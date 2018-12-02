@@ -59,7 +59,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
                 break;
             case "ab_code":
                 Intent intent_code = new Intent(Intent.ACTION_VIEW,
-                        Uri.parse("https://github.com/zsakvo"));
+                        Uri.parse("https://github.com/zsakvo/YueDuHcHelper"));
                 startActivity(intent_code);
                 break;
         }
