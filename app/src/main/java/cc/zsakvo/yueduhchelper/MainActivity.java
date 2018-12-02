@@ -23,6 +23,8 @@ import android.widget.TextView;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.keenfin.sfcdialog.SimpleFileChooser;
+import com.yanzhenjie.permission.AndPermission;
+import com.yanzhenjie.permission.Permission;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -55,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements SyncBooksListener
     String bookName;
     ProgressDialog progressDialog;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Window window = this.getWindow();
@@ -72,14 +75,27 @@ public class MainActivity extends AppCompatActivity implements SyncBooksListener
         toolbar.setTitleTextColor(getResources().getColor(R.color.colorAccent));
         setSupportActionBar(toolbar);
         textView = (TextView)findViewById(R.id.text);
+        requestPermission();
+    }
 
-        if (doCheckPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            Log.d(TAG, "onCreate: 应用具有写外部存储的权限");
-            //进行依赖权限的代码
-        } else {
-            Log.d(TAG, "onCreate: 应用不具有写外部存储的权限");
-            doRequestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        }
+    private void requestPermission(){
+        AndPermission.with(this)
+                .runtime()
+                .permission(Permission.Group.STORAGE)
+                .onGranted(permissions -> {
+                    onStart();
+                })
+                .onDenied(permissions -> {
+                    Snackbar.make(textView,"未授予存储读写权限，将无法正常工作",Snackbar.LENGTH_LONG).show();
+                    textView.setText(getResources().getText(R.string.no_permission));
+                    textView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            requestPermission();
+                        }
+                    });
+                })
+                .start();
     }
 
     @Override
@@ -106,32 +122,7 @@ public class MainActivity extends AppCompatActivity implements SyncBooksListener
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        switch (requestCode) {
-            case MY_READ_REQUEST_CODE:
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.d(TAG, "onRequestPermissionsResult: request write permission success!");
-                    //处理依赖权限的代码
-                } else {
-                    Log.d(TAG, "onRequestPermissionsResult: request write permission fail!");
-                    //请求失败，没有权限，不能运行依赖权限的代码
-                }
-                break;
-        }
-    }
 
-    private boolean doCheckPermission(String permission) {
-        int permissionCheck = checkPermission(permission, android.os.Process.myPid(), android.os.Process.myUid());
-        return permissionCheck == PackageManager.PERMISSION_GRANTED;
-    }
-
-    private void doRequestPermission(String permission) {
-        if (Build.VERSION.SDK_INT >= 23) {
-            requestPermissions(new String[]{permission}, MY_READ_REQUEST_CODE);
-        }
-    }
 
     @Override
     public void showBooks(List<String> books) {
