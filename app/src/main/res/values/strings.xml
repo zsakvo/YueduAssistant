@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">阅读缓存提取</string>
+    <string name="sync_books">正在扫描缓存，请稍后 o(*￣▽￣*) ブ</string>
+    <string name="no_books">没有扫描到书籍缓存，请确认缓存目录是否有效 ヾ (￣▽￣)</string>
+    <string name="settings">设置</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+        <PreferenceCategory android:title="设置">
+                <Preference
+                    android:key="cs_cache"
+                    android:title="缓存位置"
+                    android:summary="选择你的「阅读」缓存目录" />
+
+                <Preference
+                    android:key="cs_out"
+                    android:title="导出位置"
+                    android:summary="选择要输出 txt 文档的目录"/>
+        </PreferenceCategory>
+
+        <PreferenceCategory android:title="关于">
+                <Preference
+                    android:key="ab_id"
+                    android:title="作者"
+                    android:summary="沚水@酷安" />
+                <Preference
+                    android:key="ab_code"
+                    android:title="开源地址"
+                    android:summary="https://github.com/zsakvo"/>
+        </PreferenceCategory>
+
+</PreferenceScreen>
