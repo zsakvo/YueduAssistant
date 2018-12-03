@@ -41,6 +41,7 @@ import cc.zsakvo.yueduhchelper.listener.WriteFileListener;
 import cc.zsakvo.yueduhchelper.task.ReadCache;
 import cc.zsakvo.yueduhchelper.task.SyncBooks;
 import cc.zsakvo.yueduhchelper.task.WriteFile;
+import cc.zsakvo.yueduhchelper.utils.SnackbarUtil;
 
 import static android.content.ContentValues.TAG;
 
@@ -61,11 +62,12 @@ public class MainActivity extends AppCompatActivity implements SyncBooksListener
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Window window = this.getWindow();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            window.getDecorView().setSystemUiVisibility( View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(getResources().getColor(R.color.colorPrimary));
             if (Build.VERSION.SDK_INT<Build.VERSION_CODES.O_MR1){
-                window.setNavigationBarColor(getResources().getColor(R.color.colorPrimary));
+                window.setNavigationBarColor(getResources().getColor(R.color.colorPrimaryDark));
             }
         }
         super.onCreate(savedInstanceState);
@@ -86,8 +88,7 @@ public class MainActivity extends AppCompatActivity implements SyncBooksListener
                     onStart();
                 })
                 .onDenied(permissions -> {
-                    Snackbar.make(textView,"未授予存储读写权限，将无法正常工作",Snackbar.LENGTH_LONG).show();
-                    textView.setText(getResources().getText(R.string.no_permission));
+                    SnackbarUtil.build(this,textView,"未授予存储读写权限，将无法正常工作",Snackbar.LENGTH_LONG).show();
                     textView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -182,9 +183,9 @@ public class MainActivity extends AppCompatActivity implements SyncBooksListener
         progressDialog.dismiss();
         Snackbar snackbar;
         if (b){
-            snackbar = Snackbar.make(textView," 导出成功！",Snackbar.LENGTH_LONG);
+            snackbar = SnackbarUtil.build(this,textView," 导出成功！",Snackbar.LENGTH_LONG);
         }else {
-            snackbar = Snackbar.make(textView," 导出失败！",Snackbar.LENGTH_LONG);
+            snackbar = SnackbarUtil.build(this,textView," 导出失败！",Snackbar.LENGTH_LONG);
         }
         snackbar.show();
     }

@@ -3,6 +3,7 @@ package cc.zsakvo.yueduhchelper;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
+import cc.zsakvo.yueduhchelper.utils.SnackbarUtil;
 
 import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
@@ -27,13 +28,13 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Window window = this.getWindow();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            window.getDecorView().setSystemUiVisibility( View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(getResources().getColor(R.color.colorPrimary));
             if (Build.VERSION.SDK_INT<Build.VERSION_CODES.O_MR1){
-                window.setNavigationBarColor(getResources().getColor(R.color.colorPrimary));
+                window.setNavigationBarColor(getResources().getColor(R.color.colorPrimaryDark));
             }
-
         }
         setContentView(R.layout.activity_settings);
         toolbar = (Toolbar)findViewById(R.id.toolbar);
@@ -64,7 +65,7 @@ public class SettingsActivity extends AppCompatActivity {
         sfcDialog.setOnChosenListener(new SimpleFileChooser.SimpleFileChooserListener() {
             @Override
             public void onFileChosen(File file) {
-                Snackbar snackbar = Snackbar.make(toolbar,"请选择一个目录",Snackbar.LENGTH_LONG);
+                Snackbar snackbar = SnackbarUtil.build(getApplicationContext(),toolbar,"请选择一个目录",Snackbar.LENGTH_LONG);
                 snackbar.show();
             }
 
@@ -79,7 +80,7 @@ public class SettingsActivity extends AppCompatActivity {
 
             @Override
             public void onCancel() {
-                Snackbar snackbar = Snackbar.make(toolbar,"未选择任何目录",Snackbar.LENGTH_LONG);
+                Snackbar snackbar = SnackbarUtil.build(getApplicationContext(),toolbar,"未选择任何目录",Snackbar.LENGTH_LONG);
                 snackbar.show();
             }
         });

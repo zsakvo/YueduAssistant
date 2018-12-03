@@ -16,6 +16,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility = '1.8'
+        targetCompatibility = '1.8'
+    }
 }
 
 dependencies {
@@ -23,6 +27,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.0.2'
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'moe.shizuku.preference:preference:3.0.0'
+    implementation 'com.yanzhenjie:permission:2.0.0-rc12'
     implementation 'com.4ert:sfcdialog:0.1.1'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.2'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0-alpha1'
