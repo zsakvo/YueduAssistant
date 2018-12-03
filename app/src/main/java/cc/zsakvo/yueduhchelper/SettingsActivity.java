@@ -3,6 +3,7 @@ package cc.zsakvo.yueduhchelper;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
+import cc.zsakvo.yueduhchelper.listener.ChangePathListener;
 import cc.zsakvo.yueduhchelper.utils.SnackbarUtil;
 
 import android.annotation.SuppressLint;
@@ -60,7 +61,7 @@ public class SettingsActivity extends AppCompatActivity {
         }
     }
 
-    public void fileChoose(final String str){
+    public void fileChoose(final String str, ChangePathListener cpl){
         SimpleFileChooser sfcDialog = new SimpleFileChooser();
         sfcDialog.setOnChosenListener(new SimpleFileChooser.SimpleFileChooserListener() {
             @Override
@@ -74,6 +75,7 @@ public class SettingsActivity extends AppCompatActivity {
                 SharedPreferences sharedPreferences = getSharedPreferences("settings",MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putString(str,directory.getAbsolutePath());
+                cpl.changePath(str,directory.getAbsolutePath());
                 editor.apply();
                 editor.commit();
             }
