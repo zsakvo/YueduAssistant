@@ -81,7 +81,8 @@ public class ReadCache extends AsyncTask<File,Integer,String> {
                     }
                 }
             }
-            publishProgress(progress++);
+            progress++;
+            publishProgress(progress);
         }
         return content.toString();
     }

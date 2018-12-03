@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -125,30 +126,30 @@ public class MainActivity extends AppCompatActivity implements SyncBooksListener
 
 
 
-    @Override
-    public void showBooks(List<String> books) {
-        if (books == null){
-            textView.setText(getResources().getText(R.string.no_books));
-        }else {
-            this.books = books;
-            List<book> list = new ArrayList<>();
-            for (String book : books) {
-                if (!book.contains("-")) continue;
-                String[] ba = book.split("-");
-                book b = new book(ba[0], "来源：" + ba[1]);
-                list.add(b);
-            }
-            if (list.size()==0){
-                textView.setText(getResources().getString(R.string.no_books));
-            }else {
-                ListView listview = (ListView) findViewById(R.id.list);
-                textView.setVisibility(View.GONE);
-                listview.setVisibility(View.VISIBLE);
-                listview.setAdapter(new BookAdapter(this, list));
-                listview.setOnItemClickListener(this);
-            }
-        }
-    }
+//    @Override
+//    public void showBooks(List<String> books) {
+//        if (books == null){
+//            textView.setText(getResources().getText(R.string.no_books));
+//        }else {
+//            this.books = books;
+//            List<book> list = new ArrayList<>();
+//            for (String book : books) {
+//                if (!book.contains("-")) continue;
+//                String[] ba = book.split("-");
+//                book b = new book(ba[0], "来源：" + ba[1]);
+//                list.add(b);
+//            }
+//            if (list.size()==0){
+//                textView.setText(getResources().getString(R.string.no_books));
+//            }else {
+//                ListView listview = (ListView) findViewById(R.id.list);
+//                textView.setVisibility(View.GONE);
+//                listview.setVisibility(View.VISIBLE);
+//                listview.setAdapter(new BookAdapter(this, list));
+//                listview.setOnItemClickListener(this);
+//            }
+//        }
+//    }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -192,6 +193,11 @@ public class MainActivity extends AppCompatActivity implements SyncBooksListener
             snackbar = SnackbarUtil.build(this,textView," 导出失败！",Snackbar.LENGTH_LONG);
         }
         snackbar.show();
+    }
+
+    @Override
+    public void showBooks(Map<String, Integer> map) {
+
     }
 
     class book{

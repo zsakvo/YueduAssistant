@@ -1,21 +1,17 @@
 package cc.zsakvo.yueduhchelper;
 
-import android.app.Activity;
-import android.content.Context;
+
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
 
-import java.util.Objects;
 
 import cc.zsakvo.yueduhchelper.listener.ChangePathListener;
 import moe.shizuku.preference.Preference;
 import moe.shizuku.preference.PreferenceFragment;
 
 import static android.content.Context.MODE_PRIVATE;
-import static androidx.constraintlayout.widget.Constraints.TAG;
 
 
 public class SettingsFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener,ChangePathListener {
