@@ -176,9 +176,8 @@ public class MainActivity extends AppCompatActivity implements SyncBooksListener
     }
 
     private void writeFile(String content,String bookName){
-        String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath()+"/YueDuTXT/";
-        folderPath = getSharedPreferences("settings",MODE_PRIVATE).getString("outPath",folderPath);
-        Log.e(TAG, "writeFile: "+folderPath );
+        String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath()+"/Documents/YueDuTXT";
+        folderPath = getSharedPreferences("settings",MODE_PRIVATE).getString("outPath",folderPath)+"/";
         bookName+=".txt";
         Log.e(TAG, "writeFile: "+folderPath );
         new WriteFile(this).execute(content,folderPath,bookName);
