@@ -30,6 +30,7 @@ public class SyncBooks extends AsyncTask<String,Void,List<String>> {
                 books.add(f.getName());
             }
         }catch (Exception e){
+            e.printStackTrace();
             return null;
         }
         return books;

@@ -133,15 +133,20 @@ public class MainActivity extends AppCompatActivity implements SyncBooksListener
             this.books = books;
             List<book> list = new ArrayList<>();
             for (String book : books) {
+                if (!book.contains("-")) continue;
                 String[] ba = book.split("-");
                 book b = new book(ba[0], "来源：" + ba[1]);
                 list.add(b);
             }
-            ListView listview = (ListView) findViewById(R.id.list);
-            textView.setVisibility(View.GONE);
-            listview.setVisibility(View.VISIBLE);
-            listview.setAdapter(new BookAdapter(this, list));
-            listview.setOnItemClickListener(this);
+            if (list.size()==0){
+                textView.setText(getResources().getString(R.string.no_books));
+            }else {
+                ListView listview = (ListView) findViewById(R.id.list);
+                textView.setVisibility(View.GONE);
+                listview.setVisibility(View.VISIBLE);
+                listview.setAdapter(new BookAdapter(this, list));
+                listview.setOnItemClickListener(this);
+            }
         }
     }
 
