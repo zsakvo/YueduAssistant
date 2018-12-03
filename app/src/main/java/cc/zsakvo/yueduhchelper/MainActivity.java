@@ -180,6 +180,7 @@ public class MainActivity extends AppCompatActivity implements SyncBooksListener
         folderPath = getSharedPreferences("settings",MODE_PRIVATE).getString("outPath",folderPath);
         Log.e(TAG, "writeFile: "+folderPath );
         bookName+=".txt";
+        Log.e(TAG, "writeFile: "+folderPath );
         new WriteFile(this).execute(content,folderPath,bookName);
     }
 

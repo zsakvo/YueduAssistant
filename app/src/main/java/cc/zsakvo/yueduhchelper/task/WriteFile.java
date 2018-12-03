@@ -47,7 +47,7 @@ public class WriteFile extends AsyncTask<String,Void,Boolean> {
     protected Boolean doInBackground(String... strings) {
         makeFilePath(strings[1],strings[2]);
         try{
-            FileOutputStream fout = new FileOutputStream(strings[1]+"/"+strings[2]);
+            FileOutputStream fout = new FileOutputStream(strings[1]+strings[2]);
             byte [] bytes = strings[0].getBytes();
             fout.write(bytes);
             fout.close();
