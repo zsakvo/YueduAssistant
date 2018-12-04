@@ -168,7 +168,7 @@ public class BooksCacheFragment extends PreferenceFragment implements SyncBooksL
         if (b){
             cha.showSnackBar("导出成功！");
         }else {
-            cha.showSnackBar("到处失败！");
+            cha.showSnackBar("导出失败！");
         }
     }
 }
