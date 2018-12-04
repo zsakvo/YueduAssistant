@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import cc.zsakvo.yueduhchelper.utils.SnackbarUtil;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,6 +17,8 @@ import android.view.View;
 import android.view.Window;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.yanzhenjie.permission.AndPermission;
+import com.yanzhenjie.permission.Permission;
 
 public class CacheHelperActivity extends AppCompatActivity {
 
@@ -28,6 +31,7 @@ public class CacheHelperActivity extends AppCompatActivity {
             window.getDecorView().setSystemUiVisibility( View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
             if (Build.VERSION.SDK_INT<Build.VERSION_CODES.O_MR1){
                 window.setNavigationBarColor(getResources().getColor(R.color.colorPrimaryDark));
             }
@@ -39,14 +43,17 @@ public class CacheHelperActivity extends AppCompatActivity {
         toolbar.setTitleTextColor(getResources().getColor(R.color.colorAccent));
         setSupportActionBar(toolbar);
 
-        if (savedInstanceState == null) {
-            BooksCacheFragment fragment = new BooksCacheFragment();
-
-            getSupportFragmentManager().beginTransaction().replace(R.id.cache_fragment,
-                    fragment).commit();
+        if (getSharedPreferences("settings",MODE_PRIVATE).getBoolean("isFirst",true)) {
+            showFirstDialog();
+        }else {
+            if(AndPermission.hasPermissions(this, Permission.Group.STORAGE)) {
+                BooksCacheFragment fragment = new BooksCacheFragment();
+                getSupportFragmentManager().beginTransaction().replace(R.id.cache_fragment,
+                        fragment).commit();
+            } else {
+                requestPermission();
+            }
         }
-
-        if (getSharedPreferences("settings",MODE_PRIVATE).getBoolean("isFirst",true)) showFirstDialog();
     }
 
     private void showFirstDialog(){
@@ -57,16 +64,45 @@ public class CacheHelperActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         SharedPreferences sharedPreferences = getSharedPreferences("settings",MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.putBoolean("idFirst",false);
+                        editor.putBoolean("isFirst",false);
                         editor.apply();
                         editor.commit();
                         dialog.dismiss();
+                        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M) {
+                            requestPermission();
+                        }
                     }
                 })
-                .setMessage("1.本程序需要存储读写权限以保证正常运行\n2.程序会优先扫描「阅读」App的默认缓存文件夹.\n3.程序的默认输出文件夹为内置存储的Documents/YueDuTXT目录")
+                .setMessage("1.本程序需要存储权限以保证正常运行\n2.程序会优先扫描「阅读」的默认缓存文件夹.\n3.默认输出文件夹为 /内置存储/Documents/YueDuTXT 目录")
                 .setCancelable(false)
                 .create()
                 .show();
+    }
+
+    private void requestPermission(){
+        AndPermission.with(this)
+                .runtime()
+                .permission(Permission.Group.STORAGE)
+                .onGranted(permissions -> {
+                    BooksCacheFragment fragment = new BooksCacheFragment();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.cache_fragment,
+                            fragment).commit();
+                })
+                .onDenied(permissions -> {
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+                    alertDialogBuilder.setTitle("提示")
+                            .setPositiveButton("退出", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    finish();
+                                }
+                            })
+                            .setMessage("权限未授予，将无法正常运行！")
+                            .setCancelable(false)
+                            .create()
+                            .show();
+                })
+                .start();
     }
 
     public void showSnackBar(String string){

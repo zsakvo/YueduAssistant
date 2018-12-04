@@ -51,7 +51,7 @@ public class BooksCacheFragment extends PreferenceFragment implements SyncBooksL
         getPreferenceManager().setSharedPreferencesMode(Context.MODE_PRIVATE);
         setPreferencesFromResource(R.xml.books_cache,null);
 
-        requestPermission();
+//        requestPermission();
 
     }
 
@@ -68,18 +68,18 @@ public class BooksCacheFragment extends PreferenceFragment implements SyncBooksL
         new WriteFile(this).execute(content,folderPath,bookName);
     }
 
-    private void requestPermission(){
-        AndPermission.with(this)
-                .runtime()
-                .permission(Permission.Group.STORAGE)
-                .onGranted(permissions -> {
-                    getBooksCache();
-                })
-                .onDenied(permissions -> {
-                    requestPermission();
-                })
-                .start();
-    }
+//    private void requestPermission(){
+//        AndPermission.with(this)
+//                .runtime()
+//                .permission(Permission.Group.STORAGE)
+//                .onGranted(permissions -> {
+//                    getBooksCache();
+//                })
+//                .onDenied(permissions -> {
+//                    requestPermission();
+//                })
+//                .start();
+//    }
 
     @Override
     public void showBooks( Map<String, Integer> map) {
@@ -88,7 +88,7 @@ public class BooksCacheFragment extends PreferenceFragment implements SyncBooksL
         PreferenceCategory preferenceCategory = new PreferenceCategory(cha);
 
         this.map = map;
-        if (map.isEmpty()){
+        if (map== null||map.isEmpty()){
             preferenceCategory.setTitle("未扫描到书籍缓存");
             p.addPreference(preferenceCategory);
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(cha);
