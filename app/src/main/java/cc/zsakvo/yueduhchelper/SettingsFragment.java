@@ -36,7 +36,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
         cs_out.setOnPreferenceClickListener(this);
 
         cs_cache.setSummary(activity.getSharedPreferences("settings",MODE_PRIVATE).getString("cachePath",Environment.getExternalStorageDirectory().getAbsolutePath()+ "/Android/data/com.gedoor.monkeybook/cache/book_cache"));
-        cs_out.setSummary(activity.getSharedPreferences("settings",MODE_PRIVATE).getString("outPath",Environment.getExternalStorageDirectory().getAbsolutePath()+"/YueDuTXT"));
+        cs_out.setSummary(activity.getSharedPreferences("settings",MODE_PRIVATE).getString("outPath",Environment.getExternalStorageDirectory().getAbsolutePath()+"/Documents/YueDuTXT"));
 
 
         Preference ab_id = (Preference) findPreference("ab_id");
