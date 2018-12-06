@@ -4,9 +4,12 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.fragment.app.FragmentManager;
+import cc.zsakvo.yueduhchelper.task.ReadCache;
 import cc.zsakvo.yueduhchelper.utils.SnackbarUtil;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -24,10 +27,15 @@ import com.jaeger.library.StatusBarUtil;
 import com.yanzhenjie.permission.AndPermission;
 import com.yanzhenjie.permission.Permission;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 public class CacheHelperActivity extends AppCompatActivity {
 
     Toolbar toolbar;
     CoordinatorLayout coordinatorLayout;
+    String cpsList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,6 +123,10 @@ public class CacheHelperActivity extends AppCompatActivity {
         SnackbarUtil.build(this,coordinatorLayout,string,Snackbar.LENGTH_SHORT).show();
     }
 
+    public String getCpsList(){
+        return cpsList;
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar, menu);
@@ -130,4 +142,6 @@ public class CacheHelperActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+
 }

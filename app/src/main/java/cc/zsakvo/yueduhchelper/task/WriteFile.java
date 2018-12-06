@@ -10,12 +10,13 @@ import cc.zsakvo.yueduhchelper.listener.WriteFileListener;
 
 public class WriteFile extends AsyncTask<String,Void,Boolean> {
 
-    WriteFileListener wfl;
+    private WriteFileListener wfl;
 
     public WriteFile(WriteFileListener wfl){
         this.wfl = wfl;
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private void makeFilePath(String filePath, String fileName) {
         File file = null;
         makeRootDirectory(filePath);
@@ -31,6 +32,7 @@ public class WriteFile extends AsyncTask<String,Void,Boolean> {
         }
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private static void makeRootDirectory(String filePath) {
         File file = null;
         try {

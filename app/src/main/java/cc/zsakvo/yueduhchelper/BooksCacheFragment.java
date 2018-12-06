@@ -15,24 +15,30 @@ import com.yanzhenjie.permission.AndPermission;
 import com.yanzhenjie.permission.Permission;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.FragmentManager;
+import cc.zsakvo.yueduhchelper.listener.ChooseChaptersListener;
 import cc.zsakvo.yueduhchelper.listener.ReadCacheListener;
 import cc.zsakvo.yueduhchelper.listener.SyncBooksListener;
 import cc.zsakvo.yueduhchelper.listener.WriteFileListener;
 import cc.zsakvo.yueduhchelper.task.ReadCache;
 import cc.zsakvo.yueduhchelper.task.SyncBooks;
 import cc.zsakvo.yueduhchelper.task.WriteFile;
+import moe.shizuku.preference.ListPreference;
 import moe.shizuku.preference.Preference;
 import moe.shizuku.preference.PreferenceCategory;
 import moe.shizuku.preference.PreferenceFragment;
 import moe.shizuku.preference.PreferenceScreen;
+import moe.shizuku.preference.SimpleMenuPreference;
 
+import static android.content.ContentValues.TAG;
 import static android.content.Context.MODE_PRIVATE;
-import static androidx.constraintlayout.widget.Constraints.TAG;
 
-public class BooksCacheFragment extends PreferenceFragment implements SyncBooksListener,Preference.OnPreferenceClickListener,ReadCacheListener,WriteFileListener {
+public class BooksCacheFragment extends PreferenceFragment implements SyncBooksListener,Preference.OnPreferenceClickListener,ReadCacheListener,WriteFileListener,Preference.OnPreferenceChangeListener {
 
     private String myCachePath;
     private CacheHelperActivity cha;
@@ -40,6 +46,8 @@ public class BooksCacheFragment extends PreferenceFragment implements SyncBooksL
     private String bookName;
     private ProgressDialog progressDialog;
     private  Map<String, Integer> map;
+    private String bookinfo;
+    private String bookPath;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -68,18 +76,19 @@ public class BooksCacheFragment extends PreferenceFragment implements SyncBooksL
         new WriteFile(this).execute(content,folderPath,bookName);
     }
 
-//    private void requestPermission(){
-//        AndPermission.with(this)
-//                .runtime()
-//                .permission(Permission.Group.STORAGE)
-//                .onGranted(permissions -> {
-//                    getBooksCache();
-//                })
-//                .onDenied(permissions -> {
-//                    requestPermission();
-//                })
-//                .start();
+//    public void readFromActivity(){
+//        String s = cha.getCpsList();
+//        progressDialog = new ProgressDialog(cha);
+//        bookContent = new StringBuilder();
+//        File bookFile = new File(bookPath);
+//        progressDialog.setProgress(0);
+//        progressDialog.setTitle("合并中，请稍后……");
+//        progressDialog.setCancelable(false);
+//        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+//        progressDialog.show();
+//        new ReadCache(this, progressDialog, 0).execute("list",s);
 //    }
+
 
     @Override
     public void showBooks( Map<String, Integer> map) {
@@ -118,12 +127,24 @@ public class BooksCacheFragment extends PreferenceFragment implements SyncBooksL
                 Log.e(TAG, "showBooks: "+key );
                 if (!key.contains("-")) continue;
                 String[] ba = key.split("-");
-                Preference preference = new Preference(cha);
-                preference.setTitle(ba[0]);
-                preference.setSummary("来源："+ba[1]+"\n"+"缓存章节："+map.get(key));
-                preference.setKey(key);
-                preference.setOnPreferenceClickListener(this);
-                p.addPreference(preference);
+//                Preference preference = new Preference(cha);
+//                preference.setTitle(ba[0]);
+//                preference.setSummary("来源："+ba[1]+"\n"+"缓存章节："+map.get(key));
+//                preference.setKey(key);
+//                preference.setOnPreferenceClickListener(this);
+//                p.addPreference(preference);
+
+                SimpleMenuPreference simpleMenuPreference = new SimpleMenuPreference(cha);
+
+                simpleMenuPreference.setTitle(ba[0]);
+                simpleMenuPreference.setEntries(new CharSequence[]{"全部导出为TXT","自定义导出TXT"});
+                simpleMenuPreference.setEntryValues(new CharSequence[]{"0","1"});
+                simpleMenuPreference.setSummary("来源："+ba[1]+"\n"+"缓存章节："+map.get(key));
+                simpleMenuPreference.setKey(key);
+                simpleMenuPreference.setOnPreferenceClickListener(this);
+                simpleMenuPreference.setOnPreferenceChangeListener(this);
+                p.addPreference(simpleMenuPreference);
+
             }
         }
     }
@@ -136,22 +157,22 @@ public class BooksCacheFragment extends PreferenceFragment implements SyncBooksL
 
     @Override
     public boolean onPreferenceClick(Preference preference) {
-            progressDialog = new ProgressDialog(cha);
-            bookContent = new StringBuilder();
-            bookName = preference.getKey().split("-")[0];
-            String bookPath = myCachePath + "/" + preference.getKey() + "/";
-            File bookFile = new File(bookPath);
-
-        int bookChapNum = map.get(preference.getKey());
-
-            progressDialog.setProgress(0);
-            progressDialog.setTitle("合并中，请稍后……");
-            progressDialog.setCancelable(false);
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            progressDialog.show();
-
-        int progress = 0;
-        new ReadCache(this, progressDialog, progress).execute(bookFile);
+//            progressDialog = new ProgressDialog(cha);
+//            bookContent = new StringBuilder();
+//            bookName = preference.getKey().split("-")[0];
+//            bookPath = myCachePath + "/" + preference.getKey() + "/";
+//            File bookFile = new File(bookPath);
+//
+//        int bookChapNum = map.get(preference.getKey());
+//
+//            progressDialog.setProgress(0);
+//            progressDialog.setTitle("合并中，请稍后……");
+//            progressDialog.setCancelable(false);
+//            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+//            progressDialog.show();
+//
+//        int progress = 0;
+//        new ReadCache(this, progressDialog, progress).execute(bookFile);
         return false;
     }
 
@@ -171,4 +192,52 @@ public class BooksCacheFragment extends PreferenceFragment implements SyncBooksL
             cha.showSnackBar("导出失败！");
         }
     }
+
+    @Override
+    public boolean onPreferenceChange(Preference preference, Object newValue) {
+        switch (newValue.toString()){
+            case "0":
+                progressDialog = new ProgressDialog(cha);
+                bookContent = new StringBuilder();
+                bookName = preference.getKey().split("-")[0];
+                bookPath = myCachePath + "/" + preference.getKey() + "/";
+                File bookFile = new File(bookPath);
+                progressDialog.setProgress(0);
+                progressDialog.setTitle("合并中，请稍后……");
+                progressDialog.setCancelable(false);
+                progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                progressDialog.show();
+                new ReadCache(this, progressDialog, 0).execute("file",bookFile);
+                break;
+            case "1":
+                bookName = preference.getKey().split("-")[0];
+                bookPath = myCachePath + "/" + preference.getKey() + "/";
+                Intent intent = new Intent(cha,TextExportActivity.class);
+                intent.putExtra("bp",preference.getKey());
+                startActivityForResult(intent,0);
+                break;
+                default:
+                    break;
+        }
+        return false;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 0){
+            if (data!=null) {
+                ArrayList<String> list = data.getStringArrayListExtra("cps");
+                progressDialog = new ProgressDialog(cha);
+                bookContent = new StringBuilder();
+                progressDialog.setProgress(0);
+                progressDialog.setTitle("合并中，请稍后……");
+                progressDialog.setCancelable(false);
+                progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                progressDialog.show();
+                new ReadCache(this, progressDialog, 0).execute("list",list);
+            }
+        }
+    }
+
 }

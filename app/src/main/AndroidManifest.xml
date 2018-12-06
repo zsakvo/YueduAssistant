@@ -13,7 +13,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-
         <activity android:name=".SettingsActivity" />
         <activity android:name=".CacheHelperActivity">
             <intent-filter>
@@ -22,6 +21,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".TextExportActivity"></activity>
     </application>
 
 </manifest>
