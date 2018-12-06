@@ -140,5 +140,10 @@ public class CacheHelperActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//        getSharedPreferences("checkbox",MODE_PRIVATE).edit().clear().apply();
+//    }
 
 }

@@ -106,8 +106,8 @@ public class BooksCacheFragment extends PreferenceFragment implements SyncBooksL
                 SimpleMenuPreference simpleMenuPreference = new SimpleMenuPreference(cha);
 
                 simpleMenuPreference.setTitle(ba[0]);
-                simpleMenuPreference.setEntries(new CharSequence[]{"全部导出为TXT","自定义导出TXT"});
-                simpleMenuPreference.setEntryValues(new CharSequence[]{"0","1"});
+                simpleMenuPreference.setEntries(new CharSequence[]{"导出为TXT"});
+                simpleMenuPreference.setEntryValues(new CharSequence[]{"0"});
                 simpleMenuPreference.setSummary("来源："+ba[1]+"\n"+"缓存章节："+map.get(key));
                 simpleMenuPreference.setKey(key);
                 simpleMenuPreference.setOnPreferenceClickListener(this);
@@ -149,20 +149,21 @@ public class BooksCacheFragment extends PreferenceFragment implements SyncBooksL
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         switch (newValue.toString()){
+//            case "0":
+//                progressDialog = new ProgressDialog(cha);
+//                bookContent = new StringBuilder();
+//                bookName = preference.getKey().split("-")[0];
+//                String bookPath = myCachePath + "/" + preference.getKey() + "/";
+//                File bookFile = new File(bookPath);
+//                progressDialog.setProgress(0);
+//                progressDialog.setTitle("合并中，请稍后……");
+//                progressDialog.setCancelable(false);
+//                progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+//                progressDialog.show();
+//                new ReadCache(this, progressDialog, 0).execute("file",bookFile);
+//                break;
             case "0":
-                progressDialog = new ProgressDialog(cha);
-                bookContent = new StringBuilder();
-                bookName = preference.getKey().split("-")[0];
                 String bookPath = myCachePath + "/" + preference.getKey() + "/";
-                File bookFile = new File(bookPath);
-                progressDialog.setProgress(0);
-                progressDialog.setTitle("合并中，请稍后……");
-                progressDialog.setCancelable(false);
-                progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                progressDialog.show();
-                new ReadCache(this, progressDialog, 0).execute("file",bookFile);
-                break;
-            case "1":
                 bookName = preference.getKey().split("-")[0];
                 bookPath = myCachePath + "/" + preference.getKey() + "/";
                 Intent intent = new Intent(cha,TextExportActivity.class);

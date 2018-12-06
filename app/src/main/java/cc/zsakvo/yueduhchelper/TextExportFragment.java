@@ -2,6 +2,7 @@ package cc.zsakvo.yueduhchelper;
 
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -9,19 +10,19 @@ import java.util.List;
 
 import androidx.appcompat.widget.AppCompatButton;
 import cc.zsakvo.yueduhchelper.listener.SyncChaptersListener;
+import cc.zsakvo.yueduhchelper.preference.CheckBoxPreference;
 import cc.zsakvo.yueduhchelper.task.SyncChapters;
-import moe.shizuku.preference.CheckBoxPreference;
 import moe.shizuku.preference.Preference;
 import moe.shizuku.preference.PreferenceCategory;
 import moe.shizuku.preference.PreferenceFragment;
 import moe.shizuku.preference.PreferenceScreen;
 
+import static android.content.ContentValues.TAG;
 import static android.content.Context.MODE_PRIVATE;
 
-public class TextExportFragment extends PreferenceFragment implements SyncChaptersListener ,Preference.OnPreferenceClickListener {
+public class TextExportFragment extends PreferenceFragment implements SyncChaptersListener ,Preference.OnPreferenceChangeListener {
 
-    TextExportActivity activity;
-    private PreferenceScreen preferenceScreen;
+    private TextExportActivity activity;
     private String bookInfo = "";
     private Boolean[] checkedChapters;
     private List<String> list;
@@ -42,10 +43,10 @@ public class TextExportFragment extends PreferenceFragment implements SyncChapte
     @Override
     public void showChapters(List<String> list) {
         this.list = list;
-        preferenceScreen = getPreferenceScreen();
+        PreferenceScreen preferenceScreen = getPreferenceScreen();
         preferenceScreen.removeAll();
         PreferenceCategory preferenceCategory = new PreferenceCategory(activity);
-        preferenceCategory.setTitle(bookInfo.split("-")[0]+"\t共"+list.size()+"章");
+        preferenceCategory.setTitle(bookInfo.split("-")[0]+"\t\t共"+list.size()+"章");
         preferenceScreen.addPreference(preferenceCategory);
         checkedChapters = new Boolean[list.size()];
         for (int i=0;i<list.size();i++){
@@ -57,8 +58,35 @@ public class TextExportFragment extends PreferenceFragment implements SyncChapte
             checkBoxPreference.setChecked(true);
             checkBoxPreference.setKey(i+"");
             checkedChapters[i] = true;
-            checkBoxPreference.setOnPreferenceClickListener(this);
+            checkBoxPreference.setOnPreferenceChangeListener(this);
             preferenceScreen.addPreference(checkBoxPreference);
+        }
+        activity.initMenuItems();
+    }
+
+    int getSize(){
+        return checkedChapters.length;
+    }
+
+    void chooseChapters(int a, int b){
+        for (int i=0;i<checkedChapters.length;i++){
+            CheckBoxPreference cbp = (CheckBoxPreference)getPreferenceScreen().getPreference(i+1);
+            cbp.setChecked(false);
+            checkedChapters[i] = false;
+        }
+        for (int i=0;a+i<=b;i++){
+            CheckBoxPreference cbp = (CheckBoxPreference)getPreferenceScreen().getPreference(a+i);
+            cbp.setChecked(true);
+            checkedChapters[a+i-1] = true;
+        }
+    }
+
+    void chooseInvert(){
+        for (int i=0;i<checkedChapters.length;i++){
+            Boolean b = checkedChapters[i];
+            CheckBoxPreference cbp = (CheckBoxPreference)getPreferenceScreen().getPreference(i+1);
+            cbp.setChecked(!b);
+            checkedChapters[i] = !b;
         }
     }
 
@@ -70,10 +98,15 @@ public class TextExportFragment extends PreferenceFragment implements SyncChapte
         return chapters;
     }
 
+
+
     @Override
-    public boolean onPreferenceClick(Preference preference) {
+    public boolean onPreferenceChange(Preference preference, Object newValue) {
         int i = Integer.parseInt(preference.getKey());
         checkedChapters[i] = !checkedChapters[i];
+        CheckBoxPreference cbp = (CheckBoxPreference)preference;
+        cbp.setChecked(!cbp.isChecked());
         return false;
     }
+
 }

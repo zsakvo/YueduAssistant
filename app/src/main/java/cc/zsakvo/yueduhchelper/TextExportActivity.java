@@ -1,11 +1,15 @@
 package cc.zsakvo.yueduhchelper;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
+import cc.zsakvo.yueduhchelper.utils.SnackbarUtil;
 
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -13,16 +17,30 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.jaeger.library.StatusBarUtil;
+
+import java.util.ArrayList;
 
 public class TextExportActivity extends AppCompatActivity implements View.OnClickListener {
 
     Toolbar toolbar;
     String bookInfo;
     TextExportFragment fragment;
+    CoordinatorLayout coordinatorLayout;
+    MenuItem check_invert;
+    MenuItem check;
+    MenuItem export;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,9 +56,11 @@ public class TextExportActivity extends AppCompatActivity implements View.OnClic
             StatusBarUtil.setColor(this,Color.parseColor("#ffffff"));
         }
         toolbar = (Toolbar)findViewById(R.id.export_toolbar);
-        toolbar.setTitle("自定义导出");
+        toolbar.setTitle("导出TXT");
         toolbar.setTitleTextColor(getResources().getColor(R.color.colorAccent));
         setSupportActionBar(toolbar);
+
+        coordinatorLayout = (CoordinatorLayout)findViewById(R.id.export_coordinatorLayout);
 
         if(getSupportActionBar() != null) {
             @SuppressLint("PrivateResource") Drawable upArrow = ContextCompat.getDrawable(this, R.drawable.abc_ic_ab_back_material);
@@ -61,12 +81,6 @@ public class TextExportActivity extends AppCompatActivity implements View.OnClic
         fragment = new TextExportFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.export_fragment,fragment).commit();
 
-        AppCompatButton btn_ok = (AppCompatButton)findViewById(R.id.export_btn_ok);
-        AppCompatButton btn_cancel = (AppCompatButton)findViewById(R.id.export_btn_cancel);
-
-        btn_ok.setOnClickListener(this);
-        btn_cancel.setOnClickListener(this);
-
 
     }
 
@@ -74,26 +88,98 @@ public class TextExportActivity extends AppCompatActivity implements View.OnClic
         return bookInfo;
     }
 
+    private void showChooseChaptersDialog(){
+        final EditText edit = new EditText(this);
+
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setGravity(Gravity.CENTER_HORIZONTAL);
+        edit.setMaxLines(1);
+        edit.setInputType(EditorInfo.TYPE_CLASS_PHONE);
+        layout.setPadding(48, 0, 48, 0);
+        layout.addView(edit);
+        AlertDialog.Builder editDialog = new AlertDialog.Builder(this);
+        editDialog.setTitle(getString(R.string.prompt));
+        editDialog.setMessage(getString(R.string.choose_chapters));
+
+        //设置dialog布局
+        editDialog.setView(layout);
+
+        //设置按钮
+        editDialog.setPositiveButton(getString(R.string.choose_ok)
+                , new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        try{
+                            String[] strs = edit.getText().toString().split("-");
+                            TextExportFragment fragment = (TextExportFragment)getSupportFragmentManager().findFragmentById(R.id.export_fragment);
+                            assert fragment != null;
+                            int size = fragment.getSize();
+                            int a = Integer.parseInt(strs[0]);
+                            int b = Integer.parseInt(strs[1]);
+                            if (0<a&&a<=b&&b<=size){
+                                fragment.chooseChapters(a,b);
+                                dialog.dismiss();
+                            }else {
+                                SnackbarUtil.build(getApplicationContext(),coordinatorLayout,"请输入有效的章节数",Snackbar.LENGTH_SHORT).show();
+                            }
+                        }catch (Exception e){
+                            SnackbarUtil.build(getApplicationContext(),coordinatorLayout,"请输入有效的分割内容",Snackbar.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+        editDialog.create().show();
+    }
+
+    public void initMenuItems(){
+        check_invert.setEnabled(true);
+        check.setEnabled(true);
+        export.setEnabled(true);
+    }
+
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.export_btn_ok:
-                Intent intent = new Intent();
-                intent.putStringArrayListExtra("cps",fragment.getChapters());
-                setResult(0,intent);//requestCode=1
-                finish();
+
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.export_menu, menu);
+        check_invert = menu.findItem(R.id.export_check_invert);
+        check = menu.findItem(R.id.export_check);
+        export = menu.findItem(R.id.export_txt);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        TextExportFragment fragment = (TextExportFragment)getSupportFragmentManager().findFragmentById(R.id.export_fragment);
+        switch (item.getItemId()) {
+            case R.id.export_check_invert:
+                assert fragment != null;
+                fragment.chooseInvert();
                 break;
-            case R.id.export_btn_cancel:
-                finish();
+            case R.id.export_check:
+                showChooseChaptersDialog();
+                break;
+            case R.id.export_txt:
+                assert fragment != null;
+                ArrayList list = fragment.getChapters();
+                if (list.size()==0){
+                    SnackbarUtil.build(this,coordinatorLayout,"请至少勾选一章",Snackbar.LENGTH_SHORT).show();
+                }else {
+                    Intent intent = new Intent();
+                    intent.putStringArrayListExtra("cps", fragment.getChapters());
+                    setResult(0, intent);//requestCode=1
+                    finish();
+                }
                 break;
                 default:
                     break;
         }
+        return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        getSharedPreferences("checkbox",MODE_PRIVATE).edit().clear().apply();
-    }
 }

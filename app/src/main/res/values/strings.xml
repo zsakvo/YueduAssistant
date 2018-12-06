@@ -3,6 +3,12 @@
     <string name="sync_books">正在扫描缓存，请稍后 o(*￣▽￣*) ブ</string>
     <string name="no_books">没有扫描到书籍缓存，请确认缓存目录是否有效 ヾ (￣▽￣)</string>
     <string name="settings">设置</string>
+    <string name="check_invert">反选</string>
+    <string name="check">自选</string>
+    <string name="export">导出</string>
+    <string name="prompt">提示</string>
+    <string name="choose_ok">确定</string>
+    <string name="choose_chapters">输入要选择的章节，例如 3–238 </string>
     <string name="no_permission">未授予存储读写权限，点击重新授权 (￣△￣；)</string>
 
     <!-- TODO: Remove or change this placeholder text -->
