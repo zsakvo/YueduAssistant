@@ -7,7 +7,7 @@
 - 默认导出目录为 /内置存储/Documents/YueDuTXT
 
 ### 软件截图
-
-![](screenshots/yueduhchelper-CacheHelperActivity-12042018101202.png)
-
-![](screenshots/yueduhchelper-CacheHelperActivity-12042018101608.png)
+<div  align="center">
+<img src="./screenshots/yueduhchelper-CacheHelperActivity-12042018101202.png" height = "512" alt="主界面" align=center />
+<img src="./screenshots/yueduhchelper-CacheHelperActivity-12042018101608.png" height = "512" alt="主界面" align=center />
+</div>

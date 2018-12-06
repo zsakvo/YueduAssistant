@@ -45,7 +45,7 @@ public class TextExportFragment extends PreferenceFragment implements SyncChapte
         preferenceScreen = getPreferenceScreen();
         preferenceScreen.removeAll();
         PreferenceCategory preferenceCategory = new PreferenceCategory(activity);
-        preferenceCategory.setTitle(bookInfo.split("-")[0]+"，共"+list.size()+"章");
+        preferenceCategory.setTitle(bookInfo.split("-")[0]+"\t共"+list.size()+"章");
         preferenceScreen.addPreference(preferenceCategory);
         checkedChapters = new Boolean[list.size()];
         for (int i=0;i<list.size();i++){
