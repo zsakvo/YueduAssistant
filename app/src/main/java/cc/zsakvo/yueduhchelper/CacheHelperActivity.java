@@ -123,9 +123,6 @@ public class CacheHelperActivity extends AppCompatActivity {
         SnackbarUtil.build(this,coordinatorLayout,string,Snackbar.LENGTH_SHORT).show();
     }
 
-    public String getCpsList(){
-        return cpsList;
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

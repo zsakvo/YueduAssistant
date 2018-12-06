@@ -1,7 +1,6 @@
 package cc.zsakvo.yueduhchelper;
 
 
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -11,24 +10,18 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.google.android.material.snackbar.Snackbar;
-import com.yanzhenjie.permission.AndPermission;
-import com.yanzhenjie.permission.Permission;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.FragmentManager;
-import cc.zsakvo.yueduhchelper.listener.ChooseChaptersListener;
 import cc.zsakvo.yueduhchelper.listener.ReadCacheListener;
 import cc.zsakvo.yueduhchelper.listener.SyncBooksListener;
 import cc.zsakvo.yueduhchelper.listener.WriteFileListener;
 import cc.zsakvo.yueduhchelper.task.ReadCache;
 import cc.zsakvo.yueduhchelper.task.SyncBooks;
 import cc.zsakvo.yueduhchelper.task.WriteFile;
-import moe.shizuku.preference.ListPreference;
 import moe.shizuku.preference.Preference;
 import moe.shizuku.preference.PreferenceCategory;
 import moe.shizuku.preference.PreferenceFragment;
@@ -45,9 +38,6 @@ public class BooksCacheFragment extends PreferenceFragment implements SyncBooksL
     private StringBuilder bookContent;
     private String bookName;
     private ProgressDialog progressDialog;
-    private  Map<String, Integer> map;
-    private String bookinfo;
-    private String bookPath;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -58,9 +48,6 @@ public class BooksCacheFragment extends PreferenceFragment implements SyncBooksL
         getPreferenceManager().setSharedPreferencesName("settings");
         getPreferenceManager().setSharedPreferencesMode(Context.MODE_PRIVATE);
         setPreferencesFromResource(R.xml.books_cache,null);
-
-//        requestPermission();
-
     }
 
     private void getBooksCache(){
@@ -76,18 +63,6 @@ public class BooksCacheFragment extends PreferenceFragment implements SyncBooksL
         new WriteFile(this).execute(content,folderPath,bookName);
     }
 
-//    public void readFromActivity(){
-//        String s = cha.getCpsList();
-//        progressDialog = new ProgressDialog(cha);
-//        bookContent = new StringBuilder();
-//        File bookFile = new File(bookPath);
-//        progressDialog.setProgress(0);
-//        progressDialog.setTitle("合并中，请稍后……");
-//        progressDialog.setCancelable(false);
-//        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-//        progressDialog.show();
-//        new ReadCache(this, progressDialog, 0).execute("list",s);
-//    }
 
 
     @Override
@@ -96,7 +71,7 @@ public class BooksCacheFragment extends PreferenceFragment implements SyncBooksL
         p.removeAll();
         PreferenceCategory preferenceCategory = new PreferenceCategory(cha);
 
-        this.map = map;
+        Map<String, Integer> map1 = map;
         if (map== null||map.isEmpty()){
             preferenceCategory.setTitle("未扫描到书籍缓存");
             p.addPreference(preferenceCategory);
@@ -127,12 +102,6 @@ public class BooksCacheFragment extends PreferenceFragment implements SyncBooksL
                 Log.e(TAG, "showBooks: "+key );
                 if (!key.contains("-")) continue;
                 String[] ba = key.split("-");
-//                Preference preference = new Preference(cha);
-//                preference.setTitle(ba[0]);
-//                preference.setSummary("来源："+ba[1]+"\n"+"缓存章节："+map.get(key));
-//                preference.setKey(key);
-//                preference.setOnPreferenceClickListener(this);
-//                p.addPreference(preference);
 
                 SimpleMenuPreference simpleMenuPreference = new SimpleMenuPreference(cha);
 
@@ -157,22 +126,6 @@ public class BooksCacheFragment extends PreferenceFragment implements SyncBooksL
 
     @Override
     public boolean onPreferenceClick(Preference preference) {
-//            progressDialog = new ProgressDialog(cha);
-//            bookContent = new StringBuilder();
-//            bookName = preference.getKey().split("-")[0];
-//            bookPath = myCachePath + "/" + preference.getKey() + "/";
-//            File bookFile = new File(bookPath);
-//
-//        int bookChapNum = map.get(preference.getKey());
-//
-//            progressDialog.setProgress(0);
-//            progressDialog.setTitle("合并中，请稍后……");
-//            progressDialog.setCancelable(false);
-//            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-//            progressDialog.show();
-//
-//        int progress = 0;
-//        new ReadCache(this, progressDialog, progress).execute(bookFile);
         return false;
     }
 
@@ -200,7 +153,7 @@ public class BooksCacheFragment extends PreferenceFragment implements SyncBooksL
                 progressDialog = new ProgressDialog(cha);
                 bookContent = new StringBuilder();
                 bookName = preference.getKey().split("-")[0];
-                bookPath = myCachePath + "/" + preference.getKey() + "/";
+                String bookPath = myCachePath + "/" + preference.getKey() + "/";
                 File bookFile = new File(bookPath);
                 progressDialog.setProgress(0);
                 progressDialog.setTitle("合并中，请稍后……");
