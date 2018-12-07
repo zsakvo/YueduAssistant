@@ -26,6 +26,7 @@ public class TextExportFragment extends PreferenceFragment implements SyncChapte
     private String bookInfo = "";
     private Boolean[] checkedChapters;
     private List<String> list;
+    private String bookPath;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -36,7 +37,11 @@ public class TextExportFragment extends PreferenceFragment implements SyncChapte
         activity = (TextExportActivity) getActivity();
         assert activity != null;
         this.bookInfo = activity.getBookInfo();
-        String bookPath = activity.getSharedPreferences("settings",MODE_PRIVATE).getString("cachePath",Environment.getExternalStorageDirectory().getAbsolutePath()+ "/Android/data/com.gedoor.monkeybook/cache/book_cache")+"/"+bookInfo;
+        bookPath = activity.getSharedPreferences("settings",MODE_PRIVATE).getString("cachePath",Environment.getExternalStorageDirectory().getAbsolutePath()+ "/Android/data/com.gedoor.monkeybook/cache/book_cache")+"/"+bookInfo;
+
+    }
+
+    public void init(){
         new SyncChapters(this).execute(bookPath);
     }
 

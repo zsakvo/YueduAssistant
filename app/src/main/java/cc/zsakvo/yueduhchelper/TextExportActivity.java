@@ -17,12 +17,15 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -81,7 +84,6 @@ public class TextExportActivity extends AppCompatActivity implements View.OnClic
         fragment = new TextExportFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.export_fragment,fragment).commit();
 
-
     }
 
     public String getBookInfo(){
@@ -102,6 +104,11 @@ public class TextExportActivity extends AppCompatActivity implements View.OnClic
         editDialog.setTitle(getString(R.string.prompt));
         editDialog.setMessage(getString(R.string.choose_chapters));
 
+
+        TextExportFragment fragment = (TextExportFragment)getSupportFragmentManager().findFragmentById(R.id.export_fragment);
+        assert fragment != null;
+        int size = fragment.getSize();
+
         //设置dialog布局
         editDialog.setView(layout);
 
@@ -110,26 +117,57 @@ public class TextExportActivity extends AppCompatActivity implements View.OnClic
                 , new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        try{
-                            String[] strs = edit.getText().toString().split("-");
-                            TextExportFragment fragment = (TextExportFragment)getSupportFragmentManager().findFragmentById(R.id.export_fragment);
-                            assert fragment != null;
-                            int size = fragment.getSize();
-                            int a = Integer.parseInt(strs[0]);
-                            int b = Integer.parseInt(strs[1]);
-                            if (0<a&&a<=b&&b<=size){
-                                fragment.chooseChapters(a,b);
-                                dialog.dismiss();
-                            }else {
-                                SnackbarUtil.build(getApplicationContext(),coordinatorLayout,"请输入有效的章节数",Snackbar.LENGTH_SHORT).show();
-                            }
-                        }catch (Exception e){
-                            SnackbarUtil.build(getApplicationContext(),coordinatorLayout,"请输入有效的分割内容",Snackbar.LENGTH_SHORT).show();
-                        }
+                        String[] strs = edit.getText().toString().split("-");
+                        int a = Integer.parseInt(strs[0]);
+                        int b = Integer.parseInt(strs[1]);
+                        fragment.chooseChapters(a,b);
+                        dialog.dismiss();
                     }
-                });
+                })
+                .setNegativeButton(getString(R.string.cancel),
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                edit.getText().clear();
+                                dialog.dismiss();
+                            }
+                        });
 
-        editDialog.create().show();
+        editDialog.setCancelable(false);
+
+        AlertDialog dialog = editDialog.show();
+
+        Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+
+        positiveButton.setEnabled(false);
+
+        edit.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                try{
+                    String[] strs = edit.getText().toString().split("-");
+                    int a = Integer.parseInt(strs[0]);
+                    int b = Integer.parseInt(strs[1]);
+                    if (0<a&&a<=b&&b<=size){
+                        positiveButton.setEnabled(true);
+                    }else {
+                        positiveButton.setEnabled(false);
+                    }
+                }catch (Exception e){
+                    positiveButton.setEnabled(false);
+                }
+            }
+        });
     }
 
     public void initMenuItems(){
@@ -150,6 +188,7 @@ public class TextExportActivity extends AppCompatActivity implements View.OnClic
         check_invert = menu.findItem(R.id.export_check_invert);
         check = menu.findItem(R.id.export_check);
         export = menu.findItem(R.id.export_txt);
+        fragment.init();
         return true;
     }
 

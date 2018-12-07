@@ -8,6 +8,7 @@
     <string name="export">导出</string>
     <string name="prompt">提示</string>
     <string name="choose_ok">确定</string>
+    <string name="cancel">取消</string>
     <string name="choose_chapters">输入要选择的章节，例如 3–238 </string>
     <string name="no_permission">未授予存储读写权限，点击重新授权 (￣△￣；)</string>
 

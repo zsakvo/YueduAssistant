@@ -31,7 +31,7 @@ public class SyncBooks extends AsyncTask<String,Void, Map<String, Integer>> {
                 if (!f.isDirectory()) continue;
                 int cp = 0;
                 for (File file:f.listFiles()){
-                    if (!f.getName().contains("-")) continue;
+                    if (!file.getName().contains("-")) continue;
                     cp++;
                 }
                 map.put(f.getName(),cp);
