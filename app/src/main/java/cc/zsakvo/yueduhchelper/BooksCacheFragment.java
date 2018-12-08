@@ -56,13 +56,12 @@ public class BooksCacheFragment extends PreferenceFragment implements SyncBooksL
         getPreferenceManager().setSharedPreferencesMode(Context.MODE_PRIVATE);
         setPreferencesFromResource(R.xml.books_cache,null);
 
-        autoMerge = cha.getSharedPreferences("settings",MODE_PRIVATE).getBoolean("cs_auto_merge",true);
 
     }
 
     private void getBooksCache(){
         myCachePath = cha.getSharedPreferences("settings",MODE_PRIVATE).getString("cachePath",Environment.getExternalStorageDirectory().getAbsolutePath()+ "/Android/data/com.gedoor.monkeybook/cache/book_cache/");
-        new SyncBooks(this).execute(myCachePath);
+        new SyncBooks(this,autoMerge).execute(myCachePath);
     }
 
 
@@ -75,7 +74,7 @@ public class BooksCacheFragment extends PreferenceFragment implements SyncBooksL
 
     @SuppressWarnings("ConstantConditions")
     @Override
-    public void showBooks(List<String> list,Map<String, String> bsm,Map<String, Integer> bcm,Map<String, Integer> bsnm) {
+    public void showBooks(List<String> list,Map<String, String> bsm,Map<String, Integer> bcm,Map<String, Integer> bsnm,int validNum) {
         PreferenceScreen p = getPreferenceScreen();
         p.removeAll();
         PreferenceCategory preferenceCategory = new PreferenceCategory(cha);
@@ -85,19 +84,11 @@ public class BooksCacheFragment extends PreferenceFragment implements SyncBooksL
             p.addPreference(preferenceCategory);
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(cha);
             alertDialogBuilder.setTitle("提示")
-                    .setPositiveButton("去设置", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            startActivity(new Intent(cha,SettingsActivity.class));
-                            dialog.dismiss();
-                        }
+                    .setPositiveButton("去设置", (dialog, which) -> {
+                        startActivity(new Intent(cha,SettingsActivity.class));
+                        dialog.dismiss();
                     })
-                    .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    })
+                    .setNegativeButton("取消", (dialog, which) -> dialog.dismiss())
                     .setMessage("没有扫描到已缓存内容，是否需要自行去设置缓存路径？")
                     .setCancelable(false)
                     .create()
@@ -108,130 +99,26 @@ public class BooksCacheFragment extends PreferenceFragment implements SyncBooksL
             p.addPreference(preferenceCategory);
             for (String name : list) {
                 SimpleMenuPreference simpleMenuPreference = new SimpleMenuPreference(cha);
-                simpleMenuPreference.setTitle(name);
                 simpleMenuPreference.setEntries(new CharSequence[]{"导出为TXT","导出为Epub"});
                 simpleMenuPreference.setEntryValues(new CharSequence[]{"0","1"});
-                simpleMenuPreference.setSummary("总来源数目："+bsnm.get(name)+"\n"+"总缓存章节数目："+bcm.get(name));
-                simpleMenuPreference.setKey(name+"-"+bsm.get(name));
+                if (autoMerge){
+                    simpleMenuPreference.setTitle(name);
+                    simpleMenuPreference.setSummary("总来源数目："+bsnm.get(name)+"\n"+"总章节数："+bcm.get(name)+"\n有效章节数："+validNum);
+                    simpleMenuPreference.setKey(name+"-"+bsm.get(name));
+                }else {
+                    simpleMenuPreference.setKey(name);
+                    String source = name.split("-")[1];
+                    simpleMenuPreference.setSummary("总章节数："+bcm.get(name)+"\n来源："+source);
+                    name = name.split("-")[0];
+                    simpleMenuPreference.setTitle(name);
+                }
                 simpleMenuPreference.setOnPreferenceClickListener(this);
                 simpleMenuPreference.setOnPreferenceChangeListener(this);
                 p.addPreference(simpleMenuPreference);
             }
-
-
-
-//            preferenceCategory.setTitle("扫描到的书籍");
-//            p.addPreference(preferenceCategory);
-//            for (String key : map.keySet()) {
-//                Log.e(TAG, "showBooks: "+key );
-//                if (!key.contains("-")) continue;
-//                String[] ba = key.split("-");
-//
-//                SimpleMenuPreference simpleMenuPreference = new SimpleMenuPreference(cha);
-//
-//                simpleMenuPreference.setTitle(ba[0]);
-//                simpleMenuPreference.setEntries(new CharSequence[]{"导出为TXT"});
-//                simpleMenuPreference.setEntryValues(new CharSequence[]{"0"});
-//                simpleMenuPreference.setSummary("来源："+ba[1]+"\n"+"缓存章节："+map.get(key));
-//                simpleMenuPreference.setKey(key);
-//                simpleMenuPreference.setOnPreferenceClickListener(this);
-//                simpleMenuPreference.setOnPreferenceChangeListener(this);
-//                p.addPreference(simpleMenuPreference);
-//
-//            }
         }
     }
 
-
-//    @SuppressWarnings("ConstantConditions")
-//    @Override
-//    public void showBooks( Map<String, Integer> map) {
-//        PreferenceScreen p = getPreferenceScreen();
-//        p.removeAll();
-//        PreferenceCategory preferenceCategory = new PreferenceCategory(cha);
-//
-//        if (map== null||map.isEmpty()){
-//            preferenceCategory.setTitle("未扫描到书籍缓存");
-//            p.addPreference(preferenceCategory);
-//            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(cha);
-//            alertDialogBuilder.setTitle("提示")
-//                    .setPositiveButton("去设置", new DialogInterface.OnClickListener() {
-//                        @Override
-//                        public void onClick(DialogInterface dialog, int which) {
-//                            startActivity(new Intent(cha,SettingsActivity.class));
-//                            dialog.dismiss();
-//                        }
-//                    })
-//                    .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-//                        @Override
-//                        public void onClick(DialogInterface dialog, int which) {
-//                            dialog.dismiss();
-//                        }
-//                    })
-//                    .setMessage("没有扫描到已缓存内容，是否需要自行去设置缓存路径？")
-//                    .setCancelable(false)
-//                    .create()
-//                    .show();
-//            Log.e(TAG, "showBooks: "+"null !" );
-//        }else {
-//            books = new ArrayList<>();
-//            bookMaps = new HashMap<String, String>();
-//            bookChaptersMaps = new HashMap<String, Integer>();
-//            for (String key : map.keySet()) {
-//                if (!key.contains("-")) continue;
-//                String[] ba = key.split("-");
-//                if (!bookMaps.keySet().contains(ba[0])) {
-//                    books.add(ba[0]);
-//                    bookMaps.put(ba[0],ba[1]);
-//                    bookChaptersMaps.put(ba[0],map.get(key));
-//                }else {
-//                    bookMaps.put(ba[0],bookMaps.get(ba[0])+","+ba[1]);
-//                    bookChaptersMaps.put(ba[0],bookChaptersMaps.get(ba[0])+map.get(key));
-//                }
-//            }
-//
-//
-//            preferenceCategory.setTitle("扫描到的书籍");
-//            p.addPreference(preferenceCategory);
-//            for (String key : bookMaps.keySet()) {
-//                Log.e(TAG, "showBooks: "+key );
-//
-//                SimpleMenuPreference simpleMenuPreference = new SimpleMenuPreference(cha);
-//                key = key.split("-")[0];
-//                simpleMenuPreference.setTitle(key);
-//                simpleMenuPreference.setEntries(new CharSequence[]{"导出为TXT","导出为Epub"});
-//                simpleMenuPreference.setEntryValues(new CharSequence[]{"0","1"});
-//                simpleMenuPreference.setSummary("来源："+bookMaps.get(key)+"\n"+"缓存章节："+bookChaptersMaps.get(key));
-//                simpleMenuPreference.setKey(key);
-//                simpleMenuPreference.setOnPreferenceClickListener(this);
-//                simpleMenuPreference.setOnPreferenceChangeListener(this);
-//                p.addPreference(simpleMenuPreference);
-//
-//            }
-//
-//
-//
-////            preferenceCategory.setTitle("扫描到的书籍");
-////            p.addPreference(preferenceCategory);
-////            for (String key : map.keySet()) {
-////                Log.e(TAG, "showBooks: "+key );
-////                if (!key.contains("-")) continue;
-////                String[] ba = key.split("-");
-////
-////                SimpleMenuPreference simpleMenuPreference = new SimpleMenuPreference(cha);
-////
-////                simpleMenuPreference.setTitle(ba[0]);
-////                simpleMenuPreference.setEntries(new CharSequence[]{"导出为TXT"});
-////                simpleMenuPreference.setEntryValues(new CharSequence[]{"0"});
-////                simpleMenuPreference.setSummary("来源："+ba[1]+"\n"+"缓存章节："+map.get(key));
-////                simpleMenuPreference.setKey(key);
-////                simpleMenuPreference.setOnPreferenceClickListener(this);
-////                simpleMenuPreference.setOnPreferenceChangeListener(this);
-////                p.addPreference(simpleMenuPreference);
-////
-////            }
-//        }
-//    }
 
     private String cleanSource(String s){
         s = s.replaceAll(".+dstiejuan.+","丹书铁券");
@@ -241,6 +128,8 @@ public class BooksCacheFragment extends PreferenceFragment implements SyncBooksL
     @Override
     public void onStart(){
         super.onStart();
+        getPreferenceScreen().removeAll();
+        autoMerge = cha.getSharedPreferences("settings",MODE_PRIVATE).getBoolean("cs_auto_merge",true);
         getBooksCache();
     }
 
@@ -258,7 +147,6 @@ public class BooksCacheFragment extends PreferenceFragment implements SyncBooksL
     @Override
     public void writeFileResult(Boolean b) {
         progressDialog.dismiss();
-        Snackbar snackbar;
         if (b){
             cha.showSnackBar("导出成功！");
         }else {

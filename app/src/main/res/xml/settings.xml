@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
         <PreferenceCategory android:title="设置">
                 <Preference
                     android:key="cs_cache"
@@ -12,11 +11,16 @@
                     android:title="导出位置"
                     android:summary="选择要输出 txt 文档的目录"/>
 
+        </PreferenceCategory>
+
+        <PreferenceCategory android:title="试验性功能">
+
                 <SwitchPreference
                     android:key="cs_auto_merge"
                     android:title="书籍合并"
-                    android:defaultValue="true"
+                    android:defaultValue="false"
                     android:summary="同一书籍自动合并来自不同源的章节"/>
+
         </PreferenceCategory>
 
         <PreferenceCategory android:title="关于">

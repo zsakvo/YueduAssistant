@@ -17,48 +17,81 @@ import static android.content.ContentValues.TAG;
 public class SyncBooks extends AsyncTask<String, Void, Void> {
 
     private SyncBooksListener sbl;
+    private Boolean autoMerge;
 
-    public SyncBooks(SyncBooksListener sbl){
+    public SyncBooks(SyncBooksListener sbl,Boolean autoMerge){
         this.sbl = sbl;
+        this.autoMerge = autoMerge;
     }
 
     private Map<String, Integer> bookChapterNumMaps;
     private Map<String, Integer> bookSourceNumMaps;
     private Map<String,String> bookSourceMaps;
-    private List<String> bookList;
+    private List<String> bookSourceList;
+    private int validNum;
 
     @Override
     protected Void doInBackground(String... strings) {
-        bookList = new ArrayList<>();
-        bookChapterNumMaps = new HashMap<String, Integer>();
-        bookSourceNumMaps = new HashMap<String, Integer>();
-        bookSourceMaps = new HashMap<>();
-        String path = strings[0];
-        File cacheFile = new File(path);
-        try {
-            for (File f : cacheFile.listFiles()) {
-                if (!f.isDirectory()) continue;
-                int cp = 0;
-                for (File file:f.listFiles()){
-                    if (!file.getName().contains("-")) continue;
-                    cp++;
+        if (autoMerge){
+            bookSourceList = new ArrayList<>();
+            bookChapterNumMaps = new HashMap<String, Integer>();
+            bookSourceNumMaps = new HashMap<String, Integer>();
+            bookSourceMaps = new HashMap<>();
+            List<String> bookNames = new ArrayList<>();
+            String path = strings[0];
+            File cacheFile = new File(path);
+            try {
+                for (File f : cacheFile.listFiles()) {
+                    if (!f.isDirectory()) continue;
+                    int cp = 0;
+                    for (File file:f.listFiles()){
+                        if (!file.getName().contains("-")) continue;
+                        cp++;
+                        String num = file.getName().split("-")[0]+"-";
+                        if (!bookNames.contains(num)) bookNames.add(num);
+                    }
+                    String name = f.getName();
+                    String source = name.split("-")[1];
+                    name = name.split("-")[0];
+                    if (!bookSourceMaps.keySet().contains(name)){
+                        bookSourceMaps.put(name,source);
+                        bookChapterNumMaps.put(name,cp);
+                        bookSourceNumMaps.put(name,1);
+                        bookSourceList.add(name);
+                    }else {
+                        bookSourceMaps.put(name,bookSourceMaps.get(name)+","+source);
+                        bookChapterNumMaps.put(name,bookChapterNumMaps.get(name)+cp);
+                        bookSourceNumMaps.put(name,bookSourceNumMaps.get(name)+1);
+                    }
                 }
-                String name = f.getName();
-                String source = name.split("-")[1];
-                name = name.split("-")[0];
-                if (!bookSourceMaps.keySet().contains(name)){
+                validNum = bookNames.size();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }else {
+            bookSourceMaps = new HashMap<>();
+            bookSourceList = new ArrayList<>();
+            bookChapterNumMaps = new HashMap<String, Integer>();
+            bookSourceNumMaps = new HashMap<String, Integer>();
+            String path = strings[0];
+            File cacheFile = new File(path);
+            try {
+                for (File f : cacheFile.listFiles()) {
+                    if (!f.isDirectory()) continue;
+                    int cp = 0;
+                    for (File file:f.listFiles()){
+                        if (!file.getName().contains("-")) continue;
+                        cp++;
+                    }
+                    String name = f.getName();
+                    String source = name.split("-")[1];
                     bookSourceMaps.put(name,source);
                     bookChapterNumMaps.put(name,cp);
-                    bookSourceNumMaps.put(name,1);
-                    bookList.add(name);
-                }else {
-                    bookSourceMaps.put(name,bookSourceMaps.get(name)+","+source);
-                    bookChapterNumMaps.put(name,bookChapterNumMaps.get(name)+cp);
-                    bookSourceNumMaps.put(name,bookSourceNumMaps.get(name)+1);
+                    bookSourceList.add(name);
                 }
+            }catch (Exception e){
+                e.printStackTrace();
             }
-        }catch (Exception e){
-            e.printStackTrace();
         }
         return null;
     }
@@ -66,6 +99,6 @@ public class SyncBooks extends AsyncTask<String, Void, Void> {
     @Override
     protected void onPostExecute( Void v){
         super.onPostExecute (v);
-        sbl.showBooks(bookList,bookSourceMaps,bookChapterNumMaps,bookSourceNumMaps);
+        sbl.showBooks(bookSourceList,bookSourceMaps,bookChapterNumMaps,bookSourceNumMaps,validNum);
     }
 }

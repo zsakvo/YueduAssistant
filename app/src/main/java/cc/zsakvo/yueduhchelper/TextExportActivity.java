@@ -19,6 +19,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -61,12 +62,12 @@ public class TextExportActivity extends AppCompatActivity implements View.OnClic
         }else {
             StatusBarUtil.setColor(this,Color.parseColor("#ffffff"));
         }
-        toolbar = (Toolbar)findViewById(R.id.export_toolbar);
+        toolbar = findViewById(R.id.export_toolbar);
         toolbar.setTitle("导出TXT");
         toolbar.setTitleTextColor(getResources().getColor(R.color.colorAccent));
         setSupportActionBar(toolbar);
 
-        coordinatorLayout = (CoordinatorLayout)findViewById(R.id.export_coordinatorLayout);
+        coordinatorLayout = findViewById(R.id.export_coordinatorLayout);
 
         if(getSupportActionBar() != null) {
             @SuppressLint("PrivateResource") Drawable upArrow = ContextCompat.getDrawable(this, R.drawable.abc_ic_ab_back_material);
@@ -75,12 +76,7 @@ public class TextExportActivity extends AppCompatActivity implements View.OnClic
             getSupportActionBar().setHomeAsUpIndicator(upArrow);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        toolbar.setNavigationOnClickListener(v -> finish());
 
         Intent intent = getIntent();
         bookName = intent.getStringExtra("bn");
@@ -103,7 +99,7 @@ public class TextExportActivity extends AppCompatActivity implements View.OnClic
                 cacheFilePath.add(cachePath + "/" + bookName + "-" + s + "/");
             }
         }else {
-            cacheFilePath.add(bookSource);
+            cacheFilePath.add(cachePath + "/" + bookName + "-" + bookSource + "/");
         }
         return cacheFilePath;
     }
@@ -130,23 +126,17 @@ public class TextExportActivity extends AppCompatActivity implements View.OnClic
         editDialog.setView(layout);
 
         editDialog.setPositiveButton(getString(R.string.choose_ok)
-                , new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String[] strs = edit.getText().toString().split("-");
-                        int a = Integer.parseInt(strs[0]);
-                        int b = Integer.parseInt(strs[1]);
-                        fragment.chooseChapters(a,b);
-                        dialog.dismiss();
-                    }
+                , (dialog, which) -> {
+                    String[] strs = edit.getText().toString().split("-");
+                    int a = Integer.parseInt(strs[0]);
+                    int b = Integer.parseInt(strs[1]);
+                    fragment.chooseChapters(a,b);
+                    dialog.dismiss();
                 })
                 .setNegativeButton(getString(R.string.cancel),
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                edit.getText().clear();
-                                dialog.dismiss();
-                            }
+                        (dialog, which) -> {
+                            edit.getText().clear();
+                            dialog.dismiss();
                         });
 
         editDialog.setCancelable(false);
