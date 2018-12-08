@@ -57,14 +57,6 @@ public class WriteFile extends AsyncTask<String,Void,Boolean> {
         }
         catch(Exception e){
             e.printStackTrace();
-            try {
-                makeFilePath(strings[1],"log");
-                FileOutputStream fos = new FileOutputStream(strings[1]);
-                fos.write(e.toString().getBytes());
-                fos.close();
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
             return false;
         }
         return true;
