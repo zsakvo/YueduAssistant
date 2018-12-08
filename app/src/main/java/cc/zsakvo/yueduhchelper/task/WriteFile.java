@@ -5,6 +5,7 @@ import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 
 import cc.zsakvo.yueduhchelper.listener.WriteFileListener;
 
@@ -18,7 +19,7 @@ public class WriteFile extends AsyncTask<String,Void,Boolean> {
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private void makeFilePath(String filePath, String fileName) {
-        File file = null;
+        File file;
         makeRootDirectory(filePath);
         try {
             file = new File(filePath + fileName);
@@ -34,7 +35,7 @@ public class WriteFile extends AsyncTask<String,Void,Boolean> {
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private static void makeRootDirectory(String filePath) {
-        File file = null;
+        File file;
         try {
             file = new File(filePath);
             if (!file.exists()) {
@@ -56,6 +57,14 @@ public class WriteFile extends AsyncTask<String,Void,Boolean> {
         }
         catch(Exception e){
             e.printStackTrace();
+            try {
+                makeFilePath(strings[1],"log");
+                FileOutputStream fos = new FileOutputStream(strings[1]);
+                fos.write(e.toString().getBytes());
+                fos.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
             return false;
         }
         return true;

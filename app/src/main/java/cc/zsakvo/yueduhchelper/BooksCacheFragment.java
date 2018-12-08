@@ -129,7 +129,7 @@ public class BooksCacheFragment extends PreferenceFragment implements SyncBooksL
     public void onStart(){
         super.onStart();
         getPreferenceScreen().removeAll();
-        autoMerge = cha.getSharedPreferences("settings",MODE_PRIVATE).getBoolean("cs_auto_merge",true);
+        autoMerge = cha.getSharedPreferences("settings",MODE_PRIVATE).getBoolean("cs_auto_merge",false);
         getBooksCache();
     }
 
