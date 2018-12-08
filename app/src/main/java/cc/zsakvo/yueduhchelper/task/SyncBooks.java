@@ -13,7 +13,8 @@ import cc.zsakvo.yueduhchelper.listener.SyncBooksListener;
 
 import static android.content.ContentValues.TAG;
 
-public class SyncBooks extends AsyncTask<String,Void, Map<String, Integer>> {
+@SuppressWarnings("ALL")
+public class SyncBooks extends AsyncTask<String, Void, Void> {
 
     private SyncBooksListener sbl;
 
@@ -21,9 +22,17 @@ public class SyncBooks extends AsyncTask<String,Void, Map<String, Integer>> {
         this.sbl = sbl;
     }
 
+    private Map<String, Integer> bookChapterNumMaps;
+    private Map<String, Integer> bookSourceNumMaps;
+    private Map<String,String> bookSourceMaps;
+    private List<String> bookList;
+
     @Override
-    protected  Map<String, Integer> doInBackground(String... strings) {
-        Map<String, Integer> map = new HashMap<String, Integer>();
+    protected Void doInBackground(String... strings) {
+        bookList = new ArrayList<>();
+        bookChapterNumMaps = new HashMap<String, Integer>();
+        bookSourceNumMaps = new HashMap<String, Integer>();
+        bookSourceMaps = new HashMap<>();
         String path = strings[0];
         File cacheFile = new File(path);
         try {
@@ -34,18 +43,29 @@ public class SyncBooks extends AsyncTask<String,Void, Map<String, Integer>> {
                     if (!file.getName().contains("-")) continue;
                     cp++;
                 }
-                map.put(f.getName(),cp);
+                String name = f.getName();
+                String source = name.split("-")[1];
+                name = name.split("-")[0];
+                if (!bookSourceMaps.keySet().contains(name)){
+                    bookSourceMaps.put(name,source);
+                    bookChapterNumMaps.put(name,cp);
+                    bookSourceNumMaps.put(name,1);
+                    bookList.add(name);
+                }else {
+                    bookSourceMaps.put(name,bookSourceMaps.get(name)+","+source);
+                    bookChapterNumMaps.put(name,bookChapterNumMaps.get(name)+cp);
+                    bookSourceNumMaps.put(name,bookSourceNumMaps.get(name)+1);
+                }
             }
         }catch (Exception e){
             e.printStackTrace();
-            return null;
         }
-        return map;
+        return null;
     }
 
     @Override
-    protected void onPostExecute( Map<String, Integer> maps){
-        super.onPostExecute (maps);
-        sbl.showBooks(maps);
+    protected void onPostExecute( Void v){
+        super.onPostExecute (v);
+        sbl.showBooks(bookList,bookSourceMaps,bookChapterNumMaps,bookSourceNumMaps);
     }
 }

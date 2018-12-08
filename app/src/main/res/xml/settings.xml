@@ -11,6 +11,12 @@
                     android:key="cs_out"
                     android:title="导出位置"
                     android:summary="选择要输出 txt 文档的目录"/>
+
+                <SwitchPreference
+                    android:key="cs_auto_merge"
+                    android:title="书籍合并"
+                    android:defaultValue="true"
+                    android:summary="同一书籍自动合并来自不同源的章节"/>
         </PreferenceCategory>
 
         <PreferenceCategory android:title="关于">

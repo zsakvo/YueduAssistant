@@ -23,7 +23,7 @@ import static android.content.Context.MODE_PRIVATE;
 public class TextExportFragment extends PreferenceFragment implements SyncChaptersListener ,Preference.OnPreferenceChangeListener {
 
     private TextExportActivity activity;
-    private String bookInfo = "";
+    private List<String> cacheFilePath;
     private Boolean[] checkedChapters;
     private List<String> list;
     private String bookPath;
@@ -36,13 +36,11 @@ public class TextExportFragment extends PreferenceFragment implements SyncChapte
         setPreferencesFromResource(R.xml.books_cache, null);
         activity = (TextExportActivity) getActivity();
         assert activity != null;
-        this.bookInfo = activity.getBookInfo();
-        bookPath = activity.getSharedPreferences("settings",MODE_PRIVATE).getString("cachePath",Environment.getExternalStorageDirectory().getAbsolutePath()+ "/Android/data/com.gedoor.monkeybook/cache/book_cache")+"/"+bookInfo;
-
+        this.cacheFilePath = activity.getBookInfo();
     }
 
-    public void init(){
-        new SyncChapters(this).execute(bookPath);
+    void init(){
+        new SyncChapters(this).execute(cacheFilePath);
     }
 
     @Override
@@ -51,7 +49,7 @@ public class TextExportFragment extends PreferenceFragment implements SyncChapte
         PreferenceScreen preferenceScreen = getPreferenceScreen();
         preferenceScreen.removeAll();
         PreferenceCategory preferenceCategory = new PreferenceCategory(activity);
-        preferenceCategory.setTitle(bookInfo.split("-")[0]+"\t\t共"+list.size()+"章");
+        preferenceCategory.setTitle(activity.getBookName()+"\t\t共"+list.size()+"章");
         preferenceScreen.addPreference(preferenceCategory);
         checkedChapters = new Boolean[list.size()];
         for (int i=0;i<list.size();i++){

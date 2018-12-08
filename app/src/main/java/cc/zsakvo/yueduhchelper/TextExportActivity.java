@@ -34,11 +34,14 @@ import com.google.android.material.snackbar.Snackbar;
 import com.jaeger.library.StatusBarUtil;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class TextExportActivity extends AppCompatActivity implements View.OnClickListener {
 
     Toolbar toolbar;
-    String bookInfo;
+    String bookName;
+    String cachePath;
+    String bookSource;
     TextExportFragment fragment;
     CoordinatorLayout coordinatorLayout;
     MenuItem check_invert;
@@ -79,15 +82,30 @@ public class TextExportActivity extends AppCompatActivity implements View.OnClic
             }
         });
 
-        this.bookInfo = getIntent().getStringExtra("bp");
+        Intent intent = getIntent();
+        bookName = intent.getStringExtra("bn");
+        cachePath = intent.getStringExtra("cp");
+        bookSource = intent.getStringExtra("bs");
 
         fragment = new TextExportFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.export_fragment,fragment).commit();
 
     }
 
-    public String getBookInfo(){
-        return bookInfo;
+    public String getBookName(){
+        return bookName;
+    }
+
+    public List<String> getBookInfo(){
+        List<String> cacheFilePath = new ArrayList<>();
+        if (bookSource.contains(",")) {
+            for (String s : bookSource.split(",")) {
+                cacheFilePath.add(cachePath + "/" + bookName + "-" + s + "/");
+            }
+        }else {
+            cacheFilePath.add(bookSource);
+        }
+        return cacheFilePath;
     }
 
     private void showChooseChaptersDialog(){
@@ -109,10 +127,8 @@ public class TextExportActivity extends AppCompatActivity implements View.OnClic
         assert fragment != null;
         int size = fragment.getSize();
 
-        //设置dialog布局
         editDialog.setView(layout);
 
-        //设置按钮
         editDialog.setPositiveButton(getString(R.string.choose_ok)
                 , new DialogInterface.OnClickListener() {
                     @Override
