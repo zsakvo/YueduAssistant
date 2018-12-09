@@ -74,7 +74,7 @@ public class BooksCacheFragment extends PreferenceFragment implements SyncBooksL
 
     @SuppressWarnings("ConstantConditions")
     @Override
-    public void showBooks(List<String> list,Map<String, String> bsm,Map<String, Integer> bcm,Map<String, Integer> bsnm,int validNum) {
+    public void showBooks(List<String> list,Map<String, String> bsm,Map<String, Integer> bcm,Map<String, Integer> bsnm) {
         PreferenceScreen p = getPreferenceScreen();
         p.removeAll();
         PreferenceCategory preferenceCategory = new PreferenceCategory(cha);
@@ -103,7 +103,7 @@ public class BooksCacheFragment extends PreferenceFragment implements SyncBooksL
                 simpleMenuPreference.setEntryValues(new CharSequence[]{"0","1"});
                 if (autoMerge){
                     simpleMenuPreference.setTitle(name);
-                    simpleMenuPreference.setSummary("总来源数目："+bsnm.get(name)+"\n"+"总章节数："+bcm.get(name)+"\n有效章节数："+validNum);
+                    simpleMenuPreference.setSummary("总来源数目："+bsnm.get(name)+"\n"+"总章节数："+bcm.get(name));
                     simpleMenuPreference.setKey(name+"-"+bsm.get(name));
                 }else {
                     simpleMenuPreference.setKey(name);
@@ -158,8 +158,6 @@ public class BooksCacheFragment extends PreferenceFragment implements SyncBooksL
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         switch (newValue.toString()){
             case "0":
-//                String bookPath = myCachePath + "/" + preference.getKey() + "/";
-//                bookPath = myCachePath + "/" + preference.getKey() + "/";
                 String[] s = preference.getKey().split("-");
                 bookName = s[0];
                 Intent intent = new Intent(cha,TextExportActivity.class);
