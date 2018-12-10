@@ -4,7 +4,7 @@
 ### 使用方法
 启动软件并授予必要权限后，通过扫描「阅读」的缓存目录来分析已缓存的小说，点按即可导出。
 - 默认缓存目录为 /内置存储/Android/data/com.gedoor.monkeybook/cache/book_cache/
-- 默认导出目录为 /内置存储/Documents/YueDuTXT
+- 默认导出目录为 /Users/zsakvo/project/hexo-yuedu/hexo-theme-doc-seed/source/index.md/内置存储/Documents/YueDuTXT
 
 ### 软件截图
 <div  align="center">

@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import androidx.appcompat.app.AlertDialog;
+import cc.zsakvo.yueduhchelper.Dao.CacheBook;
 import cc.zsakvo.yueduhchelper.listener.ReadCacheListener;
 import cc.zsakvo.yueduhchelper.listener.SyncBooksListener;
 import cc.zsakvo.yueduhchelper.listener.WriteFileListener;
@@ -42,7 +43,6 @@ public class BooksCacheFragment extends PreferenceFragment implements SyncBooksL
     private String bookName;
     private ProgressDialog progressDialog;
     private Boolean autoMerge;
-    private List<String> books;
     private Map<String, String> bookMaps;
     private Map<String, Integer> bookChaptersMaps;
 
@@ -72,14 +72,17 @@ public class BooksCacheFragment extends PreferenceFragment implements SyncBooksL
         new WriteFile(this).execute(content,folderPath,bookName);
     }
 
+    private Map<String,CacheBook> books;
+
     @SuppressWarnings("ConstantConditions")
     @Override
-    public void showBooks(List<String> list,Map<String, String> bsm,Map<String, Integer> bcm,Map<String, Integer> bsnm) {
+    public void showBooks(Map<String,CacheBook> books) {
+        this.books = books;
         PreferenceScreen p = getPreferenceScreen();
         p.removeAll();
         PreferenceCategory preferenceCategory = new PreferenceCategory(cha);
 
-        if (list.size()==0){
+        if (books==null||books.size()==0){
             preferenceCategory.setTitle("未扫描到书籍缓存");
             p.addPreference(preferenceCategory);
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(cha);
@@ -97,21 +100,21 @@ public class BooksCacheFragment extends PreferenceFragment implements SyncBooksL
         }else {
             preferenceCategory.setTitle("扫描到的书籍");
             p.addPreference(preferenceCategory);
-            for (String name : list) {
+            for (String key : books.keySet()) {
+                CacheBook cb = books.get(key);
                 SimpleMenuPreference simpleMenuPreference = new SimpleMenuPreference(cha);
                 simpleMenuPreference.setEntries(new CharSequence[]{"导出为TXT","导出为Epub"});
                 simpleMenuPreference.setEntryValues(new CharSequence[]{"0","1"});
                 if (autoMerge){
-                    simpleMenuPreference.setTitle(name);
-                    simpleMenuPreference.setSummary("总来源数目："+bsnm.get(name)+"\n"+"总章节数："+bcm.get(name));
-                    simpleMenuPreference.setKey(name+"-"+bsm.get(name));
-                }else {
-                    simpleMenuPreference.setKey(name);
-                    String source = name.split("-")[1];
-                    simpleMenuPreference.setSummary("总章节数："+bcm.get(name)+"\n来源："+source);
-                    name = name.split("-")[0];
-                    simpleMenuPreference.setTitle(name);
+                    simpleMenuPreference.setTitle(cb.getName());
+                    simpleMenuPreference.setSummary("总来源数目："+cb.getBookSources().size()+"\n"+"总章节数："+cb.getAllBookChapters()+"\n有效章节数："+cb.getChapterNum().size());
                 }
+                else {
+                    String source = cb.getBookSources().get(0);
+                    simpleMenuPreference.setSummary("总章节数："+cb.getAllBookChapters()+"\n缓存路径："+source);
+                    simpleMenuPreference.setTitle(cb.getName());
+                }
+                simpleMenuPreference.setKey(key);
                 simpleMenuPreference.setOnPreferenceClickListener(this);
                 simpleMenuPreference.setOnPreferenceChangeListener(this);
                 p.addPreference(simpleMenuPreference);
@@ -158,11 +161,9 @@ public class BooksCacheFragment extends PreferenceFragment implements SyncBooksL
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         switch (newValue.toString()){
             case "0":
-                String[] s = preference.getKey().split("-");
-                bookName = s[0];
+                CacheBook cb = this.books.get(preference.getKey());
                 Intent intent = new Intent(cha,TextExportActivity.class);
-                intent.putExtra("bn",s[0]);
-                intent.putExtra("bs",s[1]);
+                intent.putExtra("book",cb);
                 intent.putExtra("cp",myCachePath);
                 startActivityForResult(intent,0);
                 break;

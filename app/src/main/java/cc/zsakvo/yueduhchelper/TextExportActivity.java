@@ -6,6 +6,8 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.LiveData;
+import cc.zsakvo.yueduhchelper.Dao.CacheBook;
 import cc.zsakvo.yueduhchelper.utils.SnackbarUtil;
 
 import android.annotation.SuppressLint;
@@ -41,8 +43,7 @@ public class TextExportActivity extends AppCompatActivity implements View.OnClic
 
     Toolbar toolbar;
     String bookName;
-    String cachePath;
-    String bookSource;
+    List<String> bookSources;
     TextExportFragment fragment;
     CoordinatorLayout coordinatorLayout;
     MenuItem check_invert;
@@ -78,10 +79,9 @@ public class TextExportActivity extends AppCompatActivity implements View.OnClic
         }
         toolbar.setNavigationOnClickListener(v -> finish());
 
-        Intent intent = getIntent();
-        bookName = intent.getStringExtra("bn");
-        cachePath = intent.getStringExtra("cp");
-        bookSource = intent.getStringExtra("bs");
+        CacheBook cb = (CacheBook)getIntent().getSerializableExtra("book");
+        bookName = cb.getName();
+        bookSources = cb.getBookSources();
 
         fragment = new TextExportFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.export_fragment,fragment).commit();
@@ -93,15 +93,7 @@ public class TextExportActivity extends AppCompatActivity implements View.OnClic
     }
 
     public List<String> getBookInfo(){
-        List<String> cacheFilePath = new ArrayList<>();
-        if (bookSource.contains(",")) {
-            for (String s : bookSource.split(",")) {
-                cacheFilePath.add(cachePath + "/" + bookName + "-" + s + "/");
-            }
-        }else {
-            cacheFilePath.add(cachePath + "/" + bookName + "-" + bookSource + "/");
-        }
-        return cacheFilePath;
+        return bookSources;
     }
 
     private void showChooseChaptersDialog(){
