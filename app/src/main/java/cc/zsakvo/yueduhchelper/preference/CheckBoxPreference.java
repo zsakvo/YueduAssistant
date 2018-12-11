@@ -5,17 +5,13 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.accessibility.AccessibilityManager;
 import android.widget.Checkable;
 import android.widget.CompoundButton;
 
-import androidx.annotation.RestrictTo;
 import androidx.core.content.res.TypedArrayUtils;
 import moe.shizuku.preference.PreferenceViewHolder;
 
-import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP;
-
-public class CheckBoxPreference  extends TwoStatePreference {
+public class CheckBoxPreference extends TwoStatePreference {
     private final cc.zsakvo.yueduhchelper.preference.CheckBoxPreference.Listener mListener = new cc.zsakvo.yueduhchelper.preference.CheckBoxPreference.Listener();
 
     private class Listener implements CompoundButton.OnCheckedChangeListener {

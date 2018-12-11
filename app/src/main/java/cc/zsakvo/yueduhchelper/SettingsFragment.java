@@ -6,8 +6,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 
-
-import androidx.fragment.app.FragmentManager;
 import cc.zsakvo.yueduhchelper.listener.ChangePathListener;
 import moe.shizuku.preference.Preference;
 import moe.shizuku.preference.PreferenceFragment;
@@ -15,7 +13,7 @@ import moe.shizuku.preference.PreferenceFragment;
 import static android.content.Context.MODE_PRIVATE;
 
 
-public class SettingsFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener,ChangePathListener {
+public class SettingsFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener, ChangePathListener {
 
     private SettingsActivity activity;
     private Preference cs_cache;
@@ -30,33 +28,33 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 
         activity = (SettingsActivity) getActivity();
 
-        cs_cache = (Preference) findPreference("cs_cache");
+        cs_cache = findPreference("cs_cache");
         cs_cache.setOnPreferenceClickListener(this);
 
-        cs_out = (Preference) findPreference("cs_out");
+        cs_out = findPreference("cs_out");
         cs_out.setOnPreferenceClickListener(this);
 
-        cs_cache.setSummary(activity.getSharedPreferences("settings",MODE_PRIVATE).getString("cachePath",Environment.getExternalStorageDirectory().getAbsolutePath()+ "/Android/data/com.gedoor.monkeybook/cache/book_cache"));
-        cs_out.setSummary(activity.getSharedPreferences("settings",MODE_PRIVATE).getString("outPath",Environment.getExternalStorageDirectory().getAbsolutePath()+"/Documents/YueDuTXT"));
+        cs_cache.setSummary(activity.getSharedPreferences("settings", MODE_PRIVATE).getString("cachePath", Environment.getExternalStorageDirectory().getAbsolutePath() + "/Android/data/com.gedoor.monkeybook/cache/book_cache"));
+        cs_out.setSummary(activity.getSharedPreferences("settings", MODE_PRIVATE).getString("outPath", Environment.getExternalStorageDirectory().getAbsolutePath() + "/Documents/YueDuTXT"));
 
 
-        Preference ab_id = (Preference) findPreference("ab_id");
+        Preference ab_id = findPreference("ab_id");
         ab_id.setOnPreferenceClickListener(this);
 
-        Preference ab_code = (Preference) findPreference("ab_code");
+        Preference ab_code = findPreference("ab_code");
         ab_code.setOnPreferenceClickListener(this);
     }
 
     @Override
     public boolean onPreferenceClick(Preference preference) {
-        switch (preference.getKey()){
+        switch (preference.getKey()) {
             case "cs_cache":
                 assert activity != null;
-                activity.fileChoose("cachePath",this);
+                activity.fileChoose("cachePath", this);
                 break;
             case "cs_out":
                 assert activity != null;
-                activity.fileChoose("outPath",this);
+                activity.fileChoose("outPath", this);
                 break;
             case "ab_id":
                 Intent intent_id = new Intent(Intent.ACTION_VIEW,
@@ -74,7 +72,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 
     @Override
     public void changePath(String str, String path) {
-        switch (str){
+        switch (str) {
             case "cachePath":
                 cs_cache.setSummary(path);
                 break;

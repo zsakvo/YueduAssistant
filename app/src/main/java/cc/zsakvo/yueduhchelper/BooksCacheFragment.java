@@ -3,20 +3,14 @@ package cc.zsakvo.yueduhchelper;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 
-import com.google.android.material.snackbar.Snackbar;
-
-import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import androidx.appcompat.app.AlertDialog;
 import cc.zsakvo.yueduhchelper.Dao.CacheBook;
@@ -35,7 +29,7 @@ import moe.shizuku.preference.SimpleMenuPreference;
 import static android.content.ContentValues.TAG;
 import static android.content.Context.MODE_PRIVATE;
 
-public class BooksCacheFragment extends PreferenceFragment implements SyncBooksListener,Preference.OnPreferenceClickListener,ReadCacheListener,WriteFileListener,Preference.OnPreferenceChangeListener {
+public class BooksCacheFragment extends PreferenceFragment implements SyncBooksListener, Preference.OnPreferenceClickListener, ReadCacheListener, WriteFileListener, Preference.OnPreferenceChangeListener {
 
     private String myCachePath;
     private CacheHelperActivity cha;
@@ -49,46 +43,46 @@ public class BooksCacheFragment extends PreferenceFragment implements SyncBooksL
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
 
-        cha = (CacheHelperActivity)getActivity();
+        cha = (CacheHelperActivity) getActivity();
 
         getPreferenceManager().setDefaultPackages(new String[]{BuildConfig.APPLICATION_ID + "."});
         getPreferenceManager().setSharedPreferencesName("settings");
         getPreferenceManager().setSharedPreferencesMode(Context.MODE_PRIVATE);
-        setPreferencesFromResource(R.xml.books_cache,null);
+        setPreferencesFromResource(R.xml.books_cache, null);
 
 
     }
 
-    private void getBooksCache(){
-        myCachePath = cha.getSharedPreferences("settings",MODE_PRIVATE).getString("cachePath",Environment.getExternalStorageDirectory().getAbsolutePath()+ "/Android/data/com.gedoor.monkeybook/cache/book_cache/");
-        new SyncBooks(this,autoMerge).execute(myCachePath);
+    private void getBooksCache() {
+        myCachePath = cha.getSharedPreferences("settings", MODE_PRIVATE).getString("cachePath", Environment.getExternalStorageDirectory().getAbsolutePath() + "/Android/data/com.gedoor.monkeybook/cache/book_cache/");
+        new SyncBooks(this, autoMerge).execute(myCachePath);
     }
 
 
-    private void writeFile(String content,String bookName){
-        String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath()+"/Documents/YueDuTXT";
-        folderPath = cha.getSharedPreferences("settings",MODE_PRIVATE).getString("outPath",folderPath)+"/";
-        bookName+=".txt";
-        new WriteFile(this).execute(content,folderPath,bookName);
+    private void writeFile(String content, String bookName) {
+        String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Documents/YueDuTXT";
+        folderPath = cha.getSharedPreferences("settings", MODE_PRIVATE).getString("outPath", folderPath) + "/";
+        bookName += ".txt";
+        new WriteFile(this).execute(content, folderPath, bookName);
     }
 
-    private Map<String,CacheBook> books;
+    private LinkedHashMap<String, CacheBook> books;
 
     @SuppressWarnings("ConstantConditions")
     @Override
-    public void showBooks(Map<String,CacheBook> books) {
+    public void showBooks(LinkedHashMap<String, CacheBook> books) {
         this.books = books;
         PreferenceScreen p = getPreferenceScreen();
         p.removeAll();
         PreferenceCategory preferenceCategory = new PreferenceCategory(cha);
 
-        if (books==null||books.size()==0){
+        if (books == null || books.size() == 0) {
             preferenceCategory.setTitle("未扫描到书籍缓存");
             p.addPreference(preferenceCategory);
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(cha);
             alertDialogBuilder.setTitle("提示")
                     .setPositiveButton("去设置", (dialog, which) -> {
-                        startActivity(new Intent(cha,SettingsActivity.class));
+                        startActivity(new Intent(cha, SettingsActivity.class));
                         dialog.dismiss();
                     })
                     .setNegativeButton("取消", (dialog, which) -> dialog.dismiss())
@@ -96,22 +90,21 @@ public class BooksCacheFragment extends PreferenceFragment implements SyncBooksL
                     .setCancelable(false)
                     .create()
                     .show();
-            Log.e(TAG, "showBooks: "+"null !" );
-        }else {
+            Log.e(TAG, "showBooks: " + "null !");
+        } else {
             preferenceCategory.setTitle("扫描到的书籍");
             p.addPreference(preferenceCategory);
             for (String key : books.keySet()) {
                 CacheBook cb = books.get(key);
                 SimpleMenuPreference simpleMenuPreference = new SimpleMenuPreference(cha);
-                simpleMenuPreference.setEntries(new CharSequence[]{"导出为TXT","导出为Epub"});
-                simpleMenuPreference.setEntryValues(new CharSequence[]{"0","1"});
-                if (autoMerge){
+                simpleMenuPreference.setEntries(new CharSequence[]{"导出为TXT", "导出为Epub"});
+                simpleMenuPreference.setEntryValues(new CharSequence[]{"0", "1"});
+                if (autoMerge) {
                     simpleMenuPreference.setTitle(cb.getName());
-                    simpleMenuPreference.setSummary("总来源数目："+cb.getBookSources().size()+"\n"+"总章节数："+cb.getAllBookChapters()+"\n有效章节数："+cb.getChapterNum().size());
-                }
-                else {
-                    String source = cb.getBookSources().get(0);
-                    simpleMenuPreference.setSummary("总章节数："+cb.getAllBookChapters()+"\n缓存路径："+source);
+                    simpleMenuPreference.setSummary("总来源数目：" + cb.getBookSources().size() + "\n" + "总章节数：" + cb.getAllBookChapters() + "\n有效章节数：" + cb.getChapterNum().size());
+                } else {
+                    String source = cb.getBookSources().get(0).replace(Environment.getExternalStorageDirectory().getAbsolutePath(), "/内置存储");
+                    simpleMenuPreference.setSummary("总章节数：" + cb.getAllBookChapters() + "\n缓存路径：" + source);
                     simpleMenuPreference.setTitle(cb.getName());
                 }
                 simpleMenuPreference.setKey(key);
@@ -123,16 +116,16 @@ public class BooksCacheFragment extends PreferenceFragment implements SyncBooksL
     }
 
 
-    private String cleanSource(String s){
-        s = s.replaceAll(".+dstiejuan.+","丹书铁券");
+    private String cleanSource(String s) {
+        s = s.replaceAll(".+dstiejuan.+", "丹书铁券");
         return s;
     }
 
     @Override
-    public void onStart(){
+    public void onStart() {
         super.onStart();
         getPreferenceScreen().removeAll();
-        autoMerge = cha.getSharedPreferences("settings",MODE_PRIVATE).getBoolean("cs_auto_merge",false);
+        autoMerge = cha.getSharedPreferences("settings", MODE_PRIVATE).getBoolean("cs_auto_merge", false);
         getBooksCache();
     }
 
@@ -144,34 +137,34 @@ public class BooksCacheFragment extends PreferenceFragment implements SyncBooksL
     @Override
     public void readCache(String content) {
         bookContent.append(content);
-        writeFile(content,bookName);
+        writeFile(content, bookName);
     }
 
     @Override
     public void writeFileResult(Boolean b) {
         progressDialog.dismiss();
-        if (b){
+        if (b) {
             cha.showSnackBar("导出成功！");
-        }else {
+        } else {
             cha.showSnackBar("导出失败！");
         }
     }
 
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
-        switch (newValue.toString()){
+        switch (newValue.toString()) {
             case "0":
                 CacheBook cb = this.books.get(preference.getKey());
-                Intent intent = new Intent(cha,TextExportActivity.class);
-                intent.putExtra("book",cb);
-                intent.putExtra("cp",myCachePath);
-                startActivityForResult(intent,0);
+                Intent intent = new Intent(cha, TextExportActivity.class);
+                intent.putExtra("book", cb);
+                intent.putExtra("cp", myCachePath);
+                startActivityForResult(intent, 0);
                 break;
             case "1":
                 cha.showSnackBar("暂未开放此功能");
                 break;
-                default:
-                    break;
+            default:
+                break;
         }
         return false;
     }
@@ -179,8 +172,8 @@ public class BooksCacheFragment extends PreferenceFragment implements SyncBooksL
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == 0){
-            if (data!=null) {
+        if (requestCode == 0) {
+            if (data != null) {
                 ArrayList<String> list = data.getStringArrayListExtra("cps");
                 progressDialog = new ProgressDialog(cha);
                 bookContent = new StringBuilder();
@@ -189,7 +182,7 @@ public class BooksCacheFragment extends PreferenceFragment implements SyncBooksL
                 progressDialog.setCancelable(false);
                 progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
                 progressDialog.show();
-                new ReadCache(this, progressDialog, 0).execute("list",list);
+                new ReadCache(this, progressDialog, 0).execute("list", list);
             }
         }
     }

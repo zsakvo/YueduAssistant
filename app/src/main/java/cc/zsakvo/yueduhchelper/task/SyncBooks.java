@@ -1,19 +1,18 @@
 package cc.zsakvo.yueduhchelper.task;
 
 import android.os.AsyncTask;
-import android.util.ArrayMap;
-import android.util.Log;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import cc.zsakvo.yueduhchelper.Dao.CacheBook;
 import cc.zsakvo.yueduhchelper.listener.SyncBooksListener;
-
-import static androidx.constraintlayout.widget.Constraints.TAG;
 
 
 @SuppressWarnings("ALL")
@@ -22,28 +21,40 @@ public class SyncBooks extends AsyncTask<String, Void, Void> {
     private SyncBooksListener sbl;
     private Boolean autoMerge;
 
-    public SyncBooks(SyncBooksListener sbl,Boolean autoMerge){
+    public SyncBooks(SyncBooksListener sbl, Boolean autoMerge) {
         this.sbl = sbl;
         this.autoMerge = autoMerge;
     }
 
     private Map<String, Integer> bookChapterNumMaps;
     private Map<String, Integer> bookSourceNumMaps;
-    private Map<String,String> bookSourceMaps;
+    private Map<String, String> bookSourceMaps;
     private List<String> bookSourceList;
 
-    private Map<String,CacheBook> books;
+    private LinkedHashMap<String, CacheBook> books;
 
     private List<CacheBook> bookList;
 
     @Override
     protected Void doInBackground(String... strings) {
-        books = new HashMap<>();
-        if (autoMerge){
-            String path = strings[0];
-            File cacheFile = new File(path);
+        books = new LinkedHashMap<>();
+        String path = strings[0];
+        File cacheFile = new File(path);
+        List<File> listFiles = Arrays.asList(cacheFile.listFiles());
+        Collections.sort(listFiles, new Comparator<File>() {
+            public int compare(File f1, File f2) {
+                long diff = f1.lastModified() - f2.lastModified();
+                if (diff > 0)
+                    return 1;
+                else if (diff == 0)
+                    return 0;
+                else
+                    return -1;
+            }
+        });
+        if (autoMerge) {
             try {
-                for (File bookCacheDirs : cacheFile.listFiles()) {
+                for (File bookCacheDirs : listFiles) {
                     if (!bookCacheDirs.isDirectory()) continue;
                     CacheBook cb;
                     String cacheBookDirName = bookCacheDirs.getName();
@@ -51,7 +62,7 @@ public class SyncBooks extends AsyncTask<String, Void, Void> {
                     String cacheBookName = cacheBookInfo[0];
                     String cacheBookSource = bookCacheDirs.getAbsolutePath();
 
-                    if (books.keySet().contains(cacheBookName)){
+                    if (books.keySet().contains(cacheBookName)) {
                         cb = books.get(cacheBookName);
                         List<String> list0 = cb.getBookSources();
                         list0.add(cacheBookSource);
@@ -59,7 +70,7 @@ public class SyncBooks extends AsyncTask<String, Void, Void> {
 
                         int chaptersNum = 0;
                         List<String> chapterNumList = new ArrayList<>();
-                        for (File chapterCaches:bookCacheDirs.listFiles()){
+                        for (File chapterCaches : bookCacheDirs.listFiles()) {
                             if (!chapterCaches.getName().contains("-")) continue;
                             String[] chapterInfo = chapterCaches.getName().split("-");
                             String chapterNum = chapterInfo[0];
@@ -72,10 +83,10 @@ public class SyncBooks extends AsyncTask<String, Void, Void> {
                         list1.addAll(chapterNumList);
                         cb.setChapterNum(list1);
 
-                        cb.setAllBookChapters(cb.getAllBookChapters()+chaptersNum);
-                        books.put(cacheBookName,cb);
+                        cb.setAllBookChapters(cb.getAllBookChapters() + chaptersNum);
+                        books.put(cacheBookName, cb);
 
-                    }else {
+                    } else {
                         cb = new CacheBook();
                         cb.setName(cacheBookName);
                         List<String> list = new ArrayList<String>();
@@ -83,7 +94,7 @@ public class SyncBooks extends AsyncTask<String, Void, Void> {
                         cb.setBookSources(list);
                         int chaptersNum = 0;
                         List<String> chapterNumList = new ArrayList<>();
-                        for (File chapterCaches:bookCacheDirs.listFiles()){
+                        for (File chapterCaches : bookCacheDirs.listFiles()) {
                             if (!chapterCaches.getName().contains("-")) continue;
                             String[] chapterInfo = chapterCaches.getName().split("-");
                             String chapterNum = chapterInfo[0];
@@ -91,25 +102,22 @@ public class SyncBooks extends AsyncTask<String, Void, Void> {
                             chaptersNum++;
                         }
                         cb.setChapterNum(chapterNumList);
-                        cb.setAllBookChapters(cb.getAllBookChapters()+chaptersNum);
-                        books.put(cacheBookName,cb);
+                        cb.setAllBookChapters(cb.getAllBookChapters() + chaptersNum);
+                        books.put(cacheBookName, cb);
                     }
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-        }else {
-            String path = strings[0];
-            File cacheFile = new File(path);
+        } else {
             try {
-                for (File bookCacheDirs : cacheFile.listFiles()) {
+                for (File bookCacheDirs : listFiles) {
                     if (!bookCacheDirs.isDirectory()) continue;
                     CacheBook cb;
                     String cacheBookDirName = bookCacheDirs.getName();
                     String[] cacheBookInfo = cacheBookDirName.split("-");
                     String cacheBookName = cacheBookInfo[0];
                     String cacheBookSource = bookCacheDirs.getAbsolutePath();
-
                     cb = new CacheBook();
                     cb.setName(cacheBookName);
                     List<String> list = new ArrayList<String>();
@@ -117,36 +125,26 @@ public class SyncBooks extends AsyncTask<String, Void, Void> {
                     cb.setBookSources(list);
                     int chaptersNum = 0;
                     List<String> chapterNumList = new ArrayList<>();
-                    for (File chapterCaches:bookCacheDirs.listFiles()){
+                    for (File chapterCaches : bookCacheDirs.listFiles()) {
                         if (!chapterCaches.getName().contains("-")) continue;
                         chaptersNum++;
                     }
                     cb.setAllBookChapters(chaptersNum);
-                    books.put(cacheBookDirName,cb);
+                    books.put(cacheBookDirName, cb);
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-//        bookList = new ArrayList<>();
-//        for (String s:books.keySet()){
-//            bookList.add(books.get(s));
-//        }
         return null;
     }
 
     @Override
-    protected void onPostExecute(Void v){
-        super.onPostExecute (v);
+    protected void onPostExecute(Void v) {
+        super.onPostExecute(v);
         sbl.showBooks(books);
     }
 }
-
-
-
-
-
-
 
 
 //package cc.zsakvo.yueduhchelper.task;

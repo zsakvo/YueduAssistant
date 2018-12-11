@@ -1,27 +1,14 @@
 package cc.zsakvo.yueduhchelper;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatButton;
-import androidx.appcompat.widget.Toolbar;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.core.content.ContextCompat;
-import androidx.lifecycle.LiveData;
-import cc.zsakvo.yueduhchelper.Dao.CacheBook;
-import cc.zsakvo.yueduhchelper.utils.SnackbarUtil;
-
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,13 +18,20 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.jaeger.library.StatusBarUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.content.ContextCompat;
+import cc.zsakvo.yueduhchelper.Dao.CacheBook;
+import cc.zsakvo.yueduhchelper.utils.SnackbarUtil;
 
 public class TextExportActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -58,10 +52,10 @@ public class TextExportActivity extends AppCompatActivity implements View.OnClic
         setContentView(R.layout.activity_text_export);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            window.getDecorView().setSystemUiVisibility( View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
             StatusBarUtil.setTransparent(this);
-        }else {
-            StatusBarUtil.setColor(this,Color.parseColor("#ffffff"));
+        } else {
+            StatusBarUtil.setColor(this, Color.parseColor("#ffffff"));
         }
         toolbar = findViewById(R.id.export_toolbar);
         toolbar.setTitle("导出TXT");
@@ -70,7 +64,7 @@ public class TextExportActivity extends AppCompatActivity implements View.OnClic
 
         coordinatorLayout = findViewById(R.id.export_coordinatorLayout);
 
-        if(getSupportActionBar() != null) {
+        if (getSupportActionBar() != null) {
             @SuppressLint("PrivateResource") Drawable upArrow = ContextCompat.getDrawable(this, R.drawable.abc_ic_ab_back_material);
             assert upArrow != null;
             upArrow.setColorFilter(getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_ATOP);
@@ -79,24 +73,24 @@ public class TextExportActivity extends AppCompatActivity implements View.OnClic
         }
         toolbar.setNavigationOnClickListener(v -> finish());
 
-        CacheBook cb = (CacheBook)getIntent().getSerializableExtra("book");
+        CacheBook cb = (CacheBook) getIntent().getSerializableExtra("book");
         bookName = cb.getName();
         bookSources = cb.getBookSources();
 
         fragment = new TextExportFragment();
-        getSupportFragmentManager().beginTransaction().replace(R.id.export_fragment,fragment).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.export_fragment, fragment).commit();
 
     }
 
-    public String getBookName(){
+    public String getBookName() {
         return bookName;
     }
 
-    public List<String> getBookInfo(){
+    public List<String> getBookInfo() {
         return bookSources;
     }
 
-    private void showChooseChaptersDialog(){
+    private void showChooseChaptersDialog() {
         final EditText edit = new EditText(this);
 
         LinearLayout layout = new LinearLayout(this);
@@ -111,7 +105,7 @@ public class TextExportActivity extends AppCompatActivity implements View.OnClic
         editDialog.setMessage(getString(R.string.choose_chapters));
 
 
-        TextExportFragment fragment = (TextExportFragment)getSupportFragmentManager().findFragmentById(R.id.export_fragment);
+        TextExportFragment fragment = (TextExportFragment) getSupportFragmentManager().findFragmentById(R.id.export_fragment);
         assert fragment != null;
         int size = fragment.getSize();
 
@@ -122,7 +116,7 @@ public class TextExportActivity extends AppCompatActivity implements View.OnClic
                     String[] strs = edit.getText().toString().split("-");
                     int a = Integer.parseInt(strs[0]);
                     int b = Integer.parseInt(strs[1]);
-                    fragment.chooseChapters(a,b);
+                    fragment.chooseChapters(a, b);
                     dialog.dismiss();
                 })
                 .setNegativeButton(getString(R.string.cancel),
@@ -152,23 +146,23 @@ public class TextExportActivity extends AppCompatActivity implements View.OnClic
 
             @Override
             public void afterTextChanged(Editable s) {
-                try{
+                try {
                     String[] strs = edit.getText().toString().split("-");
                     int a = Integer.parseInt(strs[0]);
                     int b = Integer.parseInt(strs[1]);
-                    if (0<a&&a<=b&&b<=size){
+                    if (0 < a && a <= b && b <= size) {
                         positiveButton.setEnabled(true);
-                    }else {
+                    } else {
                         positiveButton.setEnabled(false);
                     }
-                }catch (Exception e){
+                } catch (Exception e) {
                     positiveButton.setEnabled(false);
                 }
             }
         });
     }
 
-    public void initMenuItems(){
+    public void initMenuItems() {
         check_invert.setEnabled(true);
         check.setEnabled(true);
         export.setEnabled(true);
@@ -192,7 +186,7 @@ public class TextExportActivity extends AppCompatActivity implements View.OnClic
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        TextExportFragment fragment = (TextExportFragment)getSupportFragmentManager().findFragmentById(R.id.export_fragment);
+        TextExportFragment fragment = (TextExportFragment) getSupportFragmentManager().findFragmentById(R.id.export_fragment);
         switch (item.getItemId()) {
             case R.id.export_check_invert:
                 assert fragment != null;
@@ -204,17 +198,17 @@ public class TextExportActivity extends AppCompatActivity implements View.OnClic
             case R.id.export_txt:
                 assert fragment != null;
                 ArrayList list = fragment.getChapters();
-                if (list.size()==0){
-                    SnackbarUtil.build(this,coordinatorLayout,"请至少勾选一章",Snackbar.LENGTH_SHORT).show();
-                }else {
+                if (list.size() == 0) {
+                    SnackbarUtil.build(this, coordinatorLayout, "请至少勾选一章", Snackbar.LENGTH_SHORT).show();
+                } else {
                     Intent intent = new Intent();
                     intent.putStringArrayListExtra("cps", fragment.getChapters());
                     setResult(0, intent);//requestCode=1
                     finish();
                 }
                 break;
-                default:
-                    break;
+            default:
+                break;
         }
         return super.onOptionsItemSelected(item);
     }

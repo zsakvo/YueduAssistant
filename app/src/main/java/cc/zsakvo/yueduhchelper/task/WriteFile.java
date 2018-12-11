@@ -5,15 +5,14 @@ import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 
 import cc.zsakvo.yueduhchelper.listener.WriteFileListener;
 
-public class WriteFile extends AsyncTask<String,Void,Boolean> {
+public class WriteFile extends AsyncTask<String, Void, Boolean> {
 
     private WriteFileListener wfl;
 
-    public WriteFile(WriteFileListener wfl){
+    public WriteFile(WriteFileListener wfl) {
         this.wfl = wfl;
     }
 
@@ -25,7 +24,7 @@ public class WriteFile extends AsyncTask<String,Void,Boolean> {
             file = new File(filePath + fileName);
             if (!file.exists()) {
                 file.createNewFile();
-            }else {
+            } else {
                 file.delete();
             }
         } catch (Exception e) {
@@ -48,14 +47,13 @@ public class WriteFile extends AsyncTask<String,Void,Boolean> {
 
     @Override
     protected Boolean doInBackground(String... strings) {
-        makeFilePath(strings[1],strings[2]);
-        try{
-            FileOutputStream fout = new FileOutputStream(strings[1]+strings[2]);
-            byte [] bytes = strings[0].getBytes();
+        makeFilePath(strings[1], strings[2]);
+        try {
+            FileOutputStream fout = new FileOutputStream(strings[1] + strings[2]);
+            byte[] bytes = strings[0].getBytes();
             fout.write(bytes);
             fout.close();
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }

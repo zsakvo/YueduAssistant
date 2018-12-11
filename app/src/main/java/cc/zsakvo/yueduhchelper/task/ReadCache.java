@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.util.Log;
 
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,15 +18,13 @@ import java.util.List;
 
 import cc.zsakvo.yueduhchelper.listener.ReadCacheListener;
 
-import static android.content.ContentValues.TAG;
-
-public class ReadCache extends AsyncTask<Object,Integer,String> {
+public class ReadCache extends AsyncTask<Object, Integer, String> {
 
     private ReadCacheListener rcl;
     private ProgressDialog progressDialog;
     private int progress;
 
-    public ReadCache(ReadCacheListener rcl, ProgressDialog progressDialog , int progress){
+    public ReadCache(ReadCacheListener rcl, ProgressDialog progressDialog, int progress) {
         this.rcl = rcl;
         this.progressDialog = progressDialog;
         this.progress = progress;
@@ -37,29 +34,26 @@ public class ReadCache extends AsyncTask<Object,Integer,String> {
     protected final String doInBackground(Object... objects) {
         StringBuilder content = new StringBuilder();
         List<String> chapterPath;
-        switch(objects[0].toString()){
+        switch (objects[0].toString()) {
             case "file":
                 chapterPath = new ArrayList<>();
-                File[] files = ((File)objects[1]).listFiles();
+                File[] files = ((File) objects[1]).listFiles();
                 List fileList = Arrays.asList(files);
-                Collections.sort(fileList, new Comparator<File>() {
-                    @Override
-                    public int compare(File o1, File o2) {
-                        if (o1.isDirectory() && o2.isFile())
-                            return -1;
-                        if (o1.isFile() && o2.isDirectory())
-                            return 1;
-                        return o1.getName().compareTo(o2.getName());
-                    }
+                Collections.sort(fileList, (Comparator<File>) (o1, o2) -> {
+                    if (o1.isDirectory() && o2.isFile())
+                        return -1;
+                    if (o1.isFile() && o2.isDirectory())
+                        return 1;
+                    return o1.getName().compareTo(o2.getName());
                 });
 
-                for (File f:files){
+                for (File f : files) {
                     if (!f.getName().contains(".nb")) continue;
                     chapterPath.add(f.getAbsolutePath());
                 }
 
                 progressDialog.setMax(chapterPath.size());
-                for (String s:chapterPath){
+                for (String s : chapterPath) {
                     File file = new File(s);
                     if (!file.isDirectory()) {
                         if (file.getName().endsWith("nb")) {
@@ -68,7 +62,7 @@ public class ReadCache extends AsyncTask<Object,Integer,String> {
                                 InputStreamReader inputreader
                                         = new InputStreamReader(instream, "UTF-8");
                                 BufferedReader buffreader = new BufferedReader(inputreader);
-                                String line = "";
+                                String line;
                                 while ((line = buffreader.readLine()) != null) {
                                     content.append(line).append("\n");
                                 }
@@ -85,9 +79,9 @@ public class ReadCache extends AsyncTask<Object,Integer,String> {
                 }
                 break;
             case "list":
-                chapterPath = (List<String>)objects[1];
+                chapterPath = (List<String>) objects[1];
                 progressDialog.setMax(chapterPath.size());
-                for (String s:chapterPath){
+                for (String s : chapterPath) {
                     File file = new File(s);
                     if (!file.isDirectory()) {
                         if (file.getName().endsWith("nb")) {
@@ -96,7 +90,7 @@ public class ReadCache extends AsyncTask<Object,Integer,String> {
                                 InputStreamReader inputreader
                                         = new InputStreamReader(instream, "UTF-8");
                                 BufferedReader buffreader = new BufferedReader(inputreader);
-                                String line = "";
+                                String line;
                                 while ((line = buffreader.readLine()) != null) {
                                     content.append(line).append("\n");
                                 }
@@ -112,8 +106,8 @@ public class ReadCache extends AsyncTask<Object,Integer,String> {
                     publishProgress(progress);
                 }
                 break;
-                default:
-                    break;
+            default:
+                break;
         }
 
         return content.toString();
