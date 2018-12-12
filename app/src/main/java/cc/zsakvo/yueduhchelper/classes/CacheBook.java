@@ -1,4 +1,4 @@
-package cc.zsakvo.yueduhchelper.Dao;
+package cc.zsakvo.yueduhchelper.classes;
 
 import java.io.Serializable;
 import java.util.List;

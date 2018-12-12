@@ -13,7 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import androidx.appcompat.app.AlertDialog;
-import cc.zsakvo.yueduhchelper.Dao.CacheBook;
+import cc.zsakvo.yueduhchelper.classes.CacheBook;
 import cc.zsakvo.yueduhchelper.listener.ReadCacheListener;
 import cc.zsakvo.yueduhchelper.listener.SyncBooksListener;
 import cc.zsakvo.yueduhchelper.listener.WriteFileListener;

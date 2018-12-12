@@ -11,7 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import cc.zsakvo.yueduhchelper.Dao.CacheBook;
+import cc.zsakvo.yueduhchelper.classes.CacheBook;
 import cc.zsakvo.yueduhchelper.listener.SyncBooksListener;
 
 

@@ -21,6 +21,13 @@
                     android:defaultValue="false"
                     android:summary="同一书籍自动合并来自不同源的章节"/>
 
+                <SwitchPreference
+                    android:key="cs_merge_mode"
+                    android:title="激进模式"
+                    android:dependency="cs_auto_merge"
+                    android:defaultValue="false"
+                    android:summary="是否以激进模式合并不同来源，不建议开启"/>
+
         </PreferenceCategory>
 
         <PreferenceCategory android:title="关于">

@@ -30,7 +30,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
-import cc.zsakvo.yueduhchelper.Dao.CacheBook;
+import cc.zsakvo.yueduhchelper.classes.CacheBook;
 import cc.zsakvo.yueduhchelper.utils.SnackbarUtil;
 
 public class TextExportActivity extends AppCompatActivity implements View.OnClickListener {

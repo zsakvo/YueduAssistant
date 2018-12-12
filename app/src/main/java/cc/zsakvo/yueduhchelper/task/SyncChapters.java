@@ -1,53 +1,70 @@
 package cc.zsakvo.yueduhchelper.task;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 
 import cc.zsakvo.yueduhchelper.listener.SyncChaptersListener;
 
+import static androidx.constraintlayout.widget.Constraints.TAG;
+
 public class SyncChapters extends AsyncTask<List<String>, Void, List<String>> {
 
     private SyncChaptersListener scl;
-
+    private List<File> cacheFiles;
+    private List<Boolean> isDum;
     public SyncChapters(SyncChaptersListener scl) {
         this.scl = scl;
-    }
-
-    private static void removeDuplicate(List<File> list) {
-        LinkedHashSet<File> set = new LinkedHashSet<>(list.size());
-        set.addAll(list);
-        list.clear();
-        list.addAll(set);
     }
 
     @SafeVarargs
     @Override
     protected final List<String> doInBackground(List<String>... lists) {
-//        File[] cacheFiles = new File[]{};
-        List<File> cacheFiles = new ArrayList<>();
-        List<String> nameList = new ArrayList<>();
-        List<String> list = new ArrayList<>();
+        List<String> nums = new ArrayList<>();
+        LinkedHashMap<File,Boolean> fileMap = new LinkedHashMap<>();
+        
 
         for (String s : lists[0]) {
-            for (File f : new File(s).listFiles()) {
+
+            File[] files = new File(s).listFiles();
+
+            Arrays.sort(files, new Comparator<File>() {
+                @Override
+                public int compare(File o1, File o2) {
+                    if (o1.isDirectory() && o2.isFile())
+                        return -1;
+                    if (o1.isFile() && o2.isDirectory())
+                        return 1;
+                    return o1.getName().compareTo(o2.getName());
+                }
+            });
+
+
+            for (File f : files) {
                 String num = f.getName().split("-")[0] + "-";
-                if (!nameList.contains(num)) {
-                    nameList.add(num);
-                    cacheFiles.add(f);
+                if (!nums.contains(num)) {
+                    nums.add(num);
+                    fileMap.put(f,true);
+                }else {
+                    Log.e(TAG, "doInBackground: "+num );
+                    fileMap.put(f,false);
                 }
             }
         }
 
-        cacheFiles = new ArrayList<>(new HashSet<>(cacheFiles));
+        isDum = new ArrayList<>();
+        cacheFiles = new ArrayList<>(fileMap.keySet());
 //        removeDuplicate(cacheFiles);
-//按创建时间排序
+//        按创建时间排序
 //        Collections.sort(cacheFiles, new Comparator<File>() {
 //                    public int compare(File f1, File f2) {
 //                        long diff = f1.lastModified() - f2.lastModified();
@@ -61,25 +78,24 @@ public class SyncChapters extends AsyncTask<List<String>, Void, List<String>> {
 //                });
 
 //按文件名排序
-        Collections.sort(cacheFiles, (o1, o2) -> {
-            if (o1.isDirectory() && o2.isFile())
-                return -1;
-            if (o1.isFile() && o2.isDirectory())
-                return 1;
-            return o1.getName().compareTo(o2.getName());
-        });
+//        Collections.sort(cacheFiles, (o1, o2) -> {
+//            if (o1.isDirectory() && o2.isFile())
+//                return -1;
+//            if (o1.isFile() && o2.isDirectory())
+//                return 1;
+//            return o1.getName().compareTo(o2.getName());
+//        });
 
-        for (File f : cacheFiles) {
-            if (!f.getName().contains(".nb")) continue;
-            list.add(f.getAbsolutePath());
+        for (File f:cacheFiles){
+            isDum.add(fileMap.get(f));
         }
 
-        return list;
+        return nums;
     }
 
     @Override
     protected void onPostExecute(List<String> list) {
         super.onPostExecute(list);
-        scl.showChapters(list);
+        scl.showChapters(cacheFiles,isDum);
     }
 }

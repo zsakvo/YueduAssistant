@@ -2,6 +2,7 @@ package cc.zsakvo.yueduhchelper;
 
 import android.os.Bundle;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,21 +40,21 @@ public class TextExportFragment extends PreferenceFragment implements SyncChapte
     }
 
     @Override
-    public void showChapters(List<String> list) {
-        this.list = list;
+    public void showChapters(List<File> cacheFiles, List<Boolean> isDum) {
+//        this.list = list;
         PreferenceScreen preferenceScreen = getPreferenceScreen();
         preferenceScreen.removeAll();
         PreferenceCategory preferenceCategory = new PreferenceCategory(activity);
-        preferenceCategory.setTitle(activity.getBookName() + "\t\t共" + list.size() + "章");
+        preferenceCategory.setTitle(activity.getBookName() + "\t\t共" + cacheFiles.size() + "章");
         preferenceScreen.addPreference(preferenceCategory);
-        checkedChapters = new Boolean[list.size()];
-        for (int i = 0; i < list.size(); i++) {
-            String[] a = list.get(i).split("/");
+        checkedChapters = new Boolean[cacheFiles.size()];
+        for (int i = 0; i < cacheFiles.size(); i++) {
+            String[] a = cacheFiles.get(i).getName().split("/");
             String[] b = a[a.length - 1].split("-");
             String c = a[a.length - 1].replace(b[0] + "-", "").replace(".nb", "");
             CheckBoxPreference checkBoxPreference = new CheckBoxPreference(activity);
             checkBoxPreference.setTitle(c);
-            checkBoxPreference.setChecked(true);
+            checkBoxPreference.setChecked(isDum.get(i));
             checkBoxPreference.setKey(i + "");
             checkedChapters[i] = true;
             checkBoxPreference.setOnPreferenceChangeListener(this);
