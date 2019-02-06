@@ -38,7 +38,7 @@ public class WriteFile extends AsyncTask<String, Void, Boolean> {
         try {
             file = new File(filePath);
             if (!file.exists()) {
-                file.mkdir();
+                file.mkdirs();
             }
         } catch (Exception e) {
             Log.i("error:", e + "");

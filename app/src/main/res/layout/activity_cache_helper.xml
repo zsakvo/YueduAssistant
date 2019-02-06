@@ -15,19 +15,12 @@
         android:layout_height="56dp">
     </androidx.appcompat.widget.Toolbar>
 
-    <FrameLayout android:id="@+id/cache_fragment"
-        xmlns:android="http://schemas.android.com/apk/res/android"
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/cache_recyclerView"
         android:layout_below="@id/cache_toolbar"
-        android:layout_above="@id/cache_coordinatorLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:background="#00000000"
-        android:id="@+id/cache_coordinatorLayout">
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </RelativeLayout>

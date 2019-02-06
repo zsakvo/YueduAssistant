@@ -31,16 +31,8 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Window window = this.getWindow();
 
         setContentView(R.layout.activity_settings);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-            StatusBarUtil.setTransparent(this);
-        } else {
-            StatusBarUtil.setColor(this, Color.parseColor("#ffffff"));
-        }
 
         toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("设置");

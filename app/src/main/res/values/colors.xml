@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimaryDark">#fafafa</color>
+    <color name="colorPrimaryDark">#bfbfbf</color>
+    <color name="colorPrimary">#e0e0e0</color>
     <color name="colorAccent">#4285f4</color>
+    <color name="white">#ffffff</color>
+    <color name="ripple">#1F000000</color>
+    <color name="divider">#70aeaeae</color>
 </resources>

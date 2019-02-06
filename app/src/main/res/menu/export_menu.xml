@@ -5,20 +5,12 @@
         android:id="@+id/export_check_invert"
         android:icon="@drawable/ic_check_invert"
         android:title="@string/check_invert"
-        android:enabled="false"
         app:showAsAction="ifRoom" />
 
-    <item
-        android:id="@+id/export_check"
-        android:icon="@drawable/ic_check"
-        android:title="@string/check"
-        android:enabled="false"
-        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/export_txt"
         android:icon="@drawable/ic_generate"
         android:title="@string/export"
-        android:enabled="false"
         app:showAsAction="always" />
 </menu>

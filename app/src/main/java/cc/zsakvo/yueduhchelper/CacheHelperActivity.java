@@ -1,63 +1,103 @@
 package cc.zsakvo.yueduhchelper;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 
 import com.google.android.material.snackbar.Snackbar;
-import com.jaeger.library.StatusBarUtil;
 import com.yanzhenjie.permission.AndPermission;
 import com.yanzhenjie.permission.Permission;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import cc.zsakvo.yueduhchelper.adapter.CacheBooksAdapter;
+import cc.zsakvo.yueduhchelper.bean.CacheBooks;
+import cc.zsakvo.yueduhchelper.listener.ReadCacheListener;
+import cc.zsakvo.yueduhchelper.listener.SyncBooksListener;
+import cc.zsakvo.yueduhchelper.listener.WriteFileListener;
+import cc.zsakvo.yueduhchelper.task.ReadCache;
+import cc.zsakvo.yueduhchelper.task.SyncBooks;
+import cc.zsakvo.yueduhchelper.task.WriteFile;
+import cc.zsakvo.yueduhchelper.utils.Divider;
 import cc.zsakvo.yueduhchelper.utils.SnackbarUtil;
 
-public class CacheHelperActivity extends AppCompatActivity {
+public class CacheHelperActivity extends AppCompatActivity implements SyncBooksListener,ReadCacheListener,WriteFileListener {
 
+    private static final String TAG = "CacheHelperActivity";
     Toolbar toolbar;
-    CoordinatorLayout coordinatorLayout;
-    String cpsList;
+    private Boolean autoMerge;
+    private String myCachePath;
+    private CacheBooksAdapter adapter;
+
+    private List<String> bookNames = new ArrayList<>();
+    private List<String> bookInfos = new ArrayList<>();
+    private List<String> bookKeys = new ArrayList<>();
+
+    private ProgressDialog progressDialog;
+    private StringBuilder bookContent;
+    private String bookName;
+
+    private LinkedHashMap<String, CacheBooks> books;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Window window = this.getWindow();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cache_helper);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-            StatusBarUtil.setTransparent(this);
-        } else {
-            StatusBarUtil.setColor(this, Color.parseColor("#ffffff"));
-        }
 
         toolbar = findViewById(R.id.cache_toolbar);
         toolbar.setTitle("阅读缓存提取");
         toolbar.setTitleTextColor(getResources().getColor(R.color.colorAccent));
         setSupportActionBar(toolbar);
-        coordinatorLayout = findViewById(R.id.cache_coordinatorLayout);
-        coordinatorLayout.bringToFront();
+
+        RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.cache_recyclerView);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.addItemDecoration(new Divider(this,36));
+
+        adapter = new CacheBooksAdapter(bookNames,bookInfos);
+        adapter.setOnItemClickListener(new CacheBooksAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                showSingleChoiceDialog(position);
+                bookName = bookNames.get(position);
+            }
+        });
+
+        mRecyclerView.setAdapter(adapter);
 
         if (getSharedPreferences("settings", MODE_PRIVATE).getBoolean("isFirst", true)) {
             showFirstDialog();
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        bookNames.clear();
+        bookInfos.clear();
+        bookKeys.clear();
+
+        autoMerge = getSharedPreferences("settings", MODE_PRIVATE).getBoolean("cs_auto_merge", false);
+        myCachePath = getSharedPreferences("settings", MODE_PRIVATE).getString("cachePath", Environment.getExternalStorageDirectory().getAbsolutePath() + "/Android/data/com.gedoor.monkeybook/cache/book_cache/");
+
+        if (AndPermission.hasPermissions(this, Permission.Group.STORAGE)) {
+            new SyncBooks(this, autoMerge).execute(myCachePath);
         } else {
-            if (AndPermission.hasPermissions(this, Permission.Group.STORAGE)) {
-                BooksCacheFragment fragment = new BooksCacheFragment();
-                getSupportFragmentManager().beginTransaction().replace(R.id.cache_fragment,
-                        fragment).commit();
-            } else {
-                requestPermission();
-            }
+            requestPermission();
         }
     }
 
@@ -86,9 +126,7 @@ public class CacheHelperActivity extends AppCompatActivity {
                 .runtime()
                 .permission(Permission.Group.STORAGE)
                 .onGranted(permissions -> {
-                    BooksCacheFragment fragment = new BooksCacheFragment();
-                    getSupportFragmentManager().beginTransaction().replace(R.id.cache_fragment,
-                            fragment).commit();
+                    new SyncBooks(this, autoMerge).execute(myCachePath);
                 })
                 .onDenied(permissions -> {
                     AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
@@ -103,7 +141,7 @@ public class CacheHelperActivity extends AppCompatActivity {
     }
 
     public void showSnackBar(String string) {
-        SnackbarUtil.build(this, coordinatorLayout, string, Snackbar.LENGTH_SHORT).show();
+        SnackbarUtil.build(this, toolbar, string, Snackbar.LENGTH_SHORT).show();
     }
 
 
@@ -123,10 +161,104 @@ public class CacheHelperActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//        getSharedPreferences("checkbox",MODE_PRIVATE).edit().clear().apply();
-//    }
 
+    @Override
+    public void showBooks(LinkedHashMap<String, CacheBooks> books) {
+
+        this.books = books;
+
+        if (books == null || books.size() == 0) {
+            this.bookNames = null;
+            this.bookInfos = null;
+            this.bookKeys = null;
+        } else {
+            for (String key : books.keySet()) {
+                bookKeys.add(key);
+                CacheBooks cb = books.get(key);
+                if (autoMerge) {
+                    assert cb != null;
+                    bookNames.add(cb.getName());
+                    bookInfos.add("总来源数目：" + cb.getBookSources().size() + "\n" + "总章节数：" + cb.getAllBookChapters() + "\n有效章节数：" + cb.getChapterNum().size());
+                } else {
+                    assert cb != null;
+                    String source = cb.getBookSources().get(0).replace(Environment.getExternalStorageDirectory().getAbsolutePath(), "/内置存储");
+                    bookNames.add(cb.getName());
+                    bookInfos.add("总章节数：" + cb.getAllBookChapters() + "\n缓存路径：" + source);
+                }
+            }
+        }
+
+        adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void readCache(String content) {
+        bookContent.append(content);
+        writeFile(content, bookName);
+    }
+
+    private void writeFile(String content, String bookName) {
+        String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Documents/YueDuTXT";
+        folderPath = getSharedPreferences("settings", MODE_PRIVATE).getString("outPath", folderPath) + "/";
+        bookName += ".txt";
+        new WriteFile(this).execute(content, folderPath, bookName);
+    }
+
+    @Override
+    public void writeFileResult(Boolean b) {
+        progressDialog.dismiss();
+        if (b) {
+            showSnackBar("导出成功！");
+        } else {
+            showSnackBar("导出失败！");
+        }
+    }
+
+    String[] single_list = {"导出为 TXT", "导出为 Epub"};
+    private void showSingleChoiceDialog(int position) {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("选择一个操作");
+        builder.setSingleChoiceItems(single_list, 0, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                String str = single_list[which];
+                dialog.dismiss();
+                switch(which){
+                    case 0:
+                        Intent intent = new Intent(CacheHelperActivity.this, ExportActivity.class);
+                        intent.putExtra("book", books.get(bookKeys.get(position)));
+                        intent.putExtra("cp", myCachePath);
+                        startActivityForResult(intent, 0);
+                        break;
+                    case 1:
+                        break;
+                        default:
+                            break;
+                }
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 0) {
+            if (data != null) {
+                ArrayList<String> list = data.getStringArrayListExtra("cps");
+                progressDialog = new ProgressDialog(this);
+                bookContent = new StringBuilder();
+                progressDialog.setProgress(0);
+                progressDialog.setTitle("合并中，请稍后……");
+                progressDialog.setCancelable(false);
+                progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                progressDialog.show();
+                new ReadCache(this, progressDialog, 0).execute("list", list);
+            }
+        }
+    }
 }

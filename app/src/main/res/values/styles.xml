@@ -1,18 +1,18 @@
 <resources>
-<style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-    <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-    <item name="colorAccent">@color/colorAccent</item>
-    <item name="preferenceTheme">@style/AppTheme.PreferenceTheme</item>
 
-    <item name="actionMenuTextColor">@android:color/black</item>
-    <item name="colorButtonNormal">@color/colorAccent</item>
-    <item name="colorControlNormal">@color/colorAccent</item>
-</style>
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="preferenceTheme">@style/AppTheme.PreferenceTheme</item>
+    </style>
 
     <style name="AppTheme.PreferenceTheme" parent="PreferenceThemeOverlay">
         <!-- Only need this on pre-Lollipop -->
         <item name="accentColorCompat">?colorAccent</item>
         <item name="backgroundCompat">?selectableItemBackground</item>
-
     </style>
+
 </resources>

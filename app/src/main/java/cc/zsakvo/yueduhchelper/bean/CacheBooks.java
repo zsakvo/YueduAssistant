@@ -1,9 +1,9 @@
-package cc.zsakvo.yueduhchelper.classes;
+package cc.zsakvo.yueduhchelper.bean;
 
 import java.io.Serializable;
 import java.util.List;
 
-public class CacheBook implements Serializable {
+public class CacheBooks implements Serializable {
     private String name;
     private int allBookChapters;
     private List<String> chapterNum;

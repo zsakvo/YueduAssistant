@@ -14,7 +14,7 @@ public class SnackbarUtil {
         View mView = snackbar.getView();
         mView.setBackgroundColor(context.getResources().getColor(R.color.colorAccent));
         TextView tvSnackbarText = (TextView) mView.findViewById(com.google.android.material.R.id.snackbar_text);
-        tvSnackbarText.setTextColor(context.getResources().getColor(R.color.colorPrimaryDark));
+        tvSnackbarText.setTextColor(context.getResources().getColor(R.color.white));
         return snackbar;
     }
 }

@@ -11,7 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import cc.zsakvo.yueduhchelper.classes.CacheBook;
+import cc.zsakvo.yueduhchelper.bean.CacheBooks;
 import cc.zsakvo.yueduhchelper.listener.SyncBooksListener;
 
 
@@ -31,9 +31,9 @@ public class SyncBooks extends AsyncTask<String, Void, Void> {
     private Map<String, String> bookSourceMaps;
     private List<String> bookSourceList;
 
-    private LinkedHashMap<String, CacheBook> books;
+    private LinkedHashMap<String, CacheBooks> books;
 
-    private List<CacheBook> bookList;
+    private List<CacheBooks> bookList;
 
     @Override
     protected Void doInBackground(String... strings) {
@@ -56,7 +56,7 @@ public class SyncBooks extends AsyncTask<String, Void, Void> {
             try {
                 for (File bookCacheDirs : listFiles) {
                     if (!bookCacheDirs.isDirectory()) continue;
-                    CacheBook cb;
+                    CacheBooks cb;
                     String cacheBookDirName = bookCacheDirs.getName();
                     String[] cacheBookInfo = cacheBookDirName.split("-");
                     String cacheBookName = cacheBookInfo[0];
@@ -87,7 +87,7 @@ public class SyncBooks extends AsyncTask<String, Void, Void> {
                         books.put(cacheBookName, cb);
 
                     } else {
-                        cb = new CacheBook();
+                        cb = new CacheBooks();
                         cb.setName(cacheBookName);
                         List<String> list = new ArrayList<String>();
                         list.add(cacheBookSource);
@@ -113,12 +113,12 @@ public class SyncBooks extends AsyncTask<String, Void, Void> {
             try {
                 for (File bookCacheDirs : listFiles) {
                     if (!bookCacheDirs.isDirectory()) continue;
-                    CacheBook cb;
+                    CacheBooks cb;
                     String cacheBookDirName = bookCacheDirs.getName();
                     String[] cacheBookInfo = cacheBookDirName.split("-");
                     String cacheBookName = cacheBookInfo[0];
                     String cacheBookSource = bookCacheDirs.getAbsolutePath();
-                    cb = new CacheBook();
+                    cb = new CacheBooks();
                     cb.setName(cacheBookName);
                     List<String> list = new ArrayList<String>();
                     list.add(cacheBookSource);
