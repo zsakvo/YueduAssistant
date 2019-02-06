@@ -12,11 +12,23 @@
         android:layout_height="56dp">
     </androidx.appcompat.widget.Toolbar>
 
+    <TextView
+        android:id="@+id/export_info"
+        android:text="@string/loading_export_info"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="18dp"
+        android:textColor="@color/colorAccent"
+        android:textSize="14sp"
+        android:layout_below="@id/export_toolbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/export_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/export_toolbar"
+        android:layout_below="@id/export_info"
         android:layout_above="@id/export_coordinatorLayout" />
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout

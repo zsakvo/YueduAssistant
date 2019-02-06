@@ -20,6 +20,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -38,6 +39,9 @@ public class ExportActivity extends AppCompatActivity implements SyncChaptersLis
     private List<Boolean> flag;
 
     private List<File> cacheFiles;
+
+    private String bookName;
+    private TextView exportInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +75,8 @@ public class ExportActivity extends AppCompatActivity implements SyncChaptersLis
         mRecyclerView.setAdapter(adapter);
 
         CacheBooks cb = (CacheBooks) getIntent().getSerializableExtra("book");
+        exportInfo = (TextView)findViewById(R.id.export_info);
+        bookName = cb.getName();
         cacheFilePath = cb.getBookSources();
     }
 
@@ -148,6 +154,7 @@ public class ExportActivity extends AppCompatActivity implements SyncChaptersLis
             exportArray.add(new ExportChapter(c,false));
             flag.add(true);
         }
+        exportInfo.setText(String.format(getResources().getString(R.string.export_info),bookName,cacheFiles.size()));
         adapter.notifyDataSetChanged();
         invalidateOptionsMenu();
     }
