@@ -32,7 +32,7 @@ public class ExportActivity extends AppCompatActivity implements SyncChaptersLis
 
     private Toolbar toolbar;
 
-    private List<String> cacheFilePath;
+    private String cacheFilePath;
     private List<ExportChapter> exportArray;
     private ExportBooksAdapter adapter;
 
@@ -77,7 +77,7 @@ public class ExportActivity extends AppCompatActivity implements SyncChaptersLis
         CacheBooks cb = (CacheBooks) getIntent().getSerializableExtra("book");
         exportInfo = (TextView)findViewById(R.id.export_info);
         bookName = cb.getName();
-        cacheFilePath = cb.getBookSources();
+        cacheFilePath = cb.getCachePath();
     }
 
     @Override

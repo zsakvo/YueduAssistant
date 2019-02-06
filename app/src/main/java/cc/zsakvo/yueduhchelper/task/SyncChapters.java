@@ -15,9 +15,8 @@ import java.util.List;
 
 import cc.zsakvo.yueduhchelper.listener.SyncChaptersListener;
 
-import static androidx.constraintlayout.widget.Constraints.TAG;
 
-public class SyncChapters extends AsyncTask<List<String>, Void, List<String>> {
+public class SyncChapters extends AsyncTask<String, Void, List<String>> {
 
     private SyncChaptersListener scl;
     private List<File> cacheFiles;
@@ -28,14 +27,11 @@ public class SyncChapters extends AsyncTask<List<String>, Void, List<String>> {
 
     @SafeVarargs
     @Override
-    protected final List<String> doInBackground(List<String>... lists) {
+    protected final List<String> doInBackground(String... strings) {
         List<String> nums = new ArrayList<>();
         LinkedHashMap<File,Boolean> fileMap = new LinkedHashMap<>();
-        
 
-        for (String s : lists[0]) {
-
-            File[] files = new File(s).listFiles();
+            File[] files = new File(strings[0]).listFiles();
 
             Arrays.sort(files, new Comparator<File>() {
                 @Override
@@ -55,11 +51,10 @@ public class SyncChapters extends AsyncTask<List<String>, Void, List<String>> {
                     nums.add(num);
                     fileMap.put(f,true);
                 }else {
-                    Log.e(TAG, "doInBackground: "+num );
                     fileMap.put(f,false);
                 }
             }
-        }
+
 
         isDum = new ArrayList<>();
         cacheFiles = new ArrayList<>(fileMap.keySet());

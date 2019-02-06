@@ -41,6 +41,7 @@ public class CacheHelperActivity extends AppCompatActivity implements SyncBooksL
     Toolbar toolbar;
     private Boolean autoMerge;
     private String myCachePath;
+    private String myBackupPath;
     private CacheBooksAdapter adapter;
 
     private List<String> bookNames = new ArrayList<>();
@@ -93,9 +94,10 @@ public class CacheHelperActivity extends AppCompatActivity implements SyncBooksL
 
         autoMerge = getSharedPreferences("settings", MODE_PRIVATE).getBoolean("cs_auto_merge", false);
         myCachePath = getSharedPreferences("settings", MODE_PRIVATE).getString("cachePath", Environment.getExternalStorageDirectory().getAbsolutePath() + "/Android/data/com.gedoor.monkeybook/cache/book_cache/");
+        myBackupPath = getSharedPreferences("settings", MODE_PRIVATE).getString("backupPath", Environment.getExternalStorageDirectory().getAbsolutePath() + "/YueDu/");
 
         if (AndPermission.hasPermissions(this, Permission.Group.STORAGE)) {
-            new SyncBooks(this, autoMerge).execute(myCachePath);
+            new SyncBooks(this, autoMerge).execute(myBackupPath,myCachePath);
         } else {
             requestPermission();
         }
@@ -175,16 +177,19 @@ public class CacheHelperActivity extends AppCompatActivity implements SyncBooksL
             for (String key : books.keySet()) {
                 bookKeys.add(key);
                 CacheBooks cb = books.get(key);
-                if (autoMerge) {
-                    assert cb != null;
-                    bookNames.add(cb.getName());
-                    bookInfos.add("总来源数目：" + cb.getBookSources().size() + "\n" + "总章节数：" + cb.getAllBookChapters() + "\n有效章节数：" + cb.getChapterNum().size());
-                } else {
-                    assert cb != null;
-                    String source = cb.getBookSources().get(0).replace(Environment.getExternalStorageDirectory().getAbsolutePath(), "/内置存储");
-                    bookNames.add(cb.getName());
-                    bookInfos.add("总章节数：" + cb.getAllBookChapters() + "\n缓存路径：" + source);
-                }
+                assert cb != null;
+                bookNames.add(cb.getName());
+                bookInfos.add("作者：" + cb.getAuthor() + "\n" + "来源：" + cb.getSource() );
+//                if (autoMerge) {
+//                    assert cb != null;
+//                    bookNames.add(cb.getName());
+//                    bookInfos.add("总来源数目：" + cb.getBookSources().size() + "\n" + "总章节数：" + cb.getAllBookChapters() + "\n有效章节数：" + cb.getChapterNum().size());
+//                } else {
+//                    assert cb != null;
+//                    String source = cb.getBookSources().get(0).replace(Environment.getExternalStorageDirectory().getAbsolutePath(), "/内置存储");
+//                    bookNames.add(cb.getName());
+//                    bookInfos.add("总章节数：" + cb.getAllBookChapters() + "\n缓存路径：" + source);
+//                }
             }
         }
 
@@ -233,6 +238,7 @@ public class CacheHelperActivity extends AppCompatActivity implements SyncBooksL
                         startActivityForResult(intent, 0);
                         break;
                     case 1:
+                        showSnackBar("此功能尚未开放~");
                         break;
                         default:
                             break;

@@ -7,6 +7,11 @@
                     android:summary="选择你的「阅读」缓存目录" />
 
                 <Preference
+                    android:key="cs_backup"
+                    android:title="备份位置"
+                    android:summary="选择你的「阅读」备份目录" />
+
+                <Preference
                     android:key="cs_out"
                     android:title="导出位置"
                     android:summary="选择要输出 txt 文档的目录"/>

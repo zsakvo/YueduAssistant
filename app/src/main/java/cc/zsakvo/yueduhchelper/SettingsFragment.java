@@ -17,6 +17,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 
     private SettingsActivity activity;
     private Preference cs_cache;
+    private Preference cs_backup;
     private Preference cs_out;
 
     @Override
@@ -30,6 +31,9 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 
         cs_cache = findPreference("cs_cache");
         cs_cache.setOnPreferenceClickListener(this);
+
+        cs_backup = findPreference("cs_backup");
+        cs_backup.setOnPreferenceClickListener(this);
 
         cs_out = findPreference("cs_out");
         cs_out.setOnPreferenceClickListener(this);
@@ -55,6 +59,10 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
             case "cs_out":
                 assert activity != null;
                 activity.fileChoose("outPath", this);
+                break;
+            case "cs_backup":
+                assert activity != null;
+                activity.fileChoose("backupPath", this);
                 break;
             case "ab_id":
                 Intent intent_id = new Intent(Intent.ACTION_VIEW,
