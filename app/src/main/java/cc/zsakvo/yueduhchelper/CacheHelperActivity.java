@@ -10,11 +10,13 @@ import android.os.Environment;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.yanzhenjie.permission.AndPermission;
 import com.yanzhenjie.permission.Permission;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -38,10 +40,8 @@ import cc.zsakvo.yueduhchelper.utils.SnackbarUtil;
 public class CacheHelperActivity extends AppCompatActivity implements SyncBooksListener,ReadCacheListener,WriteFileListener {
 
     private static final String TAG = "CacheHelperActivity";
-    Toolbar toolbar;
-    private Boolean autoMerge;
+    private Toolbar toolbar;
     private String myCachePath;
-    private String myBackupPath;
     private CacheBooksAdapter adapter;
 
     private List<String> bookNames = new ArrayList<>();
@@ -54,6 +54,14 @@ public class CacheHelperActivity extends AppCompatActivity implements SyncBooksL
 
     private LinkedHashMap<String, CacheBooks> books;
 
+    private TextView tv_CacheInfo;
+
+    private boolean autoDel;
+
+    private String exportDirPath;
+
+    private String myBackupPath;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,6 +71,8 @@ public class CacheHelperActivity extends AppCompatActivity implements SyncBooksL
         toolbar.setTitle("阅读缓存提取");
         toolbar.setTitleTextColor(getResources().getColor(R.color.colorAccent));
         setSupportActionBar(toolbar);
+
+        tv_CacheInfo = (TextView)findViewById(R.id.cache_info);
 
         RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.cache_recyclerView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -78,29 +88,34 @@ public class CacheHelperActivity extends AppCompatActivity implements SyncBooksL
         });
 
         mRecyclerView.setAdapter(adapter);
+    }
 
-        if (getSharedPreferences("settings", MODE_PRIVATE).getBoolean("isFirst", true)) {
-            showFirstDialog();
-        }
+    private void beginSync(){
+        bookNames.clear();
+        bookInfos.clear();
+        bookKeys.clear();
+        adapter.notifyDataSetChanged();
+        new SyncBooks(this).execute(myBackupPath,myCachePath);
     }
 
     @Override
     public void onStart() {
         super.onStart();
 
-        bookNames.clear();
-        bookInfos.clear();
-        bookKeys.clear();
-
-        autoMerge = getSharedPreferences("settings", MODE_PRIVATE).getBoolean("cs_auto_merge", false);
+        autoDel = getSharedPreferences("settings", MODE_PRIVATE).getBoolean("cs_auto_del",false);
         myCachePath = getSharedPreferences("settings", MODE_PRIVATE).getString("cachePath", Environment.getExternalStorageDirectory().getAbsolutePath() + "/Android/data/com.gedoor.monkeybook/cache/book_cache/");
         myBackupPath = getSharedPreferences("settings", MODE_PRIVATE).getString("backupPath", Environment.getExternalStorageDirectory().getAbsolutePath() + "/YueDu/");
 
-        if (AndPermission.hasPermissions(this, Permission.Group.STORAGE)) {
-            new SyncBooks(this, autoMerge).execute(myBackupPath,myCachePath);
-        } else {
-            requestPermission();
+        if (!getSharedPreferences("settings", MODE_PRIVATE).getBoolean("isFirst", true)) {
+            if (AndPermission.hasPermissions(this, Permission.Group.STORAGE)) {
+                beginSync();
+            } else {
+                requestPermission();
+            }
+        }else {
+            showFirstDialog();
         }
+
     }
 
     private void showFirstDialog() {
@@ -128,7 +143,7 @@ public class CacheHelperActivity extends AppCompatActivity implements SyncBooksL
                 .runtime()
                 .permission(Permission.Group.STORAGE)
                 .onGranted(permissions -> {
-                    new SyncBooks(this, autoMerge).execute(myCachePath);
+                    beginSync();
                 })
                 .onDenied(permissions -> {
                     AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
@@ -165,7 +180,32 @@ public class CacheHelperActivity extends AppCompatActivity implements SyncBooksL
 
 
     @Override
-    public void showBooks(LinkedHashMap<String, CacheBooks> books) {
+    public void showBooks(LinkedHashMap<String, CacheBooks> books,int type) {
+
+        int booksNum;
+        String syncType;
+
+        if (books == null || books.size() == 0) {
+            booksNum = 0;
+        }else {
+            booksNum = books.size();
+        }
+
+        switch (type){
+            case 0:
+                syncType = "备份扫描";
+                break;
+            case 1:
+                syncType = "备份扫描";
+                break;
+            case 2:
+                syncType = "缓存扫描";
+                break;
+                default:
+                    syncType = "";
+        }
+
+        tv_CacheInfo.setText(String.format(getResources().getString(R.string.sync_book_info),booksNum,syncType));
 
         this.books = books;
 
@@ -179,17 +219,7 @@ public class CacheHelperActivity extends AppCompatActivity implements SyncBooksL
                 CacheBooks cb = books.get(key);
                 assert cb != null;
                 bookNames.add(cb.getName());
-                bookInfos.add("作者：" + cb.getAuthor() + "\n" + "来源：" + cb.getSource() );
-//                if (autoMerge) {
-//                    assert cb != null;
-//                    bookNames.add(cb.getName());
-//                    bookInfos.add("总来源数目：" + cb.getBookSources().size() + "\n" + "总章节数：" + cb.getAllBookChapters() + "\n有效章节数：" + cb.getChapterNum().size());
-//                } else {
-//                    assert cb != null;
-//                    String source = cb.getBookSources().get(0).replace(Environment.getExternalStorageDirectory().getAbsolutePath(), "/内置存储");
-//                    bookNames.add(cb.getName());
-//                    bookInfos.add("总章节数：" + cb.getAllBookChapters() + "\n缓存路径：" + source);
-//                }
+                bookInfos.add(cb.getCacheInfo());
             }
         }
 
@@ -214,9 +244,26 @@ public class CacheHelperActivity extends AppCompatActivity implements SyncBooksL
         progressDialog.dismiss();
         if (b) {
             showSnackBar("导出成功！");
+            if (autoDel){
+                deleteDirectory(new File(exportDirPath));
+            }
         } else {
             showSnackBar("导出失败！");
         }
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    private void deleteDirectory(File file) {
+        File files[] = file.listFiles();
+        for (File file1 : files) {
+            if (file1.isFile()) {
+                file1.delete();
+            } else if (file1.isDirectory()) {
+                deleteDirectory(file1);
+                beginSync();
+            }
+        }
+        file.delete();
     }
 
     String[] single_list = {"导出为 TXT", "导出为 Epub"};
@@ -255,6 +302,7 @@ public class CacheHelperActivity extends AppCompatActivity implements SyncBooksL
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 0) {
             if (data != null) {
+                exportDirPath = data.getStringExtra("cfp");
                 ArrayList<String> list = data.getStringArrayListExtra("cps");
                 progressDialog = new ProgressDialog(this);
                 bookContent = new StringBuilder();

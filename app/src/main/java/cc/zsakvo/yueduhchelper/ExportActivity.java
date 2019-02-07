@@ -119,6 +119,7 @@ public class ExportActivity extends AppCompatActivity implements SyncChaptersLis
         } else {
             Intent intent = new Intent();
             intent.putStringArrayListExtra("cps", chapters);
+            intent.putExtra("cfp",cacheFilePath);
             setResult(0, intent);
             finish();
         }
@@ -145,17 +146,22 @@ public class ExportActivity extends AppCompatActivity implements SyncChaptersLis
     }
 
     @Override
-    public void showChapters(List<File> cacheFiles, List<Boolean> isDum) {
-        this.cacheFiles = cacheFiles;
-        for (int i = 0; i < cacheFiles.size(); i++) {
-            String[] a = cacheFiles.get(i).getName().split("/");
-            String[] b = a[a.length - 1].split("-");
-            String c = a[a.length - 1].replace(b[0] + "-", "").replace(".nb", "");
-            exportArray.add(new ExportChapter(c,false));
-            flag.add(true);
+    public void showChapters(List<File> cacheFiles) {
+
+        if (cacheFiles==null){
+            exportInfo.setText("未扫描到任何章节！");
+        }else {
+            this.cacheFiles = cacheFiles;
+            for (int i = 0; i < cacheFiles.size(); i++) {
+                String[] a = cacheFiles.get(i).getName().split("/");
+                String[] b = a[a.length - 1].split("-");
+                String c = a[a.length - 1].replace(b[0] + "-", "").replace(".nb", "");
+                exportArray.add(new ExportChapter(c,false));
+                flag.add(true);
+            }
+            exportInfo.setText(String.format(getResources().getString(R.string.export_info),bookName,cacheFiles.size()));
+            adapter.notifyDataSetChanged();
         }
-        exportInfo.setText(String.format(getResources().getString(R.string.export_info),bookName,cacheFiles.size()));
-        adapter.notifyDataSetChanged();
         invalidateOptionsMenu();
     }
 

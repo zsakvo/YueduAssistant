@@ -1,27 +1,19 @@
 package cc.zsakvo.yueduhchelper.bean;
 
 import java.io.Serializable;
-import java.util.List;
 
 public class CacheBooks implements Serializable {
     private String name;
-    private String author;
 
-    public String getAuthor() {
-        return author;
+    public int getCacheNum() {
+        return cacheNum;
     }
 
-    public void setAuthor(String author) {
-        this.author = author;
+    public void setCacheNum(int cacheNum) {
+        this.cacheNum = cacheNum;
     }
 
-    public String getSource() {
-        return source;
-    }
-
-    public void setSource(String source) {
-        this.source = source;
-    }
+    private int cacheNum;
 
     public String getCacheInfo() {
         return cacheInfo;
@@ -31,7 +23,6 @@ public class CacheBooks implements Serializable {
         this.cacheInfo = cacheInfo;
     }
 
-    private String source;
     private String cacheInfo;
 
     public String getCachePath() {
@@ -43,17 +34,6 @@ public class CacheBooks implements Serializable {
     }
 
     private String cachePath;
-    private int allBookChapters;
-    private List<String> chapterNum;
-    private List<String> bookSources;
-
-    public List<String> getChapterNum() {
-        return chapterNum;
-    }
-
-    public void setChapterNum(List<String> chapterNum) {
-        this.chapterNum = chapterNum;
-    }
 
 
     public String getName() {
@@ -64,21 +44,6 @@ public class CacheBooks implements Serializable {
         this.name = name;
     }
 
-    public int getAllBookChapters() {
-        return allBookChapters;
-    }
 
-    public void setAllBookChapters(int allBookChapters) {
-        this.allBookChapters = allBookChapters;
-    }
-
-
-    public List<String> getBookSources() {
-        return bookSources;
-    }
-
-    public void setBookSources(List<String> bookSources) {
-        this.bookSources = bookSources;
-    }
 
 }

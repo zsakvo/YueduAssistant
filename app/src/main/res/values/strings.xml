@@ -11,7 +11,8 @@
     <string name="cancel">取消</string>
     <string name="choose_chapters">输入要选择的章节，例如 3–238 </string>
     <string name="no_permission">未授予存储读写权限，点击重新授权 (￣△￣；)</string>
-    <string name="loading_export_info">加载中，请稍后……</string>
+    <string name="loading_export_info">扫描中，请稍后……</string>
+    <string name="sync_book_info">共%1$d本\n扫描模式：%2$s</string>
     <string name="export_info">%1$s\t\t共%2$d章</string>
 
     <!-- TODO: Remove or change this placeholder text -->

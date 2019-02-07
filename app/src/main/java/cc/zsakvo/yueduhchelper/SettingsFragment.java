@@ -39,6 +39,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
         cs_out.setOnPreferenceClickListener(this);
 
         cs_cache.setSummary(activity.getSharedPreferences("settings", MODE_PRIVATE).getString("cachePath", Environment.getExternalStorageDirectory().getAbsolutePath() + "/Android/data/com.gedoor.monkeybook/cache/book_cache"));
+        cs_backup.setSummary(activity.getSharedPreferences("settings", MODE_PRIVATE).getString("backupPath", Environment.getExternalStorageDirectory().getAbsolutePath() + "/YueDu"));
         cs_out.setSummary(activity.getSharedPreferences("settings", MODE_PRIVATE).getString("outPath", Environment.getExternalStorageDirectory().getAbsolutePath() + "/Documents/YueDuTXT"));
 
 
@@ -84,6 +85,8 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
             case "cachePath":
                 cs_cache.setSummary(path);
                 break;
+            case "backupPath":
+                cs_backup.setSummary(path);
             case "outPath":
                 cs_out.setSummary(path);
                 break;

@@ -4,5 +4,5 @@ import java.io.File;
 import java.util.List;
 
 public interface SyncChaptersListener {
-    void showChapters(List<File> cacheFiles,List<Boolean> isDum);
+    void showChapters(List<File> cacheFiles);
 }
