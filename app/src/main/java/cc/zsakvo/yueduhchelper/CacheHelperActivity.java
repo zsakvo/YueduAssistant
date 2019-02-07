@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -24,6 +25,7 @@ import java.util.List;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import cc.zsakvo.yueduhchelper.adapter.CacheBooksAdapter;
@@ -36,6 +38,8 @@ import cc.zsakvo.yueduhchelper.task.SyncBooks;
 import cc.zsakvo.yueduhchelper.task.WriteFile;
 import cc.zsakvo.yueduhchelper.utils.Divider;
 import cc.zsakvo.yueduhchelper.utils.SnackbarUtil;
+import io.github.tonnyl.whatsnew.WhatsNew;
+import io.github.tonnyl.whatsnew.item.WhatsNewItem;
 
 public class CacheHelperActivity extends AppCompatActivity implements SyncBooksListener,ReadCacheListener,WriteFileListener {
 
@@ -88,6 +92,22 @@ public class CacheHelperActivity extends AppCompatActivity implements SyncBooksL
         });
 
         mRecyclerView.setAdapter(adapter);
+
+        WhatsNew whatsNew = WhatsNew.newInstance(
+                new WhatsNewItem("新界面", "重写了书籍/章节的列表展示界面，带来更好的性能和反应速度，增强可扩展性"),
+                new WhatsNewItem("自适应导航栏", "带来了SDK27以上的导航栏变色特性"),
+                new WhatsNewItem("重写扫描逻辑", "重新设计扫描书籍的逻辑，提高速度，使用时更加舒适"),
+                new WhatsNewItem("精简", "去掉某些不实用功能，专注于缓存的合并"));
+
+
+        whatsNew.setTitleColor(ContextCompat.getColor(this, R.color.colorAccent));
+        whatsNew.setTitleText("更新日志 v1.1.0207");
+        whatsNew.setButtonText("我知道了");
+        whatsNew.setButtonBackground(ContextCompat.getColor(this, R.color.colorAccent));
+        whatsNew.setButtonTextColor(ContextCompat.getColor(this, R.color.white));
+        whatsNew.setItemTitleColor(ContextCompat.getColor(this, R.color.colorAccent));
+        whatsNew.setItemContentColor(Color.parseColor("#808080"));
+        whatsNew.presentAutomatically(CacheHelperActivity.this);
     }
 
     private void beginSync(){
