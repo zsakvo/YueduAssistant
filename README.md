@@ -25,6 +25,5 @@
 <div  align="center">
 <img src="./screenshots/1.png" height = "512" alt="书籍列表" align=center />
 <img src="./screenshots/2.png" height = "512" alt="章节列表" align=center />
-<img src="./screenshots/3.png" height = "512" alt="导出TXT" align=center />
-<img src="./screenshots/4.png" height = "512" alt="设置界面" align=center />
+<img src="./screenshots/3.png" height = "512" alt="设置界面" align=center />
 </div>
