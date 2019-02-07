@@ -12,7 +12,6 @@ import android.view.Window;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.jaeger.library.StatusBarUtil;
-import com.keenfin.sfcdialog.SimpleFileChooser;
 
 import java.io.File;
 
@@ -21,12 +20,12 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
 import cc.zsakvo.yueduhchelper.listener.ChangePathListener;
+import cc.zsakvo.yueduhchelper.utils.DirChooseUtil;
 import cc.zsakvo.yueduhchelper.utils.SnackbarUtil;
 
 public class SettingsActivity extends AppCompatActivity {
 
-    Toolbar toolbar;
-    CoordinatorLayout coordinatorLayout;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,10 +47,6 @@ public class SettingsActivity extends AppCompatActivity {
         }
         toolbar.setNavigationOnClickListener(v -> finish());
 
-
-        coordinatorLayout = findViewById(R.id.coordinatorLayout);
-        coordinatorLayout.bringToFront();
-
         if (savedInstanceState == null) {
             SettingsFragment fragment = new SettingsFragment();
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment, fragment).commit();
@@ -59,12 +54,10 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     public void fileChoose(final String str, ChangePathListener cpl) {
-        SimpleFileChooser sfcDialog = new SimpleFileChooser();
-        sfcDialog.setOnChosenListener(new SimpleFileChooser.SimpleFileChooserListener() {
+        DirChooseUtil sfcDialog = new DirChooseUtil();
+        sfcDialog.setOnChosenListener(new DirChooseUtil.SimpleFileChooserListener() {
             @Override
             public void onFileChosen(File file) {
-                Snackbar snackbar = SnackbarUtil.build(getApplicationContext(), coordinatorLayout, "请选择一个目录", Snackbar.LENGTH_LONG);
-                snackbar.show();
             }
 
             @Override
@@ -79,11 +72,9 @@ public class SettingsActivity extends AppCompatActivity {
 
             @Override
             public void onCancel() {
-                Snackbar snackbar = SnackbarUtil.build(getApplicationContext(), coordinatorLayout, "未选择任何目录", Snackbar.LENGTH_LONG);
-                snackbar.show();
             }
         });
 
-        sfcDialog.show(getFragmentManager(), "SimpleFileChooserDialog");
+        sfcDialog.show(getSupportFragmentManager(), "DirChooseUtil");
     }
 }
