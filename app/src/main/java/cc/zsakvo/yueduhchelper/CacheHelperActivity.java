@@ -92,28 +92,12 @@ public class CacheHelperActivity extends AppCompatActivity implements SyncBooksL
         });
 
         mRecyclerView.setAdapter(adapter);
-
-        WhatsNew whatsNew = WhatsNew.newInstance(
-                new WhatsNewItem("新界面", "重写了书籍/章节的列表展示界面，带来更好的性能和反应速度，增强可扩展性"),
-                new WhatsNewItem("自适应导航栏", "带来了SDK27以上的导航栏变色特性"),
-                new WhatsNewItem("重写扫描逻辑", "重新设计扫描书籍的逻辑，提高速度，使用时更加舒适"),
-                new WhatsNewItem("精简", "去掉某些不实用功能，专注于缓存的合并"));
-
-
-        whatsNew.setTitleColor(ContextCompat.getColor(this, R.color.colorAccent));
-        whatsNew.setTitleText("更新日志 v1.1.0207");
-        whatsNew.setButtonText("我知道了");
-        whatsNew.setButtonBackground(ContextCompat.getColor(this, R.color.colorAccent));
-        whatsNew.setButtonTextColor(ContextCompat.getColor(this, R.color.white));
-        whatsNew.setItemTitleColor(ContextCompat.getColor(this, R.color.colorAccent));
-        whatsNew.setItemContentColor(Color.parseColor("#808080"));
-        whatsNew.presentAutomatically(CacheHelperActivity.this);
     }
 
     private void beginSync(){
-        bookNames.clear();
-        bookInfos.clear();
-        bookKeys.clear();
+        if (bookNames!=null) bookNames.clear();
+        if (bookInfos!=null) bookInfos.clear();
+        if (bookKeys!=null) bookKeys.clear();
         adapter.notifyDataSetChanged();
         new SyncBooks(this).execute(myBackupPath,myCachePath);
     }
@@ -128,6 +112,21 @@ public class CacheHelperActivity extends AppCompatActivity implements SyncBooksL
 
         if (!getSharedPreferences("settings", MODE_PRIVATE).getBoolean("isFirst", true)) {
             if (AndPermission.hasPermissions(this, Permission.Group.STORAGE)) {
+                WhatsNew whatsNew = WhatsNew.newInstance(
+                        new WhatsNewItem("新界面", "重写了书籍/章节的列表展示界面，带来更好的性能和反应速度，增强可扩展性"),
+                        new WhatsNewItem("自适应导航栏", "带来了SDK27以上的导航栏变色特性"),
+                        new WhatsNewItem("重写扫描逻辑", "重新设计扫描书籍的逻辑，提高速度，使用时更加舒适"),
+                        new WhatsNewItem("精简", "去掉某些不实用功能，专注于缓存的合并"));
+
+
+                whatsNew.setTitleColor(ContextCompat.getColor(this, R.color.colorAccent));
+                whatsNew.setTitleText("更新日志 v1.1.0207");
+                whatsNew.setButtonText("我知道了");
+                whatsNew.setButtonBackground(ContextCompat.getColor(this, R.color.colorAccent));
+                whatsNew.setButtonTextColor(ContextCompat.getColor(this, R.color.white));
+                whatsNew.setItemTitleColor(ContextCompat.getColor(this, R.color.colorAccent));
+                whatsNew.setItemContentColor(Color.parseColor("#808080"));
+                whatsNew.presentAutomatically(CacheHelperActivity.this);
                 beginSync();
             } else {
                 requestPermission();
@@ -207,6 +206,18 @@ public class CacheHelperActivity extends AppCompatActivity implements SyncBooksL
 
         if (books == null || books.size() == 0) {
             booksNum = 0;
+
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            alertDialogBuilder.setTitle("提示")
+                    .setPositiveButton("去设置", (dialog, which) -> {
+                        Intent intent = new Intent(CacheHelperActivity.this,SettingsActivity.class);
+                        startActivity(intent);
+                    })
+                    .setMessage("没有扫描到任何缓存书籍，请先缓存一本书或者去设置缓存路径")
+                    .setCancelable(false)
+                    .create()
+                    .show();
+
         }else {
             booksNum = books.size();
         }
@@ -229,11 +240,7 @@ public class CacheHelperActivity extends AppCompatActivity implements SyncBooksL
 
         this.books = books;
 
-        if (books == null || books.size() == 0) {
-            this.bookNames = null;
-            this.bookInfos = null;
-            this.bookKeys = null;
-        } else {
+        if (books != null && books.size() != 0) {
             for (String key : books.keySet()) {
                 bookKeys.add(key);
                 CacheBooks cb = books.get(key);

@@ -55,22 +55,29 @@ public class SyncBooks extends AsyncTask<String, Void, LinkedHashMap<String, Cac
         if (backupFile.exists()) this.backupTime = new File(backupPath).lastModified();
         File bookCache = new File(cachePath);
 
-        for (File cacheDir:bookCache.listFiles()){
-            if (!cacheDir.getName().contains("-")) continue;
-            if (cacheDir.lastModified()>cacheTime) cacheTime=cacheDir.lastModified();
-        }
-
-        if (autoBackupTime>backupTime&&autoBackupTime>cacheTime){
-            syncType = 0;
-            return readJson(autoBackupFile);
-        }else if (backupTime>autoBackupTime&&backupTime>cacheTime){
-            syncType = 1;
-            return readJson(backupFile);
-        }else if (cacheTime>autoBackupTime&&cacheTime>backupTime){
-            syncType = 2;
-            return syncFromCache();
-        }else {
+        if (!bookCache.exists()){
             return null;
+        }else {
+
+            if (bookCache.listFiles().length==0) return null;
+
+            for (File cacheDir:bookCache.listFiles()){
+                if (!cacheDir.getName().contains("-")) continue;
+                if (cacheDir.lastModified()>cacheTime) cacheTime=cacheDir.lastModified();
+            }
+
+            if (autoBackupTime>backupTime&&autoBackupTime>cacheTime){
+                syncType = 0;
+                return readJson(autoBackupFile);
+            }else if (backupTime>autoBackupTime&&backupTime>cacheTime){
+                syncType = 1;
+                return readJson(backupFile);
+            }else if (cacheTime>autoBackupTime&&cacheTime>backupTime){
+                syncType = 2;
+                return syncFromCache();
+            }else {
+                return null;
+            }
         }
     }
 
