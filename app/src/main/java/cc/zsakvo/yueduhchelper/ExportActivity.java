@@ -1,5 +1,6 @@
 package cc.zsakvo.yueduhchelper;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
@@ -12,14 +13,19 @@ import cc.zsakvo.yueduhchelper.listener.SyncChaptersListener;
 import cc.zsakvo.yueduhchelper.task.SyncChapters;
 import cc.zsakvo.yueduhchelper.utils.Divider;
 import cc.zsakvo.yueduhchelper.utils.SnackbarUtil;
+import cc.zsakvo.yueduhchelper.utils.SourceUtil;
 
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -30,6 +36,7 @@ import java.util.List;
 
 public class ExportActivity extends AppCompatActivity implements SyncChaptersListener{
 
+    private static final String TAG = "ExportActivity";
     private Toolbar toolbar;
 
     private String cacheFilePath;
@@ -42,6 +49,10 @@ public class ExportActivity extends AppCompatActivity implements SyncChaptersLis
 
     private String bookName;
     private TextView exportInfo;
+
+    private String[] source;
+    private String[] sourceList;
+    private int checkedItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +89,14 @@ public class ExportActivity extends AppCompatActivity implements SyncChaptersLis
         exportInfo = (TextView)findViewById(R.id.export_info);
         bookName = cb.getName();
         cacheFilePath = cb.getCachePath();
+        if (cb.getSourcePath()!=null){
+            source = cb.getSourcePath().split(",");
+            sourceList = new String[source.length];
+            for (int i=0;i<source.length;i++){
+                sourceList[i] = SourceUtil.trans(source[i]);
+                if (source[i].equals(cacheFilePath.split("-")[1])) checkedItem = i;
+            }
+        }
     }
 
     @Override
@@ -149,6 +168,7 @@ public class ExportActivity extends AppCompatActivity implements SyncChaptersLis
     public void showChapters(List<File> cacheFiles) {
 
         if (cacheFiles==null){
+            exportInfo.setTextColor(Color.RED);
             exportInfo.setText("未扫描到任何章节！");
         }else {
             this.cacheFiles = cacheFiles;
@@ -159,9 +179,37 @@ public class ExportActivity extends AppCompatActivity implements SyncChaptersLis
                 exportArray.add(new ExportChapter(c,false));
                 flag.add(true);
             }
-            exportInfo.setText(String.format(getResources().getString(R.string.export_info),bookName,cacheFiles.size()));
+            exportInfo.setTextColor(getResources().getColor(R.color.colorAccent));
+            exportInfo.setText(String.format(getResources().getString(R.string.export_info),bookName,cacheFiles.size(),SourceUtil.trans(cacheFilePath.split("-")[1])));
             adapter.notifyDataSetChanged();
         }
+        exportInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (source==null){
+                    SnackbarUtil.build(ExportActivity.this,toolbar,"只有一个缓存源，无需切换",Snackbar.LENGTH_LONG).show();
+                }else {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ExportActivity.this);
+                    builder.setTitle("切换缓存源");
+                    builder.setSingleChoiceItems(sourceList, checkedItem, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            exportInfo.setText(getResources().getString(R.string.loading_export_info));
+                            exportInfo.setOnClickListener(null);
+                            checkedItem = which;
+                            dialog.dismiss();
+                            cacheFilePath = cacheFilePath.replace(cacheFilePath.split("-")[1],source[which]);
+                            exportArray.clear();
+                            flag.clear();
+                            new SyncChapters(ExportActivity.this).execute(cacheFilePath);
+                        }
+                    });
+
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                }
+            }
+        });
         invalidateOptionsMenu();
     }
 

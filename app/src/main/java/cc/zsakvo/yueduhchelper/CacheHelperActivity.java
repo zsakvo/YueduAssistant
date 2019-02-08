@@ -109,7 +109,7 @@ public class CacheHelperActivity extends AppCompatActivity implements SyncBooksL
 
         tv_CacheInfo.setTextColor(getResources().getColor(R.color.colorAccent));
         tv_CacheInfo.setOnClickListener(null);
-        tv_CacheInfo.setText(getResources().getText(R.string.sync_book_info));
+        tv_CacheInfo.setText(getResources().getText(R.string.loading_export_info));
 
         autoDel = getSharedPreferences("settings", MODE_PRIVATE).getBoolean("cs_auto_del",false);
         myCachePath = getSharedPreferences("settings", MODE_PRIVATE).getString("cachePath", Environment.getExternalStorageDirectory().getAbsolutePath() + "/Android/data/com.gedoor.monkeybook/cache/book_cache/");

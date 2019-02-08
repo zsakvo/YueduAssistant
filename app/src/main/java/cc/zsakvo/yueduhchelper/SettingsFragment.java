@@ -87,6 +87,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
                 break;
             case "backupPath":
                 cs_backup.setSummary(path);
+                break;
             case "outPath":
                 cs_out.setSummary(path);
                 break;

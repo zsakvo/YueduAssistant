@@ -1,6 +1,7 @@
 package cc.zsakvo.yueduhchelper.task;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -9,16 +10,13 @@ import com.alibaba.fastjson.JSONObject;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-
 import cc.zsakvo.yueduhchelper.bean.CacheBooks;
 import cc.zsakvo.yueduhchelper.listener.SyncBooksListener;
+import cc.zsakvo.yueduhchelper.utils.SourceUtil;
+
 
 
 @SuppressWarnings("ALL")
@@ -32,8 +30,6 @@ public class SyncBooks extends AsyncTask<String, Void, LinkedHashMap<String, Cac
 
     private List<String> bookSourceList;
 
-//    private LinkedHashMap<String, CacheBooks> books;
-
     private List<CacheBooks> bookList;
 
     private String cachePath;
@@ -43,6 +39,8 @@ public class SyncBooks extends AsyncTask<String, Void, LinkedHashMap<String, Cac
     private long cacheTime = 0;
 
     private int syncType = 0;
+
+    private HashMap<String,String> sourceHash;
 
     @Override
     protected LinkedHashMap<String, CacheBooks> doInBackground(String... strings) {
@@ -55,15 +53,20 @@ public class SyncBooks extends AsyncTask<String, Void, LinkedHashMap<String, Cac
         if (backupFile.exists()) this.backupTime = new File(backupPath).lastModified();
         File bookCache = new File(cachePath);
 
-        if (!bookCache.exists()){
+        if (!bookCache.exists()||bookCache.listFiles()==null){
             return null;
         }else {
 
             if (bookCache.listFiles().length==0) return null;
 
+            sourceHash = new HashMap<>();
+
             for (File cacheDir:bookCache.listFiles()){
-                if (!cacheDir.getName().contains("-")) continue;
+                String cacheName = cacheDir.getName();
+                if (!cacheName.contains("-")) continue;
                 if (cacheDir.lastModified()>cacheTime) cacheTime=cacheDir.lastModified();
+                String bookName = cacheName.split("-")[0];
+                sourceHash.put(bookName,sourceHash.get(bookName)+","+cacheName.split("-")[1]);
             }
 
             if (autoBackupTime>backupTime&&autoBackupTime>cacheTime){
@@ -99,26 +102,15 @@ public class SyncBooks extends AsyncTask<String, Void, LinkedHashMap<String, Cac
             cb.setName(bookName);
             cb.setCacheNum(i);
             cb.setCachePath(cacheDir.getAbsolutePath());
+            cb.setSourcePath(sourceHash.get(bookName).substring(5));
 
             // 修正缓存来源网址
-            cacheName = cacheName
-                    .replace("http","http://")
-                    .replace("https","https://")
-                    .replace("www","www.")
-                    .replace("api","api.")
-                    .replace("com",".com")
-                    .replace("cc",".cc")
-                    .replace("net",".net")
-                    .replace("org",".org")
-                    .replace("cn",".cn")
-                    .replace("la",".la");
-            cb.setCacheInfo("缓存数量：" + i + "\n" + "来源：" + cacheName.split("-")[1]);
+            cacheName = cacheName.split("-")[1];
+            cb.setCacheInfo("缓存数量：" + i + "\n" + "来源：" + SourceUtil.trans(cacheName));
 
             if (books.get(bookName)!=null){
                 if (books.get(bookName).getCacheNum()<i){
                     books.put(bookName,cb);
-                }else {
-                    continue;
                 }
             }else {
                 books.put(bookName,cb);
@@ -156,14 +148,15 @@ public class SyncBooks extends AsyncTask<String, Void, LinkedHashMap<String, Cac
                         .replace(".","")
                         +"/");
                 cacheBook.setCacheInfo("作者：" + author + "\n" + "来源：" + origin);
-                books.put(bookInfoBean.get("name")
-                        +"-"+bookInfoBean.get("author"),cacheBook);
+                cacheBook.setSourcePath(sourceHash.get(name).substring(5));
+                books.put(name +"-"+author,cacheBook);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return books;
     }
+
 
     @Override
     protected void onPostExecute(LinkedHashMap<String, CacheBooks> books) {

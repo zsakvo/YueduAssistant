@@ -65,7 +65,7 @@ public class SettingsActivity extends AppCompatActivity {
                 SharedPreferences sharedPreferences = getSharedPreferences("settings", MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putString(str, directory.getAbsolutePath());
-                cpl.changePath(str, directory.getAbsolutePath());
+                cpl.changePath(str, directory.getAbsolutePath()+"/");
                 editor.apply();
                 editor.commit();
             }
