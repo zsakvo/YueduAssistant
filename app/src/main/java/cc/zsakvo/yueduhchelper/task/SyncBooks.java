@@ -105,6 +105,7 @@ public class SyncBooks extends AsyncTask<String, Void, LinkedHashMap<String, Cac
                     .replace("http","http://")
                     .replace("https","https://")
                     .replace("www","www.")
+                    .replace("api","api.")
                     .replace("com",".com")
                     .replace("cc",".cc")
                     .replace("net",".net")
