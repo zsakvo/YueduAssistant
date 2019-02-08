@@ -145,8 +145,7 @@ public class SyncBooks extends AsyncTask<String, Void, LinkedHashMap<String, Cac
                         .toString()
                         .replace(":" +
                                 "//","")
-                        .replace(".","")
-                        +"/");
+                        .replace(".",""));
                 cacheBook.setCacheInfo("作者：" + author + "\n" + "来源：" + origin);
                 cacheBook.setSourcePath(sourceHash.get(name).substring(5));
                 books.put(name +"-"+author,cacheBook);
