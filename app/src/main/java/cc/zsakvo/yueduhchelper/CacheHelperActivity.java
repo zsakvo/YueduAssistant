@@ -106,6 +106,10 @@ public class CacheHelperActivity extends AppCompatActivity implements SyncBooksL
     public void onStart() {
         super.onStart();
 
+        tv_CacheInfo.setTextColor(getResources().getColor(R.color.colorAccent));
+        tv_CacheInfo.setOnClickListener(null);
+        tv_CacheInfo.setText(getResources().getText(R.string.sync_book_info));
+
         autoDel = getSharedPreferences("settings", MODE_PRIVATE).getBoolean("cs_auto_del",false);
         myCachePath = getSharedPreferences("settings", MODE_PRIVATE).getString("cachePath", Environment.getExternalStorageDirectory().getAbsolutePath() + "/Android/data/com.gedoor.monkeybook/cache/book_cache/");
         myBackupPath = getSharedPreferences("settings", MODE_PRIVATE).getString("backupPath", Environment.getExternalStorageDirectory().getAbsolutePath() + "/YueDu/");
@@ -232,19 +236,10 @@ public class CacheHelperActivity extends AppCompatActivity implements SyncBooksL
                 }
             });
 
-//            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-//            alertDialogBuilder.setTitle("提示")
-//                    .setPositiveButton("去设置", (dialog, which) -> {
-//                        Intent intent = new Intent(CacheHelperActivity.this,SettingsActivity.class);
-//                        startActivity(intent);
-//                    })
-//                    .setMessage("没有扫描到任何缓存书籍，请先缓存一本书或者去设置缓存路径")
-//                    .setCancelable(false)
-//                    .create()
-//                    .show();
-
         }else {
             booksNum = books.size();
+            tv_CacheInfo.setTextColor(getResources().getColor(R.color.colorAccent));
+            tv_CacheInfo.setOnClickListener(null);
             tv_CacheInfo.setText(String.format(getResources().getString(R.string.sync_book_info),booksNum,syncType));
         }
 

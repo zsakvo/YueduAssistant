@@ -21,6 +21,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:layout_marginStart="18dp"
+        android:layout_marginEnd="18dp"
         android:textColor="@color/colorAccent"
         android:textSize="14sp"
         android:layout_below="@id/cache_toolbar"
