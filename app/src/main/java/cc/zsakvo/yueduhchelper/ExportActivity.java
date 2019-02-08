@@ -186,7 +186,7 @@ public class ExportActivity extends AppCompatActivity implements SyncChaptersLis
         exportInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (source==null){
+                if (source.length<=1){
                     SnackbarUtil.build(ExportActivity.this,toolbar,"只有一个缓存源，无需切换",Snackbar.LENGTH_LONG).show();
                 }else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(ExportActivity.this);
