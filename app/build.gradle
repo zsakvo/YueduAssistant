@@ -6,7 +6,7 @@ android {
         applicationId "cc.zsakvo.yueduhchelper"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 3
+        versionCode 4
         versionName "1.1.0207"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

@@ -154,14 +154,13 @@ public class CacheHelperActivity extends AppCompatActivity implements SyncBooksL
                 .onGranted(permissions -> {
 
                     WhatsNew whatsNew = WhatsNew.newInstance(
-                            new WhatsNewItem("新界面", "重写了书籍/章节的列表展示界面，带来更好的性能和反应速度，增强可扩展性"),
-                            new WhatsNewItem("自适应导航栏", "带来了SDK27以上的导航栏变色特性"),
-                            new WhatsNewItem("重写扫描逻辑", "重新设计扫描书籍的逻辑，提高速度，使用时更加舒适"),
-                            new WhatsNewItem("精简", "去掉某些不实用功能，专注于缓存的合并"));
+                            new WhatsNewItem("精确来源", "可精确显示缓存来源"),
+                            new WhatsNewItem("导出源切换", "如果某本书从多个网站进行缓存，在导出时支持自选导出来源（在TXT导出界面点击书名位置的蓝色字体）"),
+                            new WhatsNewItem("bug fix", "修正某些逻辑问题"));
 
 
                     whatsNew.setTitleColor(ContextCompat.getColor(this, R.color.colorAccent));
-                    whatsNew.setTitleText("更新日志 v1.1.0207");
+                    whatsNew.setTitleText("更新日志 v1.1.0209");
                     whatsNew.setButtonText("我知道了");
                     whatsNew.setButtonBackground(ContextCompat.getColor(this, R.color.colorAccent));
                     whatsNew.setButtonTextColor(ContextCompat.getColor(this, R.color.white));
