@@ -30,8 +30,7 @@ public class StatusbarUtil {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.TRANSPARENT);
 
-        } else
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        } else {
             Window window =activity.getWindow();
             window.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
                     WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -67,15 +66,13 @@ public class StatusbarUtil {
      */
     public static int StatusBarLightMode(Activity activity){
         int result=0;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            if(MIUISetStatusBarLightMode(activity, true)){
-                result=1;
-            }else if(FlymeSetStatusBarLightMode(activity.getWindow(), true)){
-                result=2;
-            }else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                activity.getWindow().getDecorView().setSystemUiVisibility( View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-                result=3;
-            }
+        if(MIUISetStatusBarLightMode(activity, true)){
+            result=1;
+        }else if(FlymeSetStatusBarLightMode(activity.getWindow(), true)){
+            result=2;
+        }else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            activity.getWindow().getDecorView().setSystemUiVisibility( View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+            result=3;
         }
         return result;
     }
@@ -182,7 +179,7 @@ public class StatusbarUtil {
                     }
                 }
             }catch (Exception e){
-
+                e.printStackTrace();
             }
         }
         return result;

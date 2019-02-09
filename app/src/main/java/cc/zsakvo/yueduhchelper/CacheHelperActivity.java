@@ -74,9 +74,13 @@ public class CacheHelperActivity extends AppCompatActivity implements SyncBooksL
         setContentView(R.layout.activity_cache_helper);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            getWindow().getDecorView().setSystemUiVisibility( View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-            StatusbarUtil.setStatusBarColor(CacheHelperActivity.this,R.color.grey);
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+                getWindow().getDecorView().setSystemUiVisibility( View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR|View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+            }
+            StatusbarUtil.setStatusBarColor(CacheHelperActivity.this,R.color.white);
         }
+
 
         toolbar = findViewById(R.id.cache_toolbar);
         toolbar.setTitle("阅读缓存提取");
@@ -160,6 +164,7 @@ public class CacheHelperActivity extends AppCompatActivity implements SyncBooksL
                 .onGranted(permissions -> {
 
                     WhatsNew whatsNew = WhatsNew.newInstance(
+                            new WhatsNewItem("修正", "修正状态栏颜色，使界面更统一"),
                             new WhatsNewItem("精确来源", "可精确显示缓存来源"),
                             new WhatsNewItem("导出源切换", "如果某本书从多个网站进行缓存，在导出时支持自选导出来源（在TXT导出界面点击书名位置的蓝色字体）"),
                             new WhatsNewItem("bug fix", "修正某些逻辑问题"));
