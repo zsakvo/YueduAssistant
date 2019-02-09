@@ -14,6 +14,7 @@ import cc.zsakvo.yueduhchelper.task.SyncChapters;
 import cc.zsakvo.yueduhchelper.utils.Divider;
 import cc.zsakvo.yueduhchelper.utils.SnackbarUtil;
 import cc.zsakvo.yueduhchelper.utils.SourceUtil;
+import cc.zsakvo.yueduhchelper.utils.StatusbarUtil;
 
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
@@ -21,6 +22,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -58,6 +60,11 @@ public class ExportActivity extends AppCompatActivity implements SyncChaptersLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_export);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            getWindow().getDecorView().setSystemUiVisibility( View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+            StatusbarUtil.setStatusBarColor(ExportActivity.this,R.color.grey);
+        }
 
         toolbar = findViewById(R.id.export_toolbar);
         toolbar.setTitle("导出为TXT");

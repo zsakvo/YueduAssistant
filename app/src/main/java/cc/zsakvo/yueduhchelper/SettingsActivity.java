@@ -22,6 +22,7 @@ import androidx.core.content.ContextCompat;
 import cc.zsakvo.yueduhchelper.listener.ChangePathListener;
 import cc.zsakvo.yueduhchelper.utils.DirChooseUtil;
 import cc.zsakvo.yueduhchelper.utils.SnackbarUtil;
+import cc.zsakvo.yueduhchelper.utils.StatusbarUtil;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -32,6 +33,11 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_settings);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            getWindow().getDecorView().setSystemUiVisibility( View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+            StatusbarUtil.setStatusBarColor(SettingsActivity.this,R.color.grey);
+        }
 
         toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("设置");

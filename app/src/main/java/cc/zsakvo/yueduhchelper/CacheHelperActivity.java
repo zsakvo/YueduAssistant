@@ -39,6 +39,7 @@ import cc.zsakvo.yueduhchelper.task.SyncBooks;
 import cc.zsakvo.yueduhchelper.task.WriteFile;
 import cc.zsakvo.yueduhchelper.utils.Divider;
 import cc.zsakvo.yueduhchelper.utils.SnackbarUtil;
+import cc.zsakvo.yueduhchelper.utils.StatusbarUtil;
 import io.github.tonnyl.whatsnew.WhatsNew;
 import io.github.tonnyl.whatsnew.item.WhatsNewItem;
 
@@ -71,6 +72,11 @@ public class CacheHelperActivity extends AppCompatActivity implements SyncBooksL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cache_helper);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            getWindow().getDecorView().setSystemUiVisibility( View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+            StatusbarUtil.setStatusBarColor(CacheHelperActivity.this,R.color.grey);
+        }
 
         toolbar = findViewById(R.id.cache_toolbar);
         toolbar.setTitle("阅读缓存提取");

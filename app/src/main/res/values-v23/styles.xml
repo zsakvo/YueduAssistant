@@ -3,7 +3,7 @@
 
     <style name="AppTheme.PreferenceTheme" parent="PreferenceThemeOverlay">
         <!-- Only need this on pre-Lollipop -->
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimaryDark">@color/grey</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="preferenceTheme">@style/AppTheme.PreferenceTheme</item>
         <item name="android:windowLightStatusBar">true</item>
