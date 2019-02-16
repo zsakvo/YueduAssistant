@@ -10,6 +10,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -60,7 +61,7 @@ public class ReadCache extends AsyncTask<Object, Integer, String> {
                             try {
                                 InputStream instream = new FileInputStream(file);
                                 InputStreamReader inputreader
-                                        = new InputStreamReader(instream, "UTF-8");
+                                        = new InputStreamReader(instream, StandardCharsets.UTF_8);
                                 BufferedReader buffreader = new BufferedReader(inputreader);
                                 String line;
                                 while ((line = buffreader.readLine()) != null) {

@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">缓存提取</string>
     <string name="sync_books">正在扫描缓存，请稍后 o(*￣▽￣*) ブ</string>
-    <string name="no_books">没有扫描到书籍缓存，请确认缓存目录是否有效 ヾ (￣▽￣)</string>
     <string name="settings">设置</string>
     <string name="check_invert">反选</string>
     <string name="check">自选</string>
@@ -14,6 +13,10 @@
     <string name="loading_export_info">扫描中，请稍后……</string>
     <string name="sync_book_info">共%1$d本\n扫描模式：%2$s</string>
     <string name="export_info">%1$s\n共%2$d章\t\t来源：%3$s</string>
+    <string name="exporting">正在导出 %1$d/%2$d</string>
+    <string name="no_books">缓存为空，请点此修改缓存路径</string>
+    <string name="epub_author">作者：%1$s</string>
+    <string name="epub_intro">简介：%1$s</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

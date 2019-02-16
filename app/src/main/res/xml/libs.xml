@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <Preference
+        android:key="appCompat"
+        android:summary="The Support Library is a static library that you can add to your Android application in order to use APIs that are either not available for older platform versions or utility APIs that aren't a part of the framework APIs."
+        android:title="Android AppCompat Library V7" />
+
+    <Preference
+        android:key="material"
+        android:summary="Material Components for Android is a static library that you can add to your Android application in order to use APIs that provide implementations of the Material Design specification."
+        android:title="Material Components For Android" />
+
+    <Preference
+        android:key="supportV4"
+        android:summary="The Support Library is a static library that you can add to your Android application in order to use APIs that are either not available for older platform versions or utility APIs that aren't a part of the framework APIs."
+        android:title="Android Support Library V4" />
+
+    <Preference
+        android:key="andPermission"
+        android:summary="Permission manager for Android"
+        android:title="AndPermission" />
+
+    <Preference
+        android:key="materialPreference"
+        android:summary="Based on support-preference from Android Support Library, adding a lot of exciting features."
+        android:title="MaterialPreference" />
+
+    <Preference
+        android:key="simpleMenu"
+        android:summary="An extend of MaterialPreference, adding a version of ListPreference that use Simple Menus from Material Design as drop down."
+        android:title="MaterialPreference SimpleMenu " />
+
+    <Preference
+        android:key="fastJson"
+        android:summary="Fastjson is a JSON processor (JSON parser + JSON generator) written in Java"
+        android:title="Fastjson" />
+
+    <Preference
+        android:key="whatsNew"
+        android:summary="WhatsNew automatically displays a short description of the new features when users update your app. This is similar to what happens in Apple's apps like Pages, Numbers, Keynote, iMovie and TestFlight."
+        android:title="Whatsnew" />
+
+    <Preference
+        android:key="rxAndroid"
+        android:summary="This module adds the minimum classes to RxJava that make writing reactive components in Android applications easy and hassle-free. More specifically, it provides a Scheduler that schedules on the main thread or any given Looper."
+        android:title="RxAndroid" />
+
+    <Preference
+        android:key="rxJava"
+        android:summary="RxJava is a Java VM implementation of Reactive Extensions: a library for composing asynchronous and event-based programs by using observable sequences."
+        android:title="RxJava" />
+
+    <Preference
+        android:key="glide"
+        android:summary="Glide is a fast and efficient open source media management and image loading framework for Android that wraps media decoding, memory and disk caching, and resource pooling into a simple and easy to use interface."
+        android:title="Glide" />
+
+
+</PreferenceScreen>

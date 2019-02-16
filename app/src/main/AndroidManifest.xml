@@ -4,6 +4,7 @@
     package="cc.zsakvo.yueduhchelper">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -12,17 +13,20 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-        <activity android:name=".SettingsActivity" />
-        <activity android:name=".CacheHelperActivity">
+        android:usesCleartextTraffic="true"
+        tools:ignore="AllowBackup,GoogleAppIndexingWarning"
+        tools:targetApi="m">
+        <activity android:name=".view.ShowLibsActivity"></activity>
+        <activity android:name=".view.SettingsActivity" />
+        <activity android:name=".view.EpubEditorActivity" />
+        <activity android:name=".view.ExportActivity" />
+        <activity android:name=".view.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".EpubEditorActivity" />
-        <activity android:name=".ExportActivity"></activity>
     </application>
 
 </manifest>

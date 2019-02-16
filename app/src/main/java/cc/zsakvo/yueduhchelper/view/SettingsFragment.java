@@ -1,4 +1,4 @@
-package cc.zsakvo.yueduhchelper;
+package cc.zsakvo.yueduhchelper.view;
 
 
 import android.content.Intent;
@@ -6,7 +6,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 
+import cc.zsakvo.yueduhchelper.BuildConfig;
+import cc.zsakvo.yueduhchelper.R;
 import cc.zsakvo.yueduhchelper.listener.ChangePathListener;
+import cc.zsakvo.yueduhchelper.utils.DialogUtil;
 import moe.shizuku.preference.Preference;
 import moe.shizuku.preference.PreferenceFragment;
 
@@ -48,22 +51,22 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 
         Preference ab_code = findPreference("ab_code");
         ab_code.setOnPreferenceClickListener(this);
+
+        Preference ab_libs = findPreference("ab_libs");
+        ab_libs.setOnPreferenceClickListener(this);
     }
 
     @Override
     public boolean onPreferenceClick(Preference preference) {
         switch (preference.getKey()) {
             case "cs_cache":
-                assert activity != null;
-                activity.fileChoose("cachePath", this);
+                DialogUtil.fileChoose("cachePath", getContext(),activity.getSupportFragmentManager(),this);
                 break;
             case "cs_out":
-                assert activity != null;
-                activity.fileChoose("outPath", this);
+                DialogUtil.fileChoose("outPath", getContext(),activity.getSupportFragmentManager(),this);
                 break;
             case "cs_backup":
-                assert activity != null;
-                activity.fileChoose("backupPath", this);
+                DialogUtil.fileChoose("backupPath", getContext(),activity.getSupportFragmentManager(),this);
                 break;
             case "ab_id":
                 Intent intent_id = new Intent(Intent.ACTION_VIEW,
@@ -74,6 +77,9 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
                 Intent intent_code = new Intent(Intent.ACTION_VIEW,
                         Uri.parse("https://github.com/zsakvo/YueDuHcHelper"));
                 startActivity(intent_code);
+                break;
+            case "ab_libs":
+                startActivity(new Intent(getActivity(),ShowLibsActivity.class));
                 break;
         }
         return false;

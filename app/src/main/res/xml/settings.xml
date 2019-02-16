@@ -1,43 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-        <PreferenceCategory android:title="设置">
-                <Preference
-                    android:key="cs_cache"
-                    android:title="缓存位置"
-                    android:summary="选择你的「阅读」缓存目录" />
+    <PreferenceCategory android:title="路径设置">
+        <Preference
+            android:key="cs_cache"
+            android:summary="选择你的「阅读」缓存目录"
+            android:title="缓存位置" />
 
-                <Preference
-                    android:key="cs_backup"
-                    android:title="备份位置"
-                    android:summary="选择你的「阅读」备份目录" />
+        <Preference
+            android:key="cs_backup"
+            android:summary="选择你的「阅读」备份目录"
+            android:title="备份位置" />
 
-                <Preference
-                    android:key="cs_out"
-                    android:title="导出位置"
-                    android:summary="选择要输出 txt 文档的目录"/>
+        <Preference
+            android:key="cs_out"
+            android:summary="选择要输出 txt 文档的目录"
+            android:title="导出位置" />
 
-        </PreferenceCategory>
+    </PreferenceCategory>
 
-        <PreferenceCategory android:title="试验性功能">
+    <PreferenceCategory android:title="试验性功能">
 
-                <SwitchPreference
-                    android:key="cs_auto_del"
-                    android:title="自动清理缓存"
-                    android:defaultValue="false"
-                    android:summary="书籍导出后自动清除其缓存文件"/>
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="ad_export_more"
+            android:title="高级导出"
+            android:summary="允许导出更多种书籍格式" />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="ad_auto_del"
+            android:title="自动清理缓存"
+            android:summary="书籍导出后自动清除其缓存文件" />
 
 
-        </PreferenceCategory>
+    </PreferenceCategory>
 
-        <PreferenceCategory android:title="关于">
-                <Preference
-                    android:key="ab_id"
-                    android:title="作者"
-                    android:summary="沚水@酷安" />
-                <Preference
-                    android:key="ab_code"
-                    android:title="开源地址"
-                    android:summary="https://github.com/zsakvo"/>
-        </PreferenceCategory>
+    <PreferenceCategory android:title="关于">
+        <Preference
+            android:key="ab_id"
+            android:summary="沚水@酷安"
+            android:title="作者" />
+        <Preference
+            android:key="ab_code"
+            android:summary="https://github.com/zsakvo"
+            android:title="项目地址" />
+        <Preference
+            android:key="ab_libs"
+            android:summary="致谢项目中使用到的开源库"
+            android:title="开源相关" />
+    </PreferenceCategory>
 
 </PreferenceScreen>

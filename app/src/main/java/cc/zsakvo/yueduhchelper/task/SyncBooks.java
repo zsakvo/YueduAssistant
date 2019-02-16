@@ -17,6 +17,7 @@ import cc.zsakvo.yueduhchelper.bean.CacheBooks;
 import cc.zsakvo.yueduhchelper.listener.SyncBooksListener;
 import cc.zsakvo.yueduhchelper.utils.SourceUtil;
 
+import static android.content.ContentValues.TAG;
 
 
 @SuppressWarnings("ALL")
@@ -29,24 +30,22 @@ public class SyncBooks extends AsyncTask<String, Void, LinkedHashMap<String, Cac
     }
 
     private List<String> bookSourceList;
-
     private List<CacheBooks> bookList;
-
     private String cachePath;
 
     private long autoBackupTime = 0;
     private long backupTime = 0;
     private long cacheTime = 0;
-
     private int syncType = 0;
 
-    private HashMap<String,String> sourceHash;
+    private HashMap<String,String> source;
 
     @Override
     protected LinkedHashMap<String, CacheBooks> doInBackground(String... strings) {
         String autoBackupPath = strings[0]+"autoSave/myBookShelf.json";
         String backupPath = strings[0]+"myBookShelf.json";
         this.cachePath = strings[1];
+        Log.e(TAG, "doInBackground: "+cachePath);
         File autoBackupFile = new File(autoBackupPath);
         File backupFile = new File(backupPath);
         if (autoBackupFile.exists()) this.autoBackupTime = new File(autoBackupPath).lastModified();
@@ -59,14 +58,14 @@ public class SyncBooks extends AsyncTask<String, Void, LinkedHashMap<String, Cac
 
             if (bookCache.listFiles().length==0) return null;
 
-            sourceHash = new HashMap<>();
+            source = new HashMap<>();
 
             for (File cacheDir:bookCache.listFiles()){
                 String cacheName = cacheDir.getName();
                 if (!cacheName.contains("-")) continue;
                 if (cacheDir.lastModified()>cacheTime) cacheTime=cacheDir.lastModified();
                 String bookName = cacheName.split("-")[0];
-                sourceHash.put(bookName,sourceHash.get(bookName)+","+cacheName.split("-")[1]);
+                source.put(bookName,source.get(bookName)+","+cacheName.split("-")[1]);
             }
 
             if (autoBackupTime>backupTime&&autoBackupTime>cacheTime){
@@ -102,7 +101,7 @@ public class SyncBooks extends AsyncTask<String, Void, LinkedHashMap<String, Cac
             cb.setName(bookName);
             cb.setCacheNum(i);
             cb.setCachePath(cacheDir.getAbsolutePath());
-            cb.setSourcePath(sourceHash.get(bookName).substring(5));
+            cb.setSourcePath(source.get(bookName).substring(5));
 
             // 修正缓存来源网址
             cacheName = cacheName.split("-")[1];
@@ -147,7 +146,20 @@ public class SyncBooks extends AsyncTask<String, Void, LinkedHashMap<String, Cac
                                 "//","")
                         .replace(".",""));
                 cacheBook.setCacheInfo("作者：" + author + "\n" + "来源：" + origin);
-                cacheBook.setSourcePath(sourceHash.get(name).substring(5));
+                cacheBook.setSourcePath(source.get(name).substring(5));
+
+                // epub 相关
+
+                String coverUrl = null;
+                String intro = null;
+
+                if (bookInfoBean.containsKey("coverUrl")) coverUrl = (String)bookInfoBean.get("coverUrl");
+                if (bookInfoBean.containsKey("introduce")) intro = (String) bookInfoBean.get("introduce");
+
+                cacheBook.setAuthor(author);
+                cacheBook.setIntro(intro);
+                cacheBook.setCoverUrl(coverUrl);
+
                 books.put(name +"-"+author,cacheBook);
             }
         } catch (Exception e) {

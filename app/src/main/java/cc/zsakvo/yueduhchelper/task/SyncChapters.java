@@ -6,11 +6,8 @@ import android.util.Log;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 
 import cc.zsakvo.yueduhchelper.listener.SyncChaptersListener;
@@ -18,6 +15,7 @@ import cc.zsakvo.yueduhchelper.listener.SyncChaptersListener;
 
 public class SyncChapters extends AsyncTask<String, Void, List<String>> {
 
+    private static final String TAG = "SyncChapters";
     private SyncChaptersListener scl;
     private List<File> cacheFiles;
     public SyncChapters(SyncChaptersListener scl) {
@@ -29,6 +27,8 @@ public class SyncChapters extends AsyncTask<String, Void, List<String>> {
     protected final List<String> doInBackground(String... strings) {
         List<String> nums = new ArrayList<>();
         LinkedHashMap<File,Boolean> fileMap = new LinkedHashMap<>();
+
+        Log.e(TAG, "doInBackground: "+strings[0] );
 
             File[] files = new File(strings[0]).listFiles();
 
@@ -48,6 +48,7 @@ public class SyncChapters extends AsyncTask<String, Void, List<String>> {
                 for (File f : files) {
                     String num = f.getName().split("-")[0] + "-";
                     if (!nums.contains(num)) {
+                        Log.e(TAG, "doInBackground: "+num );
                         nums.add(num);
                         fileMap.put(f,true);
                     }else {
@@ -66,4 +67,5 @@ public class SyncChapters extends AsyncTask<String, Void, List<String>> {
         super.onPostExecute(list);
         scl.showChapters(cacheFiles);
     }
+
 }

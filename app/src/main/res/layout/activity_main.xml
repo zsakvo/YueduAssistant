@@ -25,7 +25,7 @@
         android:textColor="@color/colorAccent"
         android:textSize="14sp"
         android:layout_below="@id/cache_toolbar"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
 
