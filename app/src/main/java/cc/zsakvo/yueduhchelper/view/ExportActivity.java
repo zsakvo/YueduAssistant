@@ -189,7 +189,6 @@ public class ExportActivity extends BaseActivity {
         tvIntro = $(R.id.epub_intro);
         ivCover = $(R.id.epub_cover);
         speedDialView = $(R.id.speedDial);
-        speedDialView.bringToFront();
 
         exportArray = new ArrayList<>();
         flag = new ArrayList<>();
