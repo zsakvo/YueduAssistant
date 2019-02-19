@@ -56,5 +56,10 @@
         android:summary="Glide is a fast and efficient open source media management and image loading framework for Android that wraps media decoding, memory and disk caching, and resource pooling into a simple and easy to use interface."
         android:title="Glide" />
 
+    <Preference
+        android:key="fab"
+        android:summary="A Floating Action Button Speed Dial implementation for Android that follows the Material Design specification."
+        android:title="FloatingActionButtonSpeedDial" />
+
 
 </PreferenceScreen>

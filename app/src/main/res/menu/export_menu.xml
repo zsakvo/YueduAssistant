@@ -2,15 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/exchange_source"
+        android:icon="@drawable/ic_exchange_source"
+        android:title="@string/change_source"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/export_check_invert"
         android:icon="@drawable/ic_check_invert"
         android:title="@string/check_invert"
         app:showAsAction="ifRoom" />
-
-
-    <item
-        android:id="@+id/export_txt"
-        android:icon="@drawable/ic_generate"
-        android:title="@string/export"
-        app:showAsAction="always" />
 </menu>

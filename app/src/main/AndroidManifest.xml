@@ -16,9 +16,8 @@
         android:usesCleartextTraffic="true"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning"
         tools:targetApi="m">
-        <activity android:name=".view.ShowLibsActivity"></activity>
+        <activity android:name=".view.ShowLibsActivity" />
         <activity android:name=".view.SettingsActivity" />
-        <activity android:name=".view.EpubEditorActivity" />
         <activity android:name=".view.ExportActivity" />
         <activity android:name=".view.MainActivity">
             <intent-filter>

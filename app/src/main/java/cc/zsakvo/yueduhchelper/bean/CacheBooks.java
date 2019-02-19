@@ -1,7 +1,6 @@
 package cc.zsakvo.yueduhchelper.bean;
 
 import java.io.Serializable;
-import java.util.List;
 
 public class CacheBooks implements Serializable {
     private String name;
@@ -9,6 +8,16 @@ public class CacheBooks implements Serializable {
     private String cacheInfo;
     private int cacheNum;
     private String sourcePath;
+
+    public boolean isDetail() {
+        return isDetail;
+    }
+
+    public void setDetail(boolean detail) {
+        isDetail = detail;
+    }
+
+    private boolean isDetail;
 
     public String getSourcePath() {
         return sourcePath;
@@ -19,11 +28,17 @@ public class CacheBooks implements Serializable {
     }
 
 
-    public int getCacheNum() { return cacheNum; }
+    public int getCacheNum() {
+        return cacheNum;
+    }
 
-    public void setCacheNum(int cacheNum) { this.cacheNum = cacheNum; }
+    public void setCacheNum(int cacheNum) {
+        this.cacheNum = cacheNum;
+    }
 
-    public String getCachePath() { return cachePath; }
+    public String getCachePath() {
+        return cachePath;
+    }
 
     public String getCacheInfo() {
         return cacheInfo;
@@ -74,7 +89,6 @@ public class CacheBooks implements Serializable {
     public void setCoverUrl(String coverUrl) {
         this.coverUrl = coverUrl;
     }
-
 
 
 }

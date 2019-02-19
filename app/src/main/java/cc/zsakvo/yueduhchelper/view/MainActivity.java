@@ -1,7 +1,6 @@
 package cc.zsakvo.yueduhchelper.view;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -21,15 +20,7 @@ import com.yanzhenjie.permission.Permission;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -69,8 +60,6 @@ public class MainActivity extends BaseActivity {
 
     private CacheBooksAdapter adapter;
 
-    private boolean autoDel;
-    private boolean exportMore;
     private String myBackupPath;
 
     private LinkedHashMap<String, CacheBooks> books;
@@ -162,55 +151,15 @@ public class MainActivity extends BaseActivity {
         tv_CacheInfo.setText(getResources().getString(R.string.loading_export_info));
         tv_CacheInfo.setOnClickListener(null);
 
-        autoDel = getSharedPreferences("settings", MODE_PRIVATE).getBoolean("ad_auto_del", false);
-        exportMore = getSharedPreferences("settings", MODE_PRIVATE).getBoolean("ad_export_more", false);
         cachePath = getSharedPreferences("settings", MODE_PRIVATE).getString("cachePath", Environment.getExternalStorageDirectory().getAbsolutePath() + "/Android/data/com.gedoor.monkeybook/cache/book_cache/");
         myBackupPath = getSharedPreferences("settings", MODE_PRIVATE).getString("backupPath", Environment.getExternalStorageDirectory().getAbsolutePath() + "/YueDu/");
-        String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Documents/YueDuTXT";
-        outPath = getSharedPreferences("settings", MODE_PRIVATE).getString("outPath", folderPath) + "/";
 
         adapter.setOnItemClickListener((view, position) -> {
-            Log.e(TAG, "doOnStart: "+books );
             bookName = bookNames.get(position);
-            if (exportMore&&syncType<2) {
-//                DialogUtil.exportTypeDialog(books, bookKeys, position, cachePath, MainActivity.this);
-                String[] single_list = {"导出为 TXT", "导出为 Epub"};
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setTitle("选择一个操作");
-                builder.setSingleChoiceItems(single_list, 0, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        Intent intent;
-                        Log.e(TAG, "onClick: "+books );
-                        CacheBooks cb = books.get(bookKeys.get(position));
-                        Log.e(TAG, "onClick: "+cb.getAuthor() );
-                        switch(which) {
-                            case 0:
-                                intent = new Intent(MainActivity.this, ExportActivity.class);
-                                intent.putExtra("txt", books.get(bookKeys.get(position)));
-                                intent.putExtra("cp", cachePath);
-                                startActivityForResult(intent, 0);
-                                break;
-                            case 1:
-                                intent = new Intent(MainActivity.this, EpubEditorActivity.class);
-                                intent.putExtra("epub", books.get(bookKeys.get(position)));
-                                intent.putExtra("cp", cachePath);
-                                startActivityForResult(intent, 0);
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                });
-                AlertDialog dialog = builder.create();
-                dialog.show();
-            } else {
-                Intent intent = new Intent(this, ExportActivity.class);
-                intent.putExtra("txt", books.get(bookKeys.get(position)));
-                intent.putExtra("cp", cachePath);
-                startActivityForResult(intent, 0);
-            }
+            Intent intent = new Intent(this, ExportActivity.class);
+            intent.putExtra("books", books.get(bookKeys.get(position)));
+            intent.putExtra("cachePath", cachePath);
+            startActivityForResult(intent, 0);
         });
 
         if (!getSharedPreferences("settings", MODE_PRIVATE).getBoolean("isFirst", true)) {
@@ -219,7 +168,7 @@ public class MainActivity extends BaseActivity {
             } else {
                 requestPermission();
             }
-        }else {
+        } else {
             showFirstDialog();
         }
     }
@@ -300,6 +249,7 @@ public class MainActivity extends BaseActivity {
             File autoBackupFile = new File(autoBackupPath);
             File backupFile = new File(backupPath);
             File bookCache = new File(cachePath);
+            File readFile = null;
             if (autoBackupFile.exists()) this.autoBackupTime = autoBackupFile.lastModified();
             if (backupFile.exists()) this.backupTime = backupFile.lastModified();
             if (bookCache.exists() && bookCache.listFiles() != null) {
@@ -307,74 +257,80 @@ public class MainActivity extends BaseActivity {
                     for (File cacheDir : bookCache.listFiles()) {
                         String cacheName = cacheDir.getName();
                         if (!cacheName.contains("-")) continue;
-                        if (cacheDir.lastModified() > cacheTime) cacheTime = cacheDir.lastModified();
+                        if (cacheDir.lastModified() > cacheTime)
+                            cacheTime = cacheDir.lastModified();
                         String bookName = cacheName.split("-")[0];
                         source.put(bookName, source.get(bookName) + "," + cacheName.split("-")[1]);
                     }
+                    if (autoBackupTime > backupTime) {
+                        readFile = autoBackupFile;
+                    } else {
+                        readFile = backupFile;
+                    }
                     if (autoBackupTime > backupTime && autoBackupTime > cacheTime) {
                         syncType = 0;
+                        readFile = autoBackupFile;
                     } else if (backupTime > autoBackupTime && backupTime > cacheTime) {
                         syncType = 1;
+                        readFile = backupFile;
                     } else if (cacheTime > autoBackupTime && cacheTime > backupTime) {
                         syncType = 2;
                     }
-                    if (syncType<2){
-                        File readFile = null;
-                        switch (syncType){
-                            case 0:
-                                readFile = autoBackupFile;
-                                break;
-                            case 1:
-                                readFile = backupFile;
-                                break;
-                        }
-                        try {
-                            FileReader r = new FileReader(readFile);
-                            BufferedReader br = new BufferedReader(r);
-                            StringBuffer json = new StringBuffer();
-                            String s;
-                            while ((s = br.readLine()) != null) {
-                                json = json.append(s).append("\n");
-                            }
-                            br.close();
-                            JSONArray jsonArray = JSON.parseArray(json.toString());
-                            for (Object object : jsonArray) {
-                                JSONObject jsonBook = (JSONObject) JSONObject.toJSON(object);
-                                if (jsonBook.containsKey("bookInfoBean")) {
-                                    JSONObject bookInfoBean = (JSONObject) JSONObject.toJSON(jsonBook.get("bookInfoBean"));
-                                    CacheBooks cacheBook = new CacheBooks();
-                                    String name = Objects.requireNonNull(Objects.requireNonNull(bookInfoBean).get("name")).toString();
-                                    String author = Objects.requireNonNull(bookInfoBean.get("author")).toString();
-                                    cacheBook.setName(name);
-                                    String origin = Objects.requireNonNull(bookInfoBean.get("origin")).toString();
-                                    cacheBook.setCachePath(cachePath + name
-                                            + "-"
-                                            + Objects.requireNonNull(bookInfoBean.get("tag"))
-                                            .toString()
-                                            .replace(":" +
-                                                    "//", "")
-                                            .replace(".", ""));
-                                    cacheBook.setCacheInfo("作者：" + author + "\n" + "来源：" + origin);
-                                    cacheBook.setSourcePath(Objects.requireNonNull(source.get(name)).substring(5));
+
+                    FileReader r = new FileReader(readFile);
+                    BufferedReader br = new BufferedReader(r);
+                    StringBuffer json = new StringBuffer();
+                    String s;
+                    while ((s = br.readLine()) != null) {
+                        json = json.append(s).append("\n");
+                    }
+                    br.close();
+                    JSONArray jsonArray = JSON.parseArray(json.toString());
+                    if (syncType < 2) {
+                        for (Object object : jsonArray) {
+                            JSONObject jsonBook = (JSONObject) JSONObject.toJSON(object);
+                            if (jsonBook.containsKey("bookInfoBean")) {
+                                JSONObject bookInfoBean = (JSONObject) JSONObject.toJSON(jsonBook.get("bookInfoBean"));
+                                CacheBooks cacheBook = new CacheBooks();
+                                String name = Objects.requireNonNull(Objects.requireNonNull(bookInfoBean).get("name")).toString();
+                                String author = "";
+                                if (bookInfoBean.containsKey("author"))
+                                    author = (String)bookInfoBean.get("author");
+                                cacheBook.setName(name);
+                                String origin = Objects.requireNonNull(bookInfoBean.get("origin")).toString();
+                                cacheBook.setCachePath(cachePath + name
+                                        + "-"
+                                        + Objects.requireNonNull(bookInfoBean.get("tag"))
+                                        .toString()
+                                        .replace(":" +
+                                                "//", "")
+                                        .replace(".", ""));
+                                cacheBook.setCacheInfo("作者：" + author + "\n" + "来源：" + origin);
+                                cacheBook.setSourcePath(Objects.requireNonNull(source.get(name)).substring(5));
 
 
-                                    // epub 相关
-                                    String coverUrl = null;
-                                    String intro = null;
-                                    if (bookInfoBean.containsKey("coverUrl")) coverUrl = (String) bookInfoBean.get("coverUrl");
-                                    if (bookInfoBean.containsKey("introduce")) intro = (String) bookInfoBean.get("introduce");
-                                    cacheBook.setAuthor(author);
-                                    cacheBook.setIntro(intro);
-                                    cacheBook.setCoverUrl(coverUrl);
-                                    books.put(name, cacheBook);
-                                }
+                                // epub 相关
+                                String coverUrl = "";
+                                String intro = "";
+                                if (bookInfoBean.containsKey("coverUrl"))
+                                    coverUrl = (String) bookInfoBean.get("coverUrl");
+                                if (bookInfoBean.containsKey("introduce"))
+                                    intro = (String) bookInfoBean.get("introduce");
+                                cacheBook.setAuthor(author);
+                                cacheBook.setIntro(intro);
+                                cacheBook.setCoverUrl(coverUrl);
+                                cacheBook.setDetail(Objects.requireNonNull(author).length()!=0&& Objects.requireNonNull(coverUrl).length()!=0&& Objects.requireNonNull(intro).length()!=0);
+                                books.put(name, cacheBook);
                             }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            emitter.onError(e);
                         }
                     }else {
-                        try {
+                            HashMap<String, JSONObject> jsonMap = new HashMap<>();
+                            for (Object object : jsonArray) {
+                                JSONObject jsonBook = (JSONObject) JSONObject.toJSON(object);
+                                JSONObject bookInfoBean = (JSONObject) JSONObject.toJSON(jsonBook.get("bookInfoBean"));
+                                String name = Objects.requireNonNull(Objects.requireNonNull(bookInfoBean).get("name")).toString();
+                                jsonMap.put(name, (JSONObject) JSONObject.toJSON(jsonBook.get("bookInfoBean")));
+                            }
                             for (File cacheDir : bookCache.listFiles()) {
                                 String cacheName = cacheDir.getName();
                                 if (!cacheName.contains("-")) continue;
@@ -386,28 +342,42 @@ public class MainActivity extends BaseActivity {
                                         continue;
                                     i++;
                                 }
-                                CacheBooks cb = new CacheBooks();
-                                cb.setName(bookName);
-                                cb.setCacheNum(i);
-                                cb.setCachePath(cacheDir.getAbsolutePath());
-                                cb.setSourcePath(Objects.requireNonNull(source.get(bookName)).substring(5));
+                                CacheBooks cacheBook = new CacheBooks();
+                                cacheBook.setName(bookName);
+                                cacheBook.setCacheNum(i);
+                                cacheBook.setCachePath(cacheDir.getAbsolutePath());
+                                cacheBook.setSourcePath(Objects.requireNonNull(source.get(bookName)).substring(5));
 
                                 // 修正缓存来源网址
+                                String coverUrl = "";
+                                String intro = "";
+                                String author = "";
+
                                 cacheName = cacheName.split("-")[1];
-                                cb.setCacheInfo("缓存数量：" + i + "\n" + "来源：" + SourceUtil.trans(cacheName));
+                                cacheBook.setCacheInfo("缓存数量：" + i + "\n" + "来源：" + SourceUtil.trans(cacheName));
+                                if (jsonMap.containsKey(bookName)){
+                                    JSONObject object = jsonMap.get(bookName);
+                                    assert object != null;
+                                    if (object.containsKey("author"))
+                                        author = (String) object.get("author");
+                                    if (object.containsKey("coverUrl"))
+                                        coverUrl = (String) object.get("coverUrl");
+                                    if (object.containsKey("introduce"))
+                                        intro = (String) object.get("introduce");
+                                }
+                                cacheBook.setAuthor(author);
+                                cacheBook.setIntro(intro);
+                                cacheBook.setCoverUrl(coverUrl);
+                                cacheBook.setDetail(Objects.requireNonNull(author).length() != 0 && Objects.requireNonNull(coverUrl).length() != 0 && Objects.requireNonNull(intro).length() != 0);
 
                                 if (books.get(bookName) != null) {
                                     if (Objects.requireNonNull(books.get(bookName)).getCacheNum() < i) {
-                                        books.put(bookName, cb);
+                                        books.put(bookName, cacheBook);
                                     }
                                 } else {
-                                    books.put(bookName, cb);
+                                    books.put(bookName, cacheBook);
                                 }
                             }
-                        }catch (Exception e){
-                            e.printStackTrace();
-                            emitter.onError(e);
-                        }
                     }
                     emitter.onComplete();
                 }
@@ -434,7 +404,7 @@ public class MainActivity extends BaseActivity {
                         Log.e(TAG, "scanBooks: " + "null");
                         tv_CacheInfo.setTextColor(Color.RED);
                         tv_CacheInfo.setText(getResources().getString(R.string.no_books));
-                        tv_CacheInfo.setOnClickListener(v -> startActivity(new Intent(MainActivity.this,SettingsActivity.class)));
+                        tv_CacheInfo.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, SettingsActivity.class)));
 
                     }
 
@@ -444,7 +414,6 @@ public class MainActivity extends BaseActivity {
                         showBooks();
                     }
                 });
-
 
 
     }
@@ -489,136 +458,12 @@ public class MainActivity extends BaseActivity {
         adapter.notifyDataSetChanged();
     }
 
-    private void readCache(String cacheFilePath, ArrayList<String> list) {
-        progress = 0;
-        progressDialog.show();
-
-        TextView tv_progress = progressDialog.findViewById(R.id.progress_text);
-        Observable.create((ObservableOnSubscribe<String>) emitter -> {
-            for (String s : list) {
-                StringBuilder content = new StringBuilder();
-                File file = new File(s);
-                if (!file.isDirectory()) {
-                    if (file.getName().endsWith("nb")) {
-                        try {
-                            InputStream instream = new FileInputStream(file);
-                            InputStreamReader inputreader
-                                    = new InputStreamReader(instream, StandardCharsets.UTF_8);
-                            BufferedReader buffreader = new BufferedReader(inputreader);
-                            String line;
-                            while ((line = buffreader.readLine()) != null) {
-                                content.append(line).append("\n");
-                            }
-                            instream.close();
-                            emitter.onNext(content.toString());
-                        } catch (FileNotFoundException e) {
-                            Log.d("ReadCache", "The File doesn't not exist.");
-                        } catch (IOException e) {
-                            Log.d("ReadCache", e.getMessage());
-                        }
-                    }
-                }
-            }
-            emitter.onComplete();
-        }).subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<String>() {
-                    File f;
-                    FileWriter fw;
-                    PrintWriter pw;
-
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        Log.d(TAG, "subscribe");
-                        if (!new File(outPath).exists()) {
-                            if (new File(outPath).mkdirs()) {
-                                Log.d(TAG, "onSubscribe: " + "文件夹创建成功");
-                            }
-                        } else if (new File(outPath + bookName + ".txt").exists()) {
-                            if (new File(outPath + bookName + ".txt").delete()) {
-                                Log.d(TAG, "已清除原有导出数据");
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onNext(String string) {
-                        Log.d(TAG, "onNext: ");
-
-                        try {
-                            if (f == null) f = new File(outPath + bookName + ".txt");
-                            if (fw == null) fw = new FileWriter(f, true);
-                            if (pw == null) pw = new PrintWriter(fw);
-                            pw.println(string);
-                            pw.flush();
-                            fw.flush();
-                            progress++;
-                            if (tv_progress != null)
-                                tv_progress.setText(String.format(getResources().getString(R.string.exporting), progress, list.size()));
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.d(TAG, "error");
-                        progressDialog.cancel();
-                        pw.close();
-                        try {
-                            fw.close();
-                        } catch (IOException e1) {
-                            e1.printStackTrace();
-                        }
-                        showSnackBar("导出失败！", toolbar);
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        Log.d(TAG, "complete");
-                        pw.close();
-                        try {
-                            fw.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        if (autoDel) {
-                            deleteDirectory(new File(cacheFilePath));
-                        }
-                        progressDialog.cancel();
-                        showSnackBar("导出成功！", toolbar);
-                        scanBooks();
-                    }
-                });
-    }
-
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    private void deleteDirectory(File file) {
-        File files[] = file.listFiles();
-        for (File file1 : files) {
-            if (file1.isFile()) {
-                file1.delete();
-            } else if (file1.isDirectory()) {
-                deleteDirectory(file1);
-            }
-        }
-        file.delete();
-    }
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 0) {
-            if (data != null) {
-                ArrayList<String> list = data.getStringArrayListExtra("cps");
-                String cacheFilePath = data.getStringExtra("cfp");
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setCancelable(false); // if you want user to wait for some process to finish,
-                builder.setView(R.layout.loading_dialog);
-                progressDialog = builder.create();
-                readCache(cacheFilePath, list);
-            }
+            //sth
         }
     }
 }

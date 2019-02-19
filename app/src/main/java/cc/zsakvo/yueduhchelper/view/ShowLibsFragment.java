@@ -36,11 +36,13 @@ public class ShowLibsFragment extends PreferenceFragment implements Preference.O
         glide.setOnPreferenceClickListener(this);
         Preference andPermission = findPreference("andPermission");
         andPermission.setOnPreferenceClickListener(this);
+        Preference fab = findPreference("fab");
+        fab.setOnPreferenceClickListener(this);
     }
 
     @Override
     public boolean onPreferenceClick(Preference preference) {
-        switch (preference.getKey()){
+        switch (preference.getKey()) {
             case "appCompat":
                 startActivity(new Intent(Intent.ACTION_VIEW,
                         Uri.parse("https://developer.android.com/topic/libraries/support-library/packages")));
@@ -81,12 +83,16 @@ public class ShowLibsFragment extends PreferenceFragment implements Preference.O
                 startActivity(new Intent(Intent.ACTION_VIEW,
                         Uri.parse("https://github.com/bumptech/glide")));
                 break;
-                case "andPermission":
+            case "andPermission":
                 startActivity(new Intent(Intent.ACTION_VIEW,
                         Uri.parse("https://github.com/yanzhenjie/AndPermission")));
                 break;
-                default:
-                    break;
+            case "fab":
+                startActivity(new Intent(Intent.ACTION_VIEW,
+                        Uri.parse("https://github.com/leinardi/FloatingActionButtonSpeedDial")));
+                break;
+            default:
+                break;
 
         }
         return false;
