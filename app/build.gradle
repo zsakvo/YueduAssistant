@@ -35,6 +35,8 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
     implementation 'io.reactivex.rxjava2:rxjava:2.2.6'
     implementation 'com.github.bumptech.glide:glide:4.8.0'
+    implementation 'org.jsoup:jsoup:1.11.3'
+    implementation 'org.zeroturnaround:zt-zip:1.8'
     implementation "com.leinardi.android:speed-dial:2.0.0"
     annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
     testImplementation 'junit:junit:4.12'

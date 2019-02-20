@@ -2,11 +2,13 @@ package cc.zsakvo.yueduhchelper.view;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -20,6 +22,9 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.leinardi.android.speeddial.SpeedDialActionItem;
 import com.leinardi.android.speeddial.SpeedDialView;
+
+import org.zeroturnaround.zip.NameMapper;
+import org.zeroturnaround.zip.ZipUtil;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -47,6 +52,7 @@ import cc.zsakvo.yueduhchelper.adapter.ExportBooksAdapter;
 import cc.zsakvo.yueduhchelper.bean.CacheBooks;
 import cc.zsakvo.yueduhchelper.bean.ExportChapter;
 import cc.zsakvo.yueduhchelper.utils.Divider;
+import cc.zsakvo.yueduhchelper.utils.EpubUtil;
 import cc.zsakvo.yueduhchelper.utils.SourceUtil;
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
@@ -57,7 +63,7 @@ import io.reactivex.schedulers.Schedulers;
 
 public class ExportActivity extends BaseActivity {
 
-    private static final String TAG = "ExportActivity" + "" ;
+    private static final String TAG = "ExportActivity" + "";
     private Toolbar toolbar;
     private String bookName;
     private String author;
@@ -122,7 +128,7 @@ public class ExportActivity extends BaseActivity {
     }
 
     @Override
-    public void onStart(){
+    public void onStart() {
         super.onStart();
     }
 
@@ -145,7 +151,7 @@ public class ExportActivity extends BaseActivity {
                 break;
             case R.id.exchange_source:
                 if (source.length <= 1) {
-                    showSnackBar("只有一个缓存源，无需切换", coord);
+                    showSnackBar("只有一个缓存源，无需切换", speedDialView);
                 } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(ExportActivity.this);
                     builder.setTitle("切换缓存源");
@@ -195,9 +201,9 @@ public class ExportActivity extends BaseActivity {
 
         RecyclerView mRecyclerView = $(R.id.export_epub_list);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mRecyclerView.addItemDecoration(new Divider(this,24));
+        mRecyclerView.addItemDecoration(new Divider(this, 24));
 
-        adapter = new ExportBooksAdapter(exportArray,flag);
+        adapter = new ExportBooksAdapter(exportArray, flag);
         mRecyclerView.setAdapter(adapter);
     }
 
@@ -212,11 +218,12 @@ public class ExportActivity extends BaseActivity {
         autoDel = getSharedPreferences("settings", MODE_PRIVATE).getBoolean("ad_auto_del", false);
         String folderPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Documents/YueDuTXT";
         outPath = getSharedPreferences("settings", MODE_PRIVATE).getString("outPath", folderPath) + "/";
+
         CacheBooks cb = (CacheBooks) getIntent().getSerializableExtra("books");
         cacheFilePath = cb.getCachePath();
-        if (cb.isDetail()){
+        if (cb.isDetail()) {
             epubInfo.setVisibility(View.VISIBLE);
-        }else {
+        } else {
             epubInfo.setVisibility(View.GONE);
         }
         bookName = cb.getName();
@@ -224,24 +231,32 @@ public class ExportActivity extends BaseActivity {
         intro = cb.getIntro();
         coverUrl = cb.getCoverUrl();
         tvBookName.setText(bookName);
-        tvAuthor.setText(String.format(getResources().getString(R.string.epub_author),author));
-        tvIntro.setText(String.format(getResources().getString(R.string.epub_intro),intro));
-        if (coverUrl==null){
+        tvAuthor.setText(String.format(getResources().getString(R.string.epub_author), author));
+        tvIntro.setText(String.format(getResources().getString(R.string.epub_intro), intro));
+        if (coverUrl == null) {
             ivCover.setImageBitmap(getNoCover());
-        }else {
+        } else {
             Glide.with(this)
                     .load(coverUrl)
                     .into(ivCover);
         }
-        if (cb.getSourcePath()!=null){
+
+        if (!new File(outPath).exists()) {
+            if (!new File(outPath).mkdirs()) {
+                showSnackBar("环境初始化失败……！", speedDialView);
+                return;
+            }
+        }
+
+        if (cb.getSourcePath() != null) {
             source = cb.getSourcePath().split(",");
             sourceList = new String[source.length];
-            for (int i=0;i<source.length;i++){
+            for (int i = 0; i < source.length; i++) {
                 sourceList[i] = SourceUtil.trans(source[i]);
                 if (source[i].equals(cacheFilePath.split("-")[1])) checkedItem = i;
             }
         }
-        if (exportMore){
+        if (exportMore) {
             //Sth
             speedDialView.addActionItem(
                     new SpeedDialActionItem.Builder(R.id.fab_epub, R.drawable.ic_epub)
@@ -261,13 +276,14 @@ public class ExportActivity extends BaseActivity {
                             exportTXT();
                             return false;
                         case R.id.fab_epub:
+                            exportEpub();
                             return false;
                         default:
                             return false;
                     }
                 }
             });
-        }else {
+        } else {
             speedDialView.setOnChangeListener(new SpeedDialView.OnChangeListener() {
                 @Override
                 public boolean onMainActionSelected() {
@@ -283,7 +299,7 @@ public class ExportActivity extends BaseActivity {
         }
     }
 
-    private void exportTXT(){
+    private void exportTXT() {
         ArrayList<String> chapters = new ArrayList<>();
         for (int i = 0; i < flag.size(); i++) {
             if (flag.get(i)) {
@@ -291,17 +307,144 @@ public class ExportActivity extends BaseActivity {
             }
         }
         if (chapters.size() == 0) {
-            showSnackBar("请至少勾选一章", coord);
+            showSnackBar("请至少勾选一章", speedDialView);
         } else {
             AlertDialog.Builder builder = new AlertDialog.Builder(ExportActivity.this);
             builder.setCancelable(false);
             builder.setView(R.layout.loading_dialog);
             progressDialog = builder.create();
-            writeCache(cacheFilePath,chapters);
+            writeCacheForTXT(cacheFilePath, chapters);
         }
     }
 
-    private void writeCache(String cacheFilePath, ArrayList<String> list) {
+    private void exportEpub() {
+        ArrayList<String> chapters = new ArrayList<>();
+        for (int i = 0; i < flag.size(); i++) {
+            if (flag.get(i)) {
+                chapters.add(chapterFilePath.get(i));
+            }
+        }
+        if (chapters.size() == 0) {
+            showSnackBar("请至少勾选一章", speedDialView);
+        } else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(ExportActivity.this);
+            builder.setCancelable(false);
+            builder.setView(R.layout.loading_dialog);
+            progressDialog = builder.create();
+            writeCacheForEpub(cacheFilePath, chapters);
+        }
+    }
+
+    private void writeCacheForEpub(String cacheFilePath, ArrayList<String> list) {
+        progress = 0;
+        progressDialog.show();
+        String epubCachePath = outPath + "cache/" + bookName;
+
+        TextView tv_progress = progressDialog.findViewById(R.id.progress_text);
+        Observable.create((ObservableOnSubscribe<String>) emitter -> {
+
+            try {
+                deleteDirectory(new File(epubCachePath));
+                if (!new EpubUtil(bookName,author,coverUrl,epubCachePath,exportArray,ExportActivity.this).build()) emitter.onError(new Throwable("init failed !"));
+                int c = 0;
+                for (String s : list) {
+                    StringBuilder content = new StringBuilder();
+                    File file = new File(s);
+                    if (!file.isDirectory()) {
+                        if (file.getName().endsWith("nb")) {
+                            try {
+                                InputStream instream = new FileInputStream(file);
+                                InputStreamReader inputreader
+                                        = new InputStreamReader(instream, StandardCharsets.UTF_8);
+                                BufferedReader buffreader = new BufferedReader(inputreader);
+                                String line;
+                                while ((line = buffreader.readLine()) != null) {
+                                    content.append(line).append("\n");
+                                }
+                                instream.close();
+                                String str = content.toString().replace("　　", "<p/>");
+                                String fileText = EpubUtil.CHAPTER.replace("toreplace0", "chapter" + c);
+                                fileText = fileText.replace("toreplace1", str);
+                                emitter.onNext(fileText);
+                                c++;
+                            } catch (FileNotFoundException e) {
+                                Log.d("ReadCache", "The File doesn't not exist.");
+                            } catch (IOException e) {
+                                Log.d("ReadCache", e.getMessage());
+                            }
+                        }
+                    }
+                }
+                emitter.onComplete();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }).subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<String>() {
+                    int i = 0;
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        if (tv_progress != null) tv_progress.setText("正在初始化……");
+                        Log.d(TAG, "subscribe");
+                        if (!new File(outPath).exists()) {
+                            if (new File(outPath).mkdirs()) {
+                                Log.d(TAG, "onSubscribe: " + "文件夹创建成功");
+                            }
+                        } else if (new File(outPath + bookName + ".txt").exists()) {
+                            if (new File(outPath + bookName + ".txt").delete()) {
+                                Log.d(TAG, "已清除原有导出数据");
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onNext(String string) {
+                        try {
+                            EpubUtil.writeFile(epubCachePath + "/OEBPS/chapter" + i + ".html", string);
+                            i++;
+                            if (tv_progress != null)
+                                tv_progress.setText(String.format(getResources().getString(R.string.exporting), i, list.size()));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d(TAG, "error");
+                        progressDialog.cancel();
+                        showSnackBar("导出失败！", speedDialView);
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.d(TAG, "complete");
+                        ZipUtil.pack(new File(epubCachePath), new File(outPath + bookName + ".epub"), new NameMapper() {
+                            public String map(String name) {
+                                return name;
+                            }
+                        });
+                        deleteDirectory(new File(epubCachePath));
+                        if (autoDel) {
+                            deleteDirectory(new File(cacheFilePath));
+                        }
+
+                        final Intent scanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+                        final Uri contentUri = Uri.fromFile(new File(outPath + bookName + ".epub"));
+                        scanIntent.setData(contentUri);
+                        sendBroadcast(scanIntent);
+
+
+                        progressDialog.cancel();
+                        showSnackBar("导出成功！", speedDialView);
+                    }
+                });
+    }
+
+    private void writeCacheForTXT(String cacheFilePath, ArrayList<String> list) {
         progress = 0;
         progressDialog.show();
 
@@ -382,7 +525,7 @@ public class ExportActivity extends BaseActivity {
                         } catch (IOException e1) {
                             e1.printStackTrace();
                         }
-                        showSnackBar("导出失败！", coord);
+                        showSnackBar("导出失败！", speedDialView);
                     }
 
                     @Override
@@ -398,7 +541,7 @@ public class ExportActivity extends BaseActivity {
                             deleteDirectory(new File(cacheFilePath));
                         }
                         progressDialog.cancel();
-                        showSnackBar("导出成功！", coord);
+                        showSnackBar("导出成功！", speedDialView);
                     }
                 });
     }
@@ -406,32 +549,34 @@ public class ExportActivity extends BaseActivity {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private void deleteDirectory(File file) {
         File files[] = file.listFiles();
-        for (File file1 : files) {
-            if (file1.isFile()) {
-                file1.delete();
-            } else if (file1.isDirectory()) {
-                deleteDirectory(file1);
+        if (files!=null){
+            for (File file1 : files) {
+                if (file1.isFile()) {
+                    file1.delete();
+                } else if (file1.isDirectory()) {
+                    deleteDirectory(file1);
+                }
             }
+            file.delete();
         }
-        file.delete();
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        if (exportArray.size()==0) {
+        if (exportArray.size() == 0) {
             menu.findItem(R.id.export_check_invert).setVisible(false);
             menu.findItem(R.id.exchange_source).setVisible(false);
-        }else {
+        } else {
             menu.findItem(R.id.export_check_invert).setVisible(true);
             menu.findItem(R.id.exchange_source).setVisible(true);
         }
         return super.onPrepareOptionsMenu(menu);
     }
 
-    private Bitmap getNoCover(){
+    private Bitmap getNoCover() {
         AssetManager assetManager = getAssets();
         try {
-            InputStream in=assetManager.open("nocover.jpg");
+            InputStream in = assetManager.open("nocover.jpg");
             return BitmapFactory.decodeStream(in);
         } catch (Exception e) {
             e.printStackTrace();
@@ -448,10 +593,10 @@ public class ExportActivity extends BaseActivity {
 
 
     private void showChapters() {
-        if (cacheFiles!=null){
+        if (cacheFiles != null) {
             exportInfo.setText(String.format(getResources().getString(R.string.export_info), chapterNames.size(), SourceUtil.trans(cacheFilePath.split("-")[1])));
             for (int i = 0; i < chapterNames.size(); i++) {
-                exportArray.add(new ExportChapter(chapterNames.get(i),false));
+                exportArray.add(new ExportChapter(chapterNames.get(i), false));
                 flag.add(true);
             }
             adapter.notifyDataSetChanged();
@@ -472,20 +617,20 @@ public class ExportActivity extends BaseActivity {
             chapterFilePath = new ArrayList<>();
 
             File[] files = new File(cacheFilePath).listFiles();
-            LinkedHashMap<Integer,String> map = new LinkedHashMap<>();
+            LinkedHashMap<Integer, String> map = new LinkedHashMap<>();
 
             for (File f : files) {
                 int chapterSN = Integer.parseInt(f.getName().split("-")[0]);
                 String chapterName = f.getName().split("-")[1].replace(".nb", "");
-                map.put(chapterSN,chapterName);
+                map.put(chapterSN, chapterName);
             }
             List<Integer> snList = new ArrayList<>(map.keySet());
             Collections.sort(snList);
-            for (int i=0;i<snList.size();i++){
+            for (int i = 0; i < snList.size(); i++) {
                 int sn = snList.get(i);
                 String name = map.get(sn);
                 chapterNames.add(name);
-                chapterFilePath.add(cacheFilePath+"/"+String.format("%05d", snList.get(i))+"-"+name+".nb");
+                chapterFilePath.add(cacheFilePath + "/" + String.format("%05d", snList.get(i)) + "-" + name + ".nb");
             }
             emitter.onComplete();
         }).subscribeOn(Schedulers.newThread())

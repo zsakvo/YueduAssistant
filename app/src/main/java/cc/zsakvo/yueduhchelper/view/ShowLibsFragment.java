@@ -38,6 +38,10 @@ public class ShowLibsFragment extends PreferenceFragment implements Preference.O
         andPermission.setOnPreferenceClickListener(this);
         Preference fab = findPreference("fab");
         fab.setOnPreferenceClickListener(this);
+        Preference jsoup = findPreference("jsoup");
+        jsoup.setOnPreferenceClickListener(this);
+        Preference ztZip = findPreference("zt-zip");
+        ztZip.setOnPreferenceClickListener(this);
     }
 
     @Override
@@ -90,6 +94,14 @@ public class ShowLibsFragment extends PreferenceFragment implements Preference.O
             case "fab":
                 startActivity(new Intent(Intent.ACTION_VIEW,
                         Uri.parse("https://github.com/leinardi/FloatingActionButtonSpeedDial")));
+                break;
+            case "jsoup":
+                startActivity(new Intent(Intent.ACTION_VIEW,
+                        Uri.parse("https://jsoup.org/")));
+                break;
+            case "zt-zip":
+                startActivity(new Intent(Intent.ACTION_VIEW,
+                        Uri.parse("https://github.com/zeroturnaround/zt-zip")));
                 break;
             default:
                 break;

@@ -61,5 +61,15 @@
         android:summary="A Floating Action Button Speed Dial implementation for Android that follows the Material Design specification."
         android:title="FloatingActionButtonSpeedDial" />
 
+    <Preference
+        android:key="jsoup"
+        android:summary="jsoup is a Java library for working with real-world HTML. It provides a very convenient API for extracting and manipulating data, using the best of DOM, CSS, and jquery-like methods."
+        android:title="jsoup" />
+
+    <Preference
+        android:key="zt-zip"
+        android:summary="The project was started and coded by Rein Raudjärv when he needed to process a large set of large ZIP archives for LiveRebel internals. Soon after we started using the utility in other projects because of the ease of use and it just worked."
+        android:title="zt-zip" />
+
 
 </PreferenceScreen>
