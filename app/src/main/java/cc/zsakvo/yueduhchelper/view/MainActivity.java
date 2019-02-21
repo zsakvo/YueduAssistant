@@ -202,7 +202,8 @@ public class MainActivity extends BaseActivity {
                     WhatsNew whatsNew = WhatsNew.newInstance(
                             new WhatsNewItem("改善", "重写异步线程，精简代码"),
                             new WhatsNewItem("优化", "优化排序逻辑，提高章节扫描速度"),
-                            new WhatsNewItem("UI", "默认只导出 TXT 文件"));
+                            new WhatsNewItem("新增", "Epub导出功能"),
+                            new WhatsNewItem("UI", "重构部分界面\n默认只导出 TXT 文件"));
 
                     whatsNew.setTitleColor(ContextCompat.getColor(this, R.color.colorAccent));
                     whatsNew.setTitleText(" 更新日志 v1.1.0209");
@@ -315,7 +316,7 @@ public class MainActivity extends BaseActivity {
                                 if (bookInfoBean.containsKey("coverUrl"))
                                     coverUrl = (String) bookInfoBean.get("coverUrl");
                                 if (bookInfoBean.containsKey("introduce"))
-                                    intro = (String) bookInfoBean.get("introduce");
+                                    intro = ((String) Objects.requireNonNull(bookInfoBean.get("introduce"))).replace("　","");
                                 cacheBook.setAuthor(author);
                                 cacheBook.setIntro(intro);
                                 cacheBook.setCoverUrl(coverUrl);
@@ -363,7 +364,7 @@ public class MainActivity extends BaseActivity {
                                     if (object.containsKey("coverUrl"))
                                         coverUrl = (String) object.get("coverUrl");
                                     if (object.containsKey("introduce"))
-                                        intro = (String) object.get("introduce");
+                                        intro = ((String) Objects.requireNonNull(object.get("introduce"))).replace("　","");
                                 }
                                 cacheBook.setAuthor(author);
                                 cacheBook.setIntro(intro);

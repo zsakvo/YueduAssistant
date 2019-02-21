@@ -2,6 +2,7 @@ package cc.zsakvo.yueduhchelper.view;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
@@ -9,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -45,6 +47,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import cc.zsakvo.yueduhchelper.R;
@@ -95,6 +98,7 @@ public class ExportActivity extends BaseActivity {
     private List<String> chapterFilePath;
 
     private boolean exportMore;
+    private boolean isDetail;
 
 
     private AlertDialog progressDialog;
@@ -145,29 +149,33 @@ public class ExportActivity extends BaseActivity {
 
     @Override
     public void clickMenu(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.export_check_invert:
-                chooseInvert();
-                break;
-            case R.id.exchange_source:
-                if (source.length <= 1) {
-                    showSnackBar("只有一个缓存源，无需切换", speedDialView);
-                } else {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(ExportActivity.this);
-                    builder.setTitle("切换缓存源");
-                    builder.setSingleChoiceItems(sourceList, checkedItem, (dialog, which) -> {
-                        exportInfo.setText(getResources().getString(R.string.loading_export_info));
-                        checkedItem = which;
-                        dialog.dismiss();
-                        cacheFilePath = cacheFilePath.replace(cacheFilePath.split("-")[1], source[which]);
-                        exportArray.clear();
-                        flag.clear();
-                        scanChapters();
-                    });
-                    AlertDialog dialog = builder.create();
-                    dialog.show();
-                }
-                break;
+        if (speedDialView.isOpen()) {
+            speedDialView.close();
+        } else {
+            switch (item.getItemId()) {
+                case R.id.export_check_invert:
+                    chooseInvert();
+                    break;
+                case R.id.exchange_source:
+                    if (source.length <= 1) {
+                        showSnackBar("只有一个缓存源，无需切换", speedDialView);
+                    } else {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(ExportActivity.this);
+                        builder.setTitle("切换缓存源");
+                        builder.setSingleChoiceItems(sourceList, checkedItem, (dialog, which) -> {
+                            exportInfo.setText(getResources().getString(R.string.loading_export_info));
+                            checkedItem = which;
+                            dialog.dismiss();
+                            cacheFilePath = cacheFilePath.replace(cacheFilePath.split("-")[1], source[which]);
+                            exportArray.clear();
+                            flag.clear();
+                            scanChapters();
+                        });
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    }
+                    break;
+            }
         }
     }
 
@@ -221,7 +229,8 @@ public class ExportActivity extends BaseActivity {
 
         CacheBooks cb = (CacheBooks) getIntent().getSerializableExtra("books");
         cacheFilePath = cb.getCachePath();
-        if (cb.isDetail()) {
+        isDetail = cb.isDetail();
+        if (isDetail) {
             epubInfo.setVisibility(View.VISIBLE);
         } else {
             epubInfo.setVisibility(View.GONE);
@@ -256,7 +265,7 @@ public class ExportActivity extends BaseActivity {
                 if (source[i].equals(cacheFilePath.split("-")[1])) checkedItem = i;
             }
         }
-        if (exportMore) {
+        if (exportMore&&isDetail) {
             //Sth
             speedDialView.addActionItem(
                     new SpeedDialActionItem.Builder(R.id.fab_epub, R.drawable.ic_epub)
@@ -345,7 +354,8 @@ public class ExportActivity extends BaseActivity {
 
             try {
                 deleteDirectory(new File(epubCachePath));
-                if (!new EpubUtil(bookName,author,coverUrl,epubCachePath,exportArray,ExportActivity.this).build()) emitter.onError(new Throwable("init failed !"));
+                if (!new EpubUtil(bookName, author, coverUrl, epubCachePath, exportArray, ExportActivity.this).build())
+                    emitter.onError(new Throwable("init failed !"));
                 int c = 0;
                 for (String s : list) {
                     StringBuilder content = new StringBuilder();
@@ -384,7 +394,9 @@ public class ExportActivity extends BaseActivity {
         }).subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<String>() {
+                    long beginTime = System.currentTimeMillis();
                     int i = 0;
+
                     @Override
                     public void onSubscribe(Disposable d) {
                         if (tv_progress != null) tv_progress.setText("正在初始化……");
@@ -436,12 +448,43 @@ public class ExportActivity extends BaseActivity {
                         final Uri contentUri = Uri.fromFile(new File(outPath + bookName + ".epub"));
                         scanIntent.setData(contentUri);
                         sendBroadcast(scanIntent);
-
-
                         progressDialog.cancel();
-                        showSnackBar("导出成功！", speedDialView);
+                        float useTime = (float) (System.currentTimeMillis() - beginTime) / 1000;
+                        AlertDialog.Builder dialog = new AlertDialog.Builder(ExportActivity.this);
+                        dialog.setTitle("提示");
+                        dialog.setCancelable(false);
+                        dialog.setMessage(bookName + " 导出成功\n耗时 " + useTime + " 秒");
+                        dialog.setPositiveButton("打开",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        Intent eIntent = new Intent("android.intent.action.VIEW");
+                                        eIntent.addCategory("android.intent.category.DEFAULT");
+                                        eIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        Uri uri = null;
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                            uri = FileProvider.getUriForFile(ExportActivity.this,
+                                                    getPackageName() + ".fileprovider",
+                                                    new File(outPath + bookName + ".epub"));
+                                            eIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                                        } else {
+                                            uri = Uri.fromFile(new File(outPath + bookName + ".epub"));
+                                        }
+                                        eIntent.setDataAndType(uri, "application/epub");
+                                        startActivity(eIntent);
+                                    }
+                                });
+                        dialog.setNegativeButton("关闭",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        finish();
+                                    }
+                                });
+                        dialog.show();
                     }
                 });
+
     }
 
     private void writeCacheForTXT(String cacheFilePath, ArrayList<String> list) {
@@ -481,6 +524,7 @@ public class ExportActivity extends BaseActivity {
                     File f;
                     FileWriter fw;
                     PrintWriter pw;
+                    long beginTime = System.currentTimeMillis();
 
                     @Override
                     public void onSubscribe(Disposable d) {
@@ -541,7 +585,19 @@ public class ExportActivity extends BaseActivity {
                             deleteDirectory(new File(cacheFilePath));
                         }
                         progressDialog.cancel();
-                        showSnackBar("导出成功！", speedDialView);
+                        AlertDialog.Builder dialog = new AlertDialog.Builder(ExportActivity.this);
+                        dialog.setTitle("提示");
+                        dialog.setCancelable(false);
+                        float useTime = (float) (System.currentTimeMillis() - beginTime) / 1000;
+                        dialog.setMessage(bookName + " 导出成功\n耗时 " + useTime + " 秒");
+                        dialog.setPositiveButton("确定",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        finish();
+                                    }
+                                });
+                        dialog.show();
                     }
                 });
     }
@@ -549,7 +605,7 @@ public class ExportActivity extends BaseActivity {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private void deleteDirectory(File file) {
         File files[] = file.listFiles();
-        if (files!=null){
+        if (files != null) {
             for (File file1 : files) {
                 if (file1.isFile()) {
                     file1.delete();
@@ -658,6 +714,16 @@ public class ExportActivity extends BaseActivity {
                         showChapters();
                     }
                 });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (speedDialView.isOpen()) {
+            speedDialView.close();
+        }else {
+            finish();
+        }
     }
 
 }

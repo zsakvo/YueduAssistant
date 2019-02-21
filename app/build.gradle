@@ -6,8 +6,8 @@ android {
         applicationId "cc.zsakvo.yueduhchelper"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 5
-        versionName "1.1.0209"
+        versionCode 6
+        versionName "1.1.0220"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
