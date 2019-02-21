@@ -294,9 +294,14 @@ public class MainActivity extends BaseActivity {
                                 JSONObject bookInfoBean = (JSONObject) JSONObject.toJSON(jsonBook.get("bookInfoBean"));
                                 CacheBooks cacheBook = new CacheBooks();
                                 String name = Objects.requireNonNull(Objects.requireNonNull(bookInfoBean).get("name")).toString();
+                                if (source.containsKey(name)) {
+                                    cacheBook.setSourcePath(Objects.requireNonNull(source.get(name)).substring(5));
+                                } else {
+                                    continue;
+                                }
                                 String author = "";
                                 if (bookInfoBean.containsKey("author"))
-                                    author = (String)bookInfoBean.get("author");
+                                    author = (String) bookInfoBean.get("author");
                                 cacheBook.setName(name);
                                 String origin = Objects.requireNonNull(bookInfoBean.get("origin")).toString();
                                 cacheBook.setCachePath(cachePath + name
@@ -307,8 +312,6 @@ public class MainActivity extends BaseActivity {
                                                 "//", "")
                                         .replace(".", ""));
                                 cacheBook.setCacheInfo("作者：" + author + "\n" + "来源：" + origin);
-                                cacheBook.setSourcePath(Objects.requireNonNull(source.get(name)).substring(5));
-
 
                                 // epub 相关
                                 String coverUrl = "";
@@ -316,69 +319,69 @@ public class MainActivity extends BaseActivity {
                                 if (bookInfoBean.containsKey("coverUrl"))
                                     coverUrl = (String) bookInfoBean.get("coverUrl");
                                 if (bookInfoBean.containsKey("introduce"))
-                                    intro = ((String) Objects.requireNonNull(bookInfoBean.get("introduce"))).replace("　","");
-                                cacheBook.setAuthor(author);
-                                cacheBook.setIntro(intro);
-                                cacheBook.setCoverUrl(coverUrl);
-                                cacheBook.setDetail(Objects.requireNonNull(author).length()!=0&& Objects.requireNonNull(coverUrl).length()!=0&& Objects.requireNonNull(intro).length()!=0);
-                                books.put(name, cacheBook);
-                            }
-                        }
-                    }else {
-                            HashMap<String, JSONObject> jsonMap = new HashMap<>();
-                            for (Object object : jsonArray) {
-                                JSONObject jsonBook = (JSONObject) JSONObject.toJSON(object);
-                                JSONObject bookInfoBean = (JSONObject) JSONObject.toJSON(jsonBook.get("bookInfoBean"));
-                                String name = Objects.requireNonNull(Objects.requireNonNull(bookInfoBean).get("name")).toString();
-                                jsonMap.put(name, (JSONObject) JSONObject.toJSON(jsonBook.get("bookInfoBean")));
-                            }
-                            for (File cacheDir : bookCache.listFiles()) {
-                                String cacheName = cacheDir.getName();
-                                if (!cacheName.contains("-")) continue;
-                                String bookName = cacheName.split("-")[0];
-                                int i = 0;
-                                for (File chapterCache : cacheDir.listFiles()) {
-                                    String chapterCacheName = chapterCache.getName();
-                                    if (!chapterCacheName.substring(chapterCacheName.lastIndexOf(".")).equals(".nb"))
-                                        continue;
-                                    i++;
-                                }
-                                CacheBooks cacheBook = new CacheBooks();
-                                cacheBook.setName(bookName);
-                                cacheBook.setCacheNum(i);
-                                cacheBook.setCachePath(cacheDir.getAbsolutePath());
-                                cacheBook.setSourcePath(Objects.requireNonNull(source.get(bookName)).substring(5));
-
-                                // 修正缓存来源网址
-                                String coverUrl = "";
-                                String intro = "";
-                                String author = "";
-
-                                cacheName = cacheName.split("-")[1];
-                                cacheBook.setCacheInfo("缓存数量：" + i + "\n" + "来源：" + SourceUtil.trans(cacheName));
-                                if (jsonMap.containsKey(bookName)){
-                                    JSONObject object = jsonMap.get(bookName);
-                                    assert object != null;
-                                    if (object.containsKey("author"))
-                                        author = (String) object.get("author");
-                                    if (object.containsKey("coverUrl"))
-                                        coverUrl = (String) object.get("coverUrl");
-                                    if (object.containsKey("introduce"))
-                                        intro = ((String) Objects.requireNonNull(object.get("introduce"))).replace("　","");
-                                }
+                                    intro = ((String) Objects.requireNonNull(bookInfoBean.get("introduce"))).replace("　", "");
                                 cacheBook.setAuthor(author);
                                 cacheBook.setIntro(intro);
                                 cacheBook.setCoverUrl(coverUrl);
                                 cacheBook.setDetail(Objects.requireNonNull(author).length() != 0 && Objects.requireNonNull(coverUrl).length() != 0 && Objects.requireNonNull(intro).length() != 0);
+                                books.put(name, cacheBook);
+                            }
+                        }
+                    } else {
+                        HashMap<String, JSONObject> jsonMap = new HashMap<>();
+                        for (Object object : jsonArray) {
+                            JSONObject jsonBook = (JSONObject) JSONObject.toJSON(object);
+                            JSONObject bookInfoBean = (JSONObject) JSONObject.toJSON(jsonBook.get("bookInfoBean"));
+                            String name = Objects.requireNonNull(Objects.requireNonNull(bookInfoBean).get("name")).toString();
+                            jsonMap.put(name, (JSONObject) JSONObject.toJSON(jsonBook.get("bookInfoBean")));
+                        }
+                        for (File cacheDir : bookCache.listFiles()) {
+                            String cacheName = cacheDir.getName();
+                            if (!cacheName.contains("-")) continue;
+                            String bookName = cacheName.split("-")[0];
+                            int i = 0;
+                            for (File chapterCache : cacheDir.listFiles()) {
+                                String chapterCacheName = chapterCache.getName();
+                                if (!chapterCacheName.substring(chapterCacheName.lastIndexOf(".")).equals(".nb"))
+                                    continue;
+                                i++;
+                            }
+                            CacheBooks cacheBook = new CacheBooks();
+                            cacheBook.setName(bookName);
+                            cacheBook.setCacheNum(i);
+                            cacheBook.setCachePath(cacheDir.getAbsolutePath());
+                            cacheBook.setSourcePath(Objects.requireNonNull(source.get(bookName)).substring(5));
 
-                                if (books.get(bookName) != null) {
-                                    if (Objects.requireNonNull(books.get(bookName)).getCacheNum() < i) {
-                                        books.put(bookName, cacheBook);
-                                    }
-                                } else {
+                            // 修正缓存来源网址
+                            String coverUrl = "";
+                            String intro = "";
+                            String author = "";
+
+                            cacheName = cacheName.split("-")[1];
+                            cacheBook.setCacheInfo("缓存数量：" + i + "\n" + "来源：" + SourceUtil.trans(cacheName));
+                            if (jsonMap.containsKey(bookName)) {
+                                JSONObject object = jsonMap.get(bookName);
+                                assert object != null;
+                                if (object.containsKey("author"))
+                                    author = (String) object.get("author");
+                                if (object.containsKey("coverUrl"))
+                                    coverUrl = (String) object.get("coverUrl");
+                                if (object.containsKey("introduce"))
+                                    intro = ((String) Objects.requireNonNull(object.get("introduce"))).replace("　", "");
+                            }
+                            cacheBook.setAuthor(author);
+                            cacheBook.setIntro(intro);
+                            cacheBook.setCoverUrl(coverUrl);
+                            cacheBook.setDetail(Objects.requireNonNull(author).length() != 0 && Objects.requireNonNull(coverUrl).length() != 0 && Objects.requireNonNull(intro).length() != 0);
+
+                            if (books.get(bookName) != null) {
+                                if (Objects.requireNonNull(books.get(bookName)).getCacheNum() < i) {
                                     books.put(bookName, cacheBook);
                                 }
+                            } else {
+                                books.put(bookName, cacheBook);
                             }
+                        }
                     }
                     emitter.onComplete();
                 }
