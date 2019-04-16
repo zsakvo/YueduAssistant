@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/scan_success_card"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="9dp"
+    android:layout_marginTop="10dp"
+    android:layout_marginRight="9dp"
+    android:layout_marginBottom="10dp"
+    android:background="@drawable/ic_drawer_bg_selector"
+    android:foreground="?android:attr/selectableItemBackground"
+    app:cardBackgroundColor="@color/color_green300"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="0dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="16dp">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/card_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:src="@drawable/ic_done" />
+
+        <TextView
+            android:id="@+id/card_scan_success_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_toEndOf="@id/card_status"
+            android:text="@string/scan_succeed"
+            android:textColor="@color/google_grey800"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/card_scan_success_sub"
+            style="@style/CardPromptText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/card_scan_success_title"
+            android:layout_alignStart="@id/card_scan_success_title"
+            android:layout_marginTop="8dp"
+            android:text="@string/scan_result_text" />
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.drawerlayout.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <include layout="@layout/toolbar"/>
+        <include layout="@layout/main_content"/>
+    </FrameLayout>
+
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true"
+        android:maxWidth="320dp"
+        android:minWidth="320dp"
+        android:paddingTop="4dp"
+        app:headerLayout="@layout/product_lookup"
+        app:itemBackground="@drawable/ic_drawer_bg_selector"
+        app:itemHorizontalPadding="24dp"
+        app:itemIconPadding="16dp"
+        app:itemIconSize="20dp"
+        app:itemIconTint="@color/og_nav_item_icon_tint_color"
+        app:itemTextAppearance="@style/AppTheme.Subhead2"
+        app:itemTextColor="@color/og_nav_item_text_color"
+        app:menu="@menu/drawer">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_marginTop="85dp" />
+
+    </com.google.android.material.navigation.NavigationView>
+
+</androidx.drawerlayout.widget.DrawerLayout>

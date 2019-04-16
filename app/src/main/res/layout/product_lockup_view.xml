@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <TextView android:textSize="22sp"
+        android:textColor="?attr/colorAccent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/yuedu"
+        android:maxLines="1"
+        android:includeFontPadding="false"
+        android:importantForAccessibility="no"
+        android:fontFamily="@font/google_sans_medium"/>
+    <TextView android:textSize="22sp"
+        android:textColor="?attr/colorAccent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/space"
+        android:maxLines="1"
+        android:includeFontPadding="false"
+        android:importantForAccessibility="no"
+        android:fontFamily="@font/product_sans_regular"/>
+    <TextView android:textSize="22sp"
+        android:textColor="?android:attr/textColorSecondary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/assistant"
+        android:maxLines="1"
+        android:includeFontPadding="false"
+        android:importantForAccessibility="no"
+        android:fontFamily="@font/product_sans_regular"/>
+</merge>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView android:id="@+id/card_scanning"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="9dp"
+    android:layout_marginTop="10dp"
+    android:layout_marginRight="9dp"
+    android:layout_marginBottom="10dp"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:background="@drawable/ic_drawer_bg_selector"
+    app:cardBackgroundColor="@color/google_grey400"
+    app:cardElevation="0dp"
+    app:cardCornerRadius="8dp"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/card_scanning_status"
+            android:src="@drawable/ic_scanning"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/card_scanning_status_text"
+            android:layout_toEndOf="@id/card_scanning_status"
+            android:layout_marginStart="8dp"
+            android:text="@string/scanning_books_title"
+            android:textSize="16sp"
+            android:textColor="@color/google_grey800"/>
+
+        <TextView
+            android:id="@+id/card_scanning_text"
+            android:layout_alignStart="@id/card_scanning_status_text"
+            android:layout_below="@id/card_scanning_status_text"
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/scanning_books_text"
+            style="@style/CardPromptText"/>
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>

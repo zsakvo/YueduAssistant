@@ -1,0 +1,26 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@android:color/white</item>
+    </style>
+
+    <style name="AppTheme.Subhead2">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:fontFamily">@font/google_sans_medium</item>
+        <item name="android:letterSpacing">@null</item>
+        <item name="fontFamily">@font/google_sans_medium</item>
+    </style>
+
+    <style name="CardPromptText">
+        <item name="android:textColor">@color/google_grey800</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:lineSpacingExtra">6dp</item>
+    </style>
+
+</resources>

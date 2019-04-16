@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="24dp"
+    android:orientation="vertical">
+    <LinearLayout
+        android:gravity="center_vertical|center_horizontal|center|start"
+        android:layout_width="300dp"
+        android:layout_height="28dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginStart="20dp">
+        <include layout="@layout/product_lockup_view"/>
+    </LinearLayout>
+    <include layout="@layout/line_divider" />
+</LinearLayout>
