@@ -22,6 +22,7 @@ import io.reactivex.schedulers.Schedulers;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
@@ -312,7 +313,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 menuItem.setChecked(true);
                 break;
             case R.id.drawer_settings:
-                menuItem.setChecked(true);
+//                menuItem.setChecked(true);
+                startActivity(new Intent(MainActivity.this,SettingsActivity.class));
                 break;
             case R.id.drawer_help:
                 menuItem.setChecked(true);
