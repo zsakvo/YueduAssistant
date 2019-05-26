@@ -2,7 +2,6 @@ package cc.zsakvo.yueduassistant.view;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.core.view.GravityCompat;
@@ -12,7 +11,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import cc.zsakvo.yueduassistant.R;
 import cc.zsakvo.yueduassistant.adapter.CacheBookAdapter;
 import cc.zsakvo.yueduassistant.bean.CacheBook;
-import cc.zsakvo.yueduassistant.utils.SpUtils;
+import cc.zsakvo.yueduassistant.utils.SourceUtil;
+import cc.zsakvo.yueduassistant.utils.SpUtil;
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Observer;
@@ -20,18 +20,13 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Environment;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,7 +46,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Objects;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -60,7 +54,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private CardView permisson_card;
     private CardView scanning_card;
     private CardView prompt_card;
-    private String cacheDir;
+    private String cacheDirPath = "";
     private HashMap<String, String> source;
     private LinkedHashMap<String, CacheBook> books;
     private List<String> bookNames = new ArrayList<>();
@@ -159,10 +153,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     public void doBusiness(Context mContext) {
 
-        String defaultCacheDirPath = SpUtils.defaultCacheDirPath;
-        String configPath = SpUtils.configPath;
+        String configPath = SpUtil.configPath;
         //获取缓存路径
-        cacheDir = SpUtils.getCacheDirPath(this);
+        cacheDirPath = SpUtil.getCacheDirPath(this);
 
         mRecyclerView = $(R.id.cache_recyclerView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -214,38 +207,56 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private void scanBooks(String configPath) {
         Logger.d("开始扫描书籍");
         Observable.create((ObservableOnSubscribe<Void>) emitter -> {
+            //通过备份文件扫描书籍
+//            try {
+//                source = new HashMap<>();
+//                books = new LinkedHashMap<>();
+//                File configFile = new File(configPath);
+//                FileReader r = new FileReader(configFile);
+//                BufferedReader br = new BufferedReader(r);
+//                StringBuffer json = new StringBuffer();
+//                String s;
+//                while ((s = br.readLine()) != null) {
+//                    json = json.append(s).append("\n");
+//                }
+//                br.close();
+//                JSONArray jsonArray = JSON.parseArray(json.toString());
+//                if (jsonArray != null) {
+//                    for (Object object : jsonArray) {
+//                        JSONObject jsonBook = (JSONObject) JSONObject.toJSON(object);
+//                        JSONObject bookInfoBean = (JSONObject) JSONObject.toJSON(jsonBook.get("bookInfoBean"));
+//                        assert bookInfoBean != null;
+//                        String name = bookInfoBean.getString("name");
+//                        String source = bookInfoBean.getString("origin");
+//                        CacheBook cacheBook = new CacheBook();
+//                        cacheBook.setName(name);
+//                        cacheBook.setSource(source);
+//                        cacheBooks.add(cacheBook);
+//                    }
+//                    emitter.onComplete();
+//                } else {
+//                    emitter.onError(new Throwable("no bookcaches！"));
+//                }
+//            } catch (Exception e) {
+//                Logger.e(e.toString());
+//            }
+
             try {
-                source = new HashMap<>();
-                books = new LinkedHashMap<>();
-                File configFile = new File(configPath);
-                FileReader r = new FileReader(configFile);
-                BufferedReader br = new BufferedReader(r);
-                StringBuffer json = new StringBuffer();
-                String s;
-                while ((s = br.readLine()) != null) {
-                    json = json.append(s).append("\n");
+                File cacheDir = new File(cacheDirPath);
+                for (String cacheName:cacheDir.list()){
+                    if (!cacheName.contains("-")) break;
+                    CacheBook cacheBook = new CacheBook();
+                    String[] cacheInfo = cacheName.split(("-"));
+                    cacheBook.setName(cacheInfo[0]);
+                    cacheBook.setSource(SourceUtil.trans(cacheInfo[1]));
+                    Logger.d(cacheInfo[0]+"\t"+SourceUtil.trans(cacheInfo[1]));
+                    cacheBooks.add(cacheBook);
                 }
-                br.close();
-                JSONArray jsonArray = JSON.parseArray(json.toString());
-                if (jsonArray != null) {
-                    for (Object object : jsonArray) {
-                        JSONObject jsonBook = (JSONObject) JSONObject.toJSON(object);
-                        JSONObject bookInfoBean = (JSONObject) JSONObject.toJSON(jsonBook.get("bookInfoBean"));
-                        assert bookInfoBean != null;
-                        String name = bookInfoBean.getString("name");
-                        String source = bookInfoBean.getString("origin");
-                        CacheBook cacheBook = new CacheBook();
-                        cacheBook.setName(name);
-                        cacheBook.setSource(source);
-                        cacheBooks.add(cacheBook);
-                    }
-                    emitter.onComplete();
-                } else {
-                    emitter.onError(new Throwable("no bookcaches！"));
-                }
-            } catch (Exception e) {
+                emitter.onComplete();
+            }catch (Exception e){
                 Logger.e(e.toString());
             }
+
         }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<Void>() {

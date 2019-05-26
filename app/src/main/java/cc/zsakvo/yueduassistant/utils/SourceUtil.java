@@ -4,6 +4,9 @@ public class SourceUtil {
     public static String trans(String cacheName) {
         String sourceName;
         switch (cacheName) {
+            case "httpsapizhuishushenqicom":
+                sourceName = "追书神器";
+                break;
             case "httphost810174988s324pppfcomcn":
                 sourceName = "追书716";
                 break;
