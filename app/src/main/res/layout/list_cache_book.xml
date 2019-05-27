@@ -43,7 +43,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/scan_result_text"
+                android:text="@string/scan_book_source"
                 android:textColor="?android:attr/textColorPrimary"
                 style="@style/CardPromptText"/>
 

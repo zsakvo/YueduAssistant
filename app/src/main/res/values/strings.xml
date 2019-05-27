@@ -8,7 +8,7 @@
     <string name="drawer_menu_extract">缓存提取</string>
     <string name="drawer_menu_about">关于与帮助</string>
     <string name="drawer_menu_settings">程序设置</string>
-    <string name="scanning_books_text">正在扫描书籍，请耐心等待……</string>
+    <string name="scanning_books_text">正在执行扫描任务，请耐心等待……</string>
     <string name="scanning_books_title">正在扫描</string>
     <string name="permisson_subscribe_text">读取以及导出缓存需要读写存储的权限 点击本卡片后确认授权方可继续使用本软件</string>
     <string name="permisson_subscribe_title">需要权限</string>
@@ -16,4 +16,7 @@
     <string name="scan_failed">扫描失败</string>
     <string name="scan_failed_sub">没有扫描到符合的缓存，请检查是否修改了「阅读」的默认缓存路径，如果是，请点击此卡片跳转设置；若不是，请长按获取 Log 信息反馈给开发者</string>
     <string name="scan_result_text">当前模式：%1$s \n扫描结果：%2$d本</string>
+    <string name="scan_book_source">来源：</string>
+    <string name="book_info_name">这是一本小说</string>
+    <string name="book_info_chapterNum">扫描完毕，共%1d章</string>
 </resources>

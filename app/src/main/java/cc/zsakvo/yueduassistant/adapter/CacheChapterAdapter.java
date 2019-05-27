@@ -1,0 +1,32 @@
+package cc.zsakvo.yueduassistant.adapter;
+
+import android.content.Context;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+
+import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chad.library.adapter.base.BaseViewHolder;
+import com.orhanobut.logger.Logger;
+
+import java.util.List;
+
+import cc.zsakvo.yueduassistant.R;
+import cc.zsakvo.yueduassistant.bean.CacheChapter;
+
+public class CacheChapterAdapter extends BaseQuickAdapter<CacheChapter, BaseViewHolder> {
+
+    private List<Boolean> flag;
+
+    public CacheChapterAdapter(int layoutResId, List<CacheChapter> data,List<Boolean> flag) {
+        super(layoutResId, data);
+        this.flag = flag;
+    }
+
+    @Override
+    protected void convert(BaseViewHolder helper, CacheChapter item) {
+        CheckBox checkBox = helper.getView(R.id.cache_chapter_check);
+        checkBox.setText(item.getName());
+        checkBox.setChecked(true);
+        checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> flag.set(helper.getLayoutPosition(),!flag.get(helper.getLayoutPosition())));
+    }
+}

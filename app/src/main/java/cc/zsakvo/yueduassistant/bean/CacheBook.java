@@ -8,6 +8,15 @@ public class CacheBook implements Serializable {
 
     private String name;
     private String source;
+    private String info;
+
+    public String getInfo() {
+        return info;
+    }
+
+    public void setInfo(String info) {
+        this.info = info;
+    }
 
     public String getSource() {
         return source;

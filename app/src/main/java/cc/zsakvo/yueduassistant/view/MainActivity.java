@@ -163,12 +163,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         adapter.openLoadAnimation();
 
-        adapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                Logger.d("onItemClick: ");
-                Toast.makeText(MainActivity.this, "onItemClick" + position, Toast.LENGTH_SHORT).show();
-            }
+        adapter.setOnItemClickListener((adapter, view, position) -> {
+            Intent intent = new Intent(MainActivity.this,BookDetailActivity.class);
+            intent.putExtra("info",cacheBooks.get(position).getInfo());
+            startActivity(intent);
         });
 
         //检查权限
@@ -182,23 +180,20 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         } else {
             View top = getLayoutInflater().inflate(R.layout.request_permission_card, (ViewGroup) mRecyclerView.getParent(), false);
             adapter.addHeaderView(top);
-            adapter.getHeaderLayout().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    adapter.removeAllHeaderView();
-                    AndPermission.with(MainActivity.this)
-                            .runtime()
-                            .permission(Permission.Group.STORAGE)
-                            .onGranted(permissions -> {
-                                adapter.getHeaderLayout().setOnClickListener(null);
-                                adapter.addHeaderView(getHeaderView(R.layout.scanning_card));
-                                scanBooks(configPath);
-                            })
-                            .onDenied(permissions -> {
-                                adapter.addHeaderView(getHeaderView(R.layout.request_permission_card));
-                            })
-                            .start();
-                }
+            adapter.getHeaderLayout().setOnClickListener(v -> {
+                adapter.removeAllHeaderView();
+                AndPermission.with(MainActivity.this)
+                        .runtime()
+                        .permission(Permission.Group.STORAGE)
+                        .onGranted(permissions -> {
+                            adapter.getHeaderLayout().setOnClickListener(null);
+                            adapter.addHeaderView(getHeaderView(R.layout.scanning_card));
+                            scanBooks(configPath);
+                        })
+                        .onDenied(permissions -> {
+                            adapter.addHeaderView(getHeaderView(R.layout.request_permission_card));
+                        })
+                        .start();
             });
         }
         mRecyclerView.setAdapter(adapter);
@@ -246,6 +241,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 for (String cacheName:cacheDir.list()){
                     if (!cacheName.contains("-")) break;
                     CacheBook cacheBook = new CacheBook();
+                    cacheBook.setInfo(cacheName);
                     String[] cacheInfo = cacheName.split(("-"));
                     cacheBook.setName(cacheInfo[0]);
                     cacheBook.setSource(SourceUtil.trans(cacheInfo[1]));
