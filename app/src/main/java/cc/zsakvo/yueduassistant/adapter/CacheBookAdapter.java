@@ -26,7 +26,7 @@ public class CacheBookAdapter extends BaseQuickAdapter<CacheBook, BaseViewHolder
     @Override
     protected void convert(BaseViewHolder helper, CacheBook item) {
         helper.setText(R.id.card_cache_book_name,"《"+item.getName()+"》");
-        helper.setText(R.id.card_cache_book_source,"\t来源："+item.getSource());
+        helper.setText(R.id.card_cache_book_source,"\t共"+item.getChapterNum()+"章\t\t\t来源："+item.getSource());
     }
 }
 

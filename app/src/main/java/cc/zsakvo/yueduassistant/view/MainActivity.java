@@ -202,40 +202,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private void scanBooks(String configPath) {
         Logger.d("开始扫描书籍");
         Observable.create((ObservableOnSubscribe<Void>) emitter -> {
-            //通过备份文件扫描书籍
-//            try {
-//                source = new HashMap<>();
-//                books = new LinkedHashMap<>();
-//                File configFile = new File(configPath);
-//                FileReader r = new FileReader(configFile);
-//                BufferedReader br = new BufferedReader(r);
-//                StringBuffer json = new StringBuffer();
-//                String s;
-//                while ((s = br.readLine()) != null) {
-//                    json = json.append(s).append("\n");
-//                }
-//                br.close();
-//                JSONArray jsonArray = JSON.parseArray(json.toString());
-//                if (jsonArray != null) {
-//                    for (Object object : jsonArray) {
-//                        JSONObject jsonBook = (JSONObject) JSONObject.toJSON(object);
-//                        JSONObject bookInfoBean = (JSONObject) JSONObject.toJSON(jsonBook.get("bookInfoBean"));
-//                        assert bookInfoBean != null;
-//                        String name = bookInfoBean.getString("name");
-//                        String source = bookInfoBean.getString("origin");
-//                        CacheBook cacheBook = new CacheBook();
-//                        cacheBook.setName(name);
-//                        cacheBook.setSource(source);
-//                        cacheBooks.add(cacheBook);
-//                    }
-//                    emitter.onComplete();
-//                } else {
-//                    emitter.onError(new Throwable("no bookcaches！"));
-//                }
-//            } catch (Exception e) {
-//                Logger.e(e.toString());
-//            }
-
             try {
                 File cacheDir = new File(cacheDirPath);
                 for (String cacheName:cacheDir.list()){
@@ -245,7 +211,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     String[] cacheInfo = cacheName.split(("-"));
                     cacheBook.setName(cacheInfo[0]);
                     cacheBook.setSource(SourceUtil.trans(cacheInfo[1]));
-                    Logger.d(cacheInfo[0]+"\t"+SourceUtil.trans(cacheInfo[1]));
+                    int chapterNum = new File(cacheDirPath+"/"+cacheName+"/").list().length;
+                    cacheBook.setChapterNum(chapterNum);
                     cacheBooks.add(cacheBook);
                 }
                 emitter.onComplete();
@@ -287,7 +254,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     private void showBooks() {
         int booksNum;
-        String type = "备份扫描";
+        String type = "基础功能";
         if (cacheBooks == null || cacheBooks.size() == 0) {
             Logger.e("未扫描到书籍");
         } else {

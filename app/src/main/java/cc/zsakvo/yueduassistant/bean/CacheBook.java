@@ -8,7 +8,17 @@ public class CacheBook implements Serializable {
 
     private String name;
     private String source;
+    private int chapterNum;
     private String info;
+
+    public int getChapterNum() {
+        return chapterNum;
+    }
+
+    public void setChapterNum(int chapterNum) {
+        this.chapterNum = chapterNum;
+    }
+
 
     public String getInfo() {
         return info;
