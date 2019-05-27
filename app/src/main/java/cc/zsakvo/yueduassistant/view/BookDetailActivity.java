@@ -169,6 +169,7 @@ public class BookDetailActivity extends BaseActivity implements ExportListener {
                 emitter.onComplete();
             } catch (Exception e) {
                 Logger.e(e.toString());
+                fab.setVisibility(View.GONE);
                 View topView = getLayoutInflater().inflate(R.layout.scan_chapters_failed_card, new LinearLayout(BookDetailActivity.this));
                 bookInfoCard.removeAllViews();
                 bookInfoCard.addView(topView);
@@ -190,6 +191,7 @@ public class BookDetailActivity extends BaseActivity implements ExportListener {
                     @Override
                     public void onError(Throwable e) {
                         Logger.e(e.toString());
+                        fab.setVisibility(View.GONE);
                         View topView = getLayoutInflater().inflate(R.layout.scan_chapters_failed_card,new LinearLayout(BookDetailActivity.this));
                         bookInfoCard.removeAllViews();
                         bookInfoCard.addView(topView);
