@@ -40,7 +40,6 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Logger.addLogAdapter(new AndroidLogAdapter());
-        Logger.d("BaseActivity-->onCreate()");
         Bundle bundle = getIntent().getExtras();
         initParms(bundle);
         View mView = bindView();

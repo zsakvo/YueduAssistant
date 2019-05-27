@@ -50,6 +50,9 @@ dependencies {
     implementation 'moe.shizuku.preference:preference:3.0.0'
     implementation 'moe.shizuku.preference:preference-simplemenu:3.0.0'
 
+    //fab
+    implementation "com.leinardi.android:speed-dial:2.0.1"
+
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0-beta01'

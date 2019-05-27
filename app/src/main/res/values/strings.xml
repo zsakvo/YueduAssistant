@@ -19,4 +19,5 @@
     <string name="scan_book_source">来源：</string>
     <string name="book_info_name">这是一本小说</string>
     <string name="book_info_chapterNum">扫描完毕，共%1d章</string>
+    <string name="exporting">正在导出 %1$d/%2$d </string>
 </resources>

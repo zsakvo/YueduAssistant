@@ -15,11 +15,11 @@ import cc.zsakvo.yueduassistant.bean.CacheChapter;
 
 public class CacheChapterAdapter extends BaseQuickAdapter<CacheChapter, BaseViewHolder> {
 
-    private List<Boolean> flag;
+    private List<Boolean> flags;
 
-    public CacheChapterAdapter(int layoutResId, List<CacheChapter> data,List<Boolean> flag) {
+    public CacheChapterAdapter(int layoutResId, List<CacheChapter> data,List<Boolean> flags) {
         super(layoutResId, data);
-        this.flag = flag;
+        this.flags = flags;
     }
 
     @Override
@@ -27,6 +27,6 @@ public class CacheChapterAdapter extends BaseQuickAdapter<CacheChapter, BaseView
         CheckBox checkBox = helper.getView(R.id.cache_chapter_check);
         checkBox.setText(item.getName());
         checkBox.setChecked(true);
-        checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> flag.set(helper.getLayoutPosition(),!flag.get(helper.getLayoutPosition())));
+        checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> flags.set(helper.getLayoutPosition(),!flags.get(helper.getLayoutPosition())));
     }
 }
