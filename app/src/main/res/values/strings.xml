@@ -15,6 +15,7 @@
     <string name="scan_succeed">扫描成功</string>
     <string name="scan_failed">扫描失败</string>
     <string name="scan_failed_sub">没有扫描到符合的缓存，请检查是否修改了「阅读」的默认缓存路径，如果是，请点击此卡片跳转设置；若不是，请长按获取 Log 信息反馈给开发者</string>
+    <string name="scan_chapters_failed">没有扫描到当前书籍的章节内容</string>
     <string name="scan_result_text">当前模式：%1$s \n扫描结果：%2$d本</string>
     <string name="scan_book_source">来源：</string>
     <string name="book_info_name">这是一本小说</string>

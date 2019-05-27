@@ -13,6 +13,7 @@ import cc.zsakvo.yueduassistant.adapter.CacheChapterAdapter;
 import cc.zsakvo.yueduassistant.bean.CacheBook;
 import cc.zsakvo.yueduassistant.bean.CacheChapter;
 import cc.zsakvo.yueduassistant.bean.ExportBook;
+import cc.zsakvo.yueduassistant.listener.ExportListener;
 import cc.zsakvo.yueduassistant.utils.BookUtil;
 import cc.zsakvo.yueduassistant.utils.SourceUtil;
 import cc.zsakvo.yueduassistant.utils.SpUtil;
@@ -44,7 +45,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class BookDetailActivity extends BaseActivity {
+public class BookDetailActivity extends BaseActivity implements ExportListener {
 
     List<CacheChapter> cacheChapters = new ArrayList<>();
     List<Boolean> chapterFlags = new ArrayList<>();
@@ -53,14 +54,15 @@ public class BookDetailActivity extends BaseActivity {
     private CacheChapterAdapter adapter;
     private String bookName;
     private int chapterNum;
-    private TextView bookInfoName,bookInfoNum;
+    private TextView bookInfoName, bookInfoNum;
     private FrameLayout bookInfoCard;
     private RecyclerView bookChapters;
     private SpeedDialView fab;
     private CoordinatorLayout coordinatorLayout;
 
     @Override
-    public void widgetClick(View v) { }
+    public void widgetClick(View v) {
+    }
 
     @Override
     public void initParms(Bundle parms) {
@@ -101,7 +103,7 @@ public class BookDetailActivity extends BaseActivity {
 
         bookChapters = $(R.id.book_chapters);
         bookChapters.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new CacheChapterAdapter(R.layout.list_cache_chapter, cacheChapters,chapterFlags);
+        adapter = new CacheChapterAdapter(R.layout.list_cache_chapter, cacheChapters, chapterFlags);
         adapter.openLoadAnimation();
         adapter.setOnItemClickListener((adapter, itemView, position) -> {
             Logger.d(chapterFlags.get(position));
@@ -127,9 +129,9 @@ public class BookDetailActivity extends BaseActivity {
                         .cacheChapters(cacheChapters)
                         .flags(chapterFlags)
                         .outputDirPath(SpUtil.getOutputPath(BookDetailActivity.this))
-                        .fileName(bookName+".txt")
+                        .fileName(bookName + ".txt")
                         .build();
-                new BookUtil(exportBook,coordinatorLayout).extractTXT();
+                new BookUtil(exportBook, coordinatorLayout, BookDetailActivity.this).extractTXT();
                 return false;
             }
 
@@ -146,6 +148,9 @@ public class BookDetailActivity extends BaseActivity {
     }
 
     private void scanChapters(String path) {
+        cacheChapters.clear();
+        chapterFlags.clear();
+        adapter.notifyDataSetChanged();
         Observable.create((ObservableOnSubscribe<Void>) emitter -> {
             try {
                 File bookCache = new File(path);
@@ -164,6 +169,9 @@ public class BookDetailActivity extends BaseActivity {
                 emitter.onComplete();
             } catch (Exception e) {
                 Logger.e(e.toString());
+                View topView = getLayoutInflater().inflate(R.layout.scan_chapters_failed_card, new LinearLayout(BookDetailActivity.this));
+                bookInfoCard.removeAllViews();
+                bookInfoCard.addView(topView);
             }
 
         }).subscribeOn(Schedulers.io())
@@ -171,7 +179,8 @@ public class BookDetailActivity extends BaseActivity {
                 .subscribe(new Observer<Void>() {
 
                     @Override
-                    public void onSubscribe(Disposable d) { }
+                    public void onSubscribe(Disposable d) {
+                    }
 
                     @Override
                     public void onNext(Void v) {
@@ -181,19 +190,23 @@ public class BookDetailActivity extends BaseActivity {
                     @Override
                     public void onError(Throwable e) {
                         Logger.e(e.toString());
+                        View topView = getLayoutInflater().inflate(R.layout.scan_chapters_failed_card,new LinearLayout(BookDetailActivity.this));
+                        bookInfoCard.removeAllViews();
+                        bookInfoCard.addView(topView);
                     }
 
                     @Override
                     public void onComplete() {
-                        View topView = getLayoutInflater().inflate(R.layout.book_info_card,new LinearLayout(BookDetailActivity.this));
+                        adapter.notifyDataSetChanged();
+                        View topView = getLayoutInflater().inflate(R.layout.book_info_card, new LinearLayout(BookDetailActivity.this));
                         bookInfoName = topView.findViewById(R.id.card_book_info_name);
                         bookInfoNum = topView.findViewById(R.id.card_book_info_num);
                         bookInfoCard.removeAllViews();
                         bookInfoCard.addView(topView);
                         chapterNum = cacheChapters.size();
                         bookInfoName.setText(bookName);
-                        bookInfoNum.setText(String.format(getResources().getString(R.string.book_info_chapterNum),chapterNum));
-                        adapter.notifyDataSetChanged();
+                        bookInfoNum.setText(String.format(getResources().getString(R.string.book_info_chapterNum), chapterNum));
+
                     }
                 });
     }
@@ -204,11 +217,15 @@ public class BookDetailActivity extends BaseActivity {
         bookName = info.split("-")[0];
         bookCachePath = SpUtil.getCacheDirPath(this) + "/" + info;
         outputPath = SpUtil.getOutputPath(this) + "/" + bookName + ".txt";
-        scanChapters(bookCachePath);
     }
 
     @Override
     public void doOnStart() {
+        scanChapters(bookCachePath);
+    }
 
+    @Override
+    public void exportFinish() {
+        scanChapters(bookCachePath);
     }
 }

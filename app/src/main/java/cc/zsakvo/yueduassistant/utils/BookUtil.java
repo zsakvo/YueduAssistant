@@ -28,6 +28,7 @@ import androidx.appcompat.app.AlertDialog;
 import cc.zsakvo.yueduassistant.R;
 import cc.zsakvo.yueduassistant.bean.CacheChapter;
 import cc.zsakvo.yueduassistant.bean.ExportBook;
+import cc.zsakvo.yueduassistant.listener.ExportListener;
 import cc.zsakvo.yueduassistant.view.BookDetailActivity;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -49,9 +50,11 @@ public class BookUtil {
     private Context mContext;
     private AlertDialog progressDialog;
     private TextView tv_progress;
+    private ExportListener el;
 
-    public BookUtil(ExportBook exportBook,View view){
+    public BookUtil(ExportBook exportBook,View view,ExportListener el){
         this.v = view;
+        this.el = el;
         this.cacheChapters = exportBook.getCacheChapters();
         this.flags = exportBook.getFlags();
         this.bookPath = exportBook.getBookPath();
@@ -145,7 +148,26 @@ public class BookUtil {
                         Logger.d("完毕！");
                         progressDialog.cancel();
                         SnackbarUtil.build(mContext, v, "导出成功", Snackbar.LENGTH_SHORT).show();
+                        if(SpUtil.getAutoDel(mContext)){
+                            deleteDirectory(bookPath);
+                        }
+                        el.exportFinish();
                     }
                 });
+    }
+
+    private void deleteDirectory(String path) {
+        File file = new File(path);
+        File files[] = file.listFiles();
+        if (files != null) {
+            for (File file1 : files) {
+                if (file1.isFile()) {
+                    file1.delete();
+                } else if (file1.isDirectory()) {
+                    deleteDirectory(file1.getAbsolutePath());
+                }
+            }
+            file.delete();
+        }
     }
 }

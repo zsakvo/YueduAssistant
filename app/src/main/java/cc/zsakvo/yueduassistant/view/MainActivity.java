@@ -28,20 +28,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.google.android.material.navigation.NavigationView;
 import com.orhanobut.logger.Logger;
 import com.yanzhenjie.permission.AndPermission;
 import com.yanzhenjie.permission.runtime.Permission;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -193,7 +186,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     public void onError(Throwable e) {
                         Logger.e(e.toString());
                         adapter.removeAllHeaderView();
-                        adapter.addHeaderView(getHeaderView(R.layout.scan_failed_card));
+                        adapter.addHeaderView(getHeaderView(R.layout.scan_books_failed_card));
                         showBooks();
                     }
 
@@ -212,7 +205,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         String type = "基础功能";
         if (cacheBooks == null || cacheBooks.size() == 0) {
             adapter.removeAllHeaderView();
-            adapter.addHeaderView(getHeaderView(R.layout.scan_failed_card));
+            adapter.addHeaderView(getHeaderView(R.layout.scan_books_failed_card));
             Logger.e("未扫描到书籍");
         } else {
             booksNum = cacheBooks.size();

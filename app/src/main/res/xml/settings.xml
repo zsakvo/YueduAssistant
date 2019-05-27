@@ -43,19 +43,5 @@
 
     </PreferenceCategory>
 
-    <!--<PreferenceCategory android:title="关于">-->
-        <!--<Preference-->
-            <!--android:key="author_id"-->
-            <!--android:summary="沚水 @酷安"-->
-            <!--android:title="作者"/>-->
-        <!--<Preference-->
-            <!--android:key="project_git"-->
-            <!--android:summary="https://github.com/zsakvo"-->
-            <!--android:title="项目地址"/>-->
-        <!--<Preference-->
-            <!--android:key="libs"-->
-            <!--android:summary="致谢项目中使用到的开源库"-->
-            <!--android:title="开源相关"/>-->
-    <!--</PreferenceCategory>-->
 
 </PreferenceScreen>

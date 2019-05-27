@@ -31,4 +31,8 @@ public class SpUtil {
     public static int getScanType(Context context){
         return context.getSharedPreferences("settings", MODE_PRIVATE).getInt("scan_type", 0);
     }
+
+    public static boolean getAutoDel(Context context){
+        return context.getSharedPreferences("settings", MODE_PRIVATE).getBoolean("auto_del",false);
+    }
 }
