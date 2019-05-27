@@ -136,10 +136,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     public void doBusiness(Context mContext) {
 
-        String configPath = SpUtil.configPath;
-        //获取缓存路径
-        cacheDirPath = SpUtil.getCacheDirPath(this);
-
         mRecyclerView = $(R.id.cache_recyclerView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new CacheBookAdapter(R.layout.list_cache_book, cacheBooks);
@@ -151,39 +147,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             intent.putExtra("info",cacheBooks.get(position).getInfo());
             startActivity(intent);
         });
-
-        //检查权限
-        String readPermission = "android.permission.READ_EXTERNAL_STORAGE";
-        String writePermission = "android.permission.WRITE_EXTERNAL_STORAGE";
-        int rperm = checkCallingOrSelfPermission(readPermission);
-        int wperm = checkCallingOrSelfPermission(writePermission);
-        if (rperm == PackageManager.PERMISSION_GRANTED && wperm == PackageManager.PERMISSION_GRANTED) {
-            adapter.addHeaderView(getHeaderView(R.layout.scanning_card));
-            scanBooks(configPath);
-        } else {
-            View top = getLayoutInflater().inflate(R.layout.request_permission_card, (ViewGroup) mRecyclerView.getParent(), false);
-            adapter.addHeaderView(top);
-            adapter.getHeaderLayout().setOnClickListener(v -> {
-                adapter.removeAllHeaderView();
-                AndPermission.with(MainActivity.this)
-                        .runtime()
-                        .permission(Permission.Group.STORAGE)
-                        .onGranted(permissions -> {
-                            adapter.getHeaderLayout().setOnClickListener(null);
-                            adapter.addHeaderView(getHeaderView(R.layout.scanning_card));
-                            scanBooks(configPath);
-                        })
-                        .onDenied(permissions -> {
-                            adapter.addHeaderView(getHeaderView(R.layout.request_permission_card));
-                        })
-                        .start();
-            });
-        }
         mRecyclerView.setAdapter(adapter);
+
+
     }
 
-    private void scanBooks(String configPath) {
+    private void scanBooks() {
         Logger.d("开始扫描书籍");
+        cacheBooks.clear();
+        adapter.notifyDataSetChanged();
         Observable.create((ObservableOnSubscribe<Void>) emitter -> {
             try {
                 File cacheDir = new File(cacheDirPath);
@@ -239,10 +211,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         int booksNum;
         String type = "基础功能";
         if (cacheBooks == null || cacheBooks.size() == 0) {
+            adapter.removeAllHeaderView();
+            adapter.addHeaderView(getHeaderView(R.layout.scan_failed_card));
             Logger.e("未扫描到书籍");
         } else {
             booksNum = cacheBooks.size();
-            TextView tv_scan_success = (TextView) adapter.getHeaderLayout().findViewById(R.id.card_scan_success_sub);
+            TextView tv_scan_success =  adapter.getHeaderLayout().findViewById(R.id.card_scan_success_sub);
             tv_scan_success.setText(String.format(getResources().getString(R.string.scan_result_text), type, booksNum));
         }
         adapter.notifyDataSetChanged();
@@ -251,7 +225,33 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Override
     public void doOnStart() {
-
+        //获取缓存路径
+        cacheDirPath = SpUtil.getCacheDirPath(this);
+        //检查权限
+        String readPermission = "android.permission.READ_EXTERNAL_STORAGE";
+        String writePermission = "android.permission.WRITE_EXTERNAL_STORAGE";
+        int rperm = checkCallingOrSelfPermission(readPermission);
+        int wperm = checkCallingOrSelfPermission(writePermission);
+        if (rperm == PackageManager.PERMISSION_GRANTED && wperm == PackageManager.PERMISSION_GRANTED) {
+            adapter.addHeaderView(getHeaderView(R.layout.scanning_card));
+            scanBooks();
+        } else {
+            View top = getLayoutInflater().inflate(R.layout.request_permission_card, (ViewGroup) mRecyclerView.getParent(), false);
+            adapter.addHeaderView(top);
+            adapter.getHeaderLayout().setOnClickListener(v -> {
+                adapter.removeAllHeaderView();
+                AndPermission.with(MainActivity.this)
+                        .runtime()
+                        .permission(Permission.Group.STORAGE)
+                        .onGranted(permissions -> {
+                            adapter.getHeaderLayout().setOnClickListener(null);
+                            adapter.addHeaderView(getHeaderView(R.layout.scanning_card));
+                            scanBooks();
+                        })
+                        .onDenied(permissions -> adapter.addHeaderView(getHeaderView(R.layout.request_permission_card)))
+                        .start();
+            });
+        }
     }
 
     @Override
