@@ -69,24 +69,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Override
     public void widgetClick(View v) {
-        switch (v.getId()) {
-//            case R.id.card_permission:
-//
-//                //开始授权
-//                AndPermission.with(this)
-//                        .runtime()
-//                        .permission(Permission.Group.STORAGE)
-//                        .onGranted(permissions -> {
-//                            permisson_card.setVisibility(View.GONE);
-//                            scanning_card.setVisibility(View.VISIBLE);
-//                        })
-//                        .onDenied(permissions -> {
-//                            permisson_card.setVisibility(View.VISIBLE);
-//                            scanning_card.setVisibility(View.GONE);
-//                        })
-//                        .start();
-//                break;
-        }
+        switch (v.getId()) { }
     }
 
     @Override
@@ -287,11 +270,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 menuItem.setChecked(true);
                 break;
             case R.id.drawer_settings:
-//                menuItem.setChecked(true);
                 startActivity(new Intent(MainActivity.this,SettingsActivity.class));
                 break;
             case R.id.drawer_help:
-                menuItem.setChecked(true);
+                startActivity(new Intent(MainActivity.this,AboutActivity.class));
                 break;
         }
         drawerLayout.closeDrawer(GravityCompat.START);

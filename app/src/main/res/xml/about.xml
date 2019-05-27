@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="关于程序">
+        <Preference
+            android:key="author_id"
+            android:summary="沚水 @酷安"
+            android:title="作者" />
+        <Preference
+            android:key="project_git"
+            android:summary="https://github.com/zsakvo"
+            android:title="项目地址" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="开源信息">
+        <Preference
+            android:key="andPermission"
+            android:summary="Permission manager for Android"
+            android:title="AndPermission"/>
+        <Preference
+            android:key="materialPreference"
+            android:summary="Based on support-preference from Android Support Library, adding a lot of exciting features."
+            android:title="MaterialPreference" />
+        <Preference
+            android:key="simpleMenu"
+            android:summary="An extend of MaterialPreference, adding a version of ListPreference that use Simple Menus from Material Design as drop down."
+            android:title="MaterialPreference SimpleMenu " />
+        <Preference
+            android:key="fastJson"
+            android:summary="Fastjson is a JSON processor (JSON parser + JSON generator) written in Java"
+            android:title="Fastjson" />
+        <Preference
+            android:key="rxAndroid"
+            android:summary="This module adds the minimum classes to RxJava that make writing reactive components in Android applications easy and hassle-free. More specifically, it provides a Scheduler that schedules on the main thread or any given Looper."
+            android:title="RxAndroid" />
+        <Preference
+            android:key="rxJava"
+            android:summary="RxJava is a Java VM implementation of Reactive Extensions: a library for composing asynchronous and event-based programs by using observable sequences."
+            android:title="RxJava" />
+        <Preference
+            android:key="fab"
+            android:summary="A Floating Action Button Speed Dial implementation for Android that follows the Material Design specification."
+            android:title="FloatingActionButtonSpeedDial" />
+        <Preference
+            android:key="zt-zip"
+            android:summary="The project was started and coded by Rein Raudjärv when he needed to process a large set of large ZIP archives for LiveRebel internals. Soon after we started using the utility in other projects because of the ease of use and it just worked."
+            android:title="zt-zip" />
+        <Preference
+            android:key="logger"
+            android:summary="Simple, pretty and powerful logger for android."
+            android:title="Logger" />
+        <Preference
+            android:key="brvah"
+            android:summary="Powerful and flexible RecyclerAdapter."
+            android:title="BRVAH" />
+    </PreferenceCategory>
+</PreferenceScreen>

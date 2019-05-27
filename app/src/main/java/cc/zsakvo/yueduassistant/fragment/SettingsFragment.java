@@ -37,24 +37,24 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
         cache_path = findPreference("cache_path");
         cache_path.setOnPreferenceClickListener(this);
 
-        backup_path = findPreference("backup_path");
-        backup_path.setOnPreferenceClickListener(this);
+//        backup_path = findPreference("backup_path");
+//        backup_path.setOnPreferenceClickListener(this);
 
         output_path = findPreference("output_path");
         output_path.setOnPreferenceClickListener(this);
 
         cache_path.setSummary(SpUtil.getCacheDirPath(Objects.requireNonNull(getContext())));
-        backup_path.setSummary(SpUtil.getBackupPath(Objects.requireNonNull(getContext())));
+//        backup_path.setSummary(SpUtil.getBackupPath(Objects.requireNonNull(getContext())));
         output_path.setSummary(SpUtil.getOutputPath(Objects.requireNonNull(getContext())));
 
-        Preference author_id = findPreference("author_id");
-        author_id.setOnPreferenceClickListener(this);
-
-        Preference project_git = findPreference("project_git");
-        project_git.setOnPreferenceClickListener(this);
-
-        Preference libs = findPreference("libs");
-        libs.setOnPreferenceClickListener(this);
+//        Preference author_id = findPreference("author_id");
+//        author_id.setOnPreferenceClickListener(this);
+//
+//        Preference project_git = findPreference("project_git");
+//        project_git.setOnPreferenceClickListener(this);
+//
+//        Preference libs = findPreference("libs");
+//        libs.setOnPreferenceClickListener(this);
     }
 
     @Override
