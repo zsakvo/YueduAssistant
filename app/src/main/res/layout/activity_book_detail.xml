@@ -19,6 +19,7 @@
         android:id="@+id/book_chapters"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:scrollbars="vertical"
         android:layout_below="@id/book_info_card"/>
 
     <com.leinardi.android.speeddial.SpeedDialOverlayLayout
