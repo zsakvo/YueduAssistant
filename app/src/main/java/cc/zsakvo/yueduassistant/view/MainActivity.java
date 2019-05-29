@@ -62,7 +62,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Override
     public void widgetClick(View v) {
-        switch (v.getId()) { }
+        switch (v.getId()){
+            case -1:
+                startActivity(new Intent(MainActivity.this,SettingsActivity.class));
+                break;
+        }
     }
 
     @Override
@@ -206,6 +210,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (cacheBooks == null || cacheBooks.size() == 0) {
             adapter.removeAllHeaderView();
             adapter.addHeaderView(getHeaderView(R.layout.scan_books_failed_card));
+            adapter.getHeaderLayout().setOnClickListener(this);
             Logger.e("未扫描到书籍");
         } else {
             booksNum = cacheBooks.size();
