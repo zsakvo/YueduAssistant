@@ -216,6 +216,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             booksNum = cacheBooks.size();
             TextView tv_scan_success =  adapter.getHeaderLayout().findViewById(R.id.card_scan_success_sub);
             tv_scan_success.setText(String.format(getResources().getString(R.string.scan_result_text), type, booksNum));
+            adapter.getHeaderLayout().setOnClickListener(null);
         }
         adapter.notifyDataSetChanged();
     }
