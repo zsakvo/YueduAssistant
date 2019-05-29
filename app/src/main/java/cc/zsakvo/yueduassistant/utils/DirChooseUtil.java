@@ -128,7 +128,7 @@ public class DirChooseUtil extends DialogFragment implements android.content.Dia
         try {
             File currentDir = new File(dir);
 
-            if (!dir.equals(rootPath))
+            if (!dir.equals(Environment.getExternalStorageDirectory().getAbsolutePath()))
                 dirs.add("..");
 
             if (!currentDir.exists() || !currentDir.isDirectory())
