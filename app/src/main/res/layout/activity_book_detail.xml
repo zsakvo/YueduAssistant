@@ -15,12 +15,14 @@
         <include layout="@layout/scanning_card"/>
     </FrameLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
+    <com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView
         android:id="@+id/book_chapters"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scrollbars="vertical"
-        android:layout_below="@id/book_info_card"/>
+        android:layout_below="@id/book_info_card"
+        app:fastScrollThumbColor="@color/colorAccent"
+        app:fastScrollTrackColor="#00000000"
+        app:fastScrollAutoHideDelay="500"/>
 
     <com.leinardi.android.speeddial.SpeedDialOverlayLayout
         android:id="@+id/overlay"
