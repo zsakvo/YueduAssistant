@@ -38,6 +38,7 @@ public class AboutFragment extends PreferenceFragment implements Preference.OnPr
         findPreference("zt-zip").setOnPreferenceClickListener(this);
         findPreference("logger").setOnPreferenceClickListener(this);
         findPreference("brvah").setOnPreferenceClickListener(this);
+        findPreference("fastScroll").setOnPreferenceClickListener(this);
 
     }
 
@@ -91,6 +92,10 @@ public class AboutFragment extends PreferenceFragment implements Preference.OnPr
             case "logger":
                 startActivity(new Intent(Intent.ACTION_VIEW,
                         Uri.parse("https://github.com/CymChad/BaseRecyclerViewAdapterHelper")));
+                break;
+            case "fastScroll":
+                startActivity(new Intent(Intent.ACTION_VIEW,
+                        Uri.parse("https://github.com/timusus/RecyclerView-FastScroll")));
                 break;
         }
         return false;

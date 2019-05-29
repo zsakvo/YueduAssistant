@@ -53,5 +53,9 @@
             android:key="brvah"
             android:summary="Powerful and flexible RecyclerAdapter."
             android:title="BRVAH" />
+        <Preference
+            android:key="fastScroll"
+            android:summary="A simple FastScroller for Android's RecyclerView."
+            android:title="FastScroll" />
     </PreferenceCategory>
 </PreferenceScreen>
