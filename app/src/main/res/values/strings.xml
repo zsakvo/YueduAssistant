@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">YueduAssistant</string>
+    <string name="app_name">阅读助手</string>
     <string name="yuedu">Yuedu</string>
     <string name="assistant">Assistant</string>
     <string name="space"> </string>
