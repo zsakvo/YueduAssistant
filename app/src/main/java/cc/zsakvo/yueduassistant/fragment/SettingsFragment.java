@@ -61,13 +61,13 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
     public boolean onPreferenceClick(Preference preference) {
         switch (preference.getKey()) {
             case "cache_path":
-                DialogUtil.fileChoose("cache_path", getContext(),activity.getSupportFragmentManager(),this,null);
+                DialogUtil.fileChoose("cache_path", getContext(),activity.getSupportFragmentManager(),this,SpUtil.getCacheDirPath(Objects.requireNonNull(getContext())));
                 break;
             case "backup_path":
                 DialogUtil.fileChoose("backup_path", getContext(),activity.getSupportFragmentManager(),this,null);
                 break;
             case "output_path":
-                DialogUtil.fileChoose("output_path", getContext(),activity.getSupportFragmentManager(),this,null);
+                DialogUtil.fileChoose("output_path", getContext(),activity.getSupportFragmentManager(),this,SpUtil.getOutputPath(Objects.requireNonNull(getContext())));
                 break;
             case "author_id":
                 Intent intent_id = new Intent(Intent.ACTION_VIEW,
