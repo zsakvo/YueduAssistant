@@ -20,6 +20,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -58,6 +60,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private CacheBookAdapter adapter;
 
     private TextView tv_prompt_text;
+
+    private StringBuilder errorLog;
 
 
     @Override
@@ -169,7 +173,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 }
                 emitter.onComplete();
             }catch (Exception e){
-                Logger.e(e.toString());
+                emitter.onError(e);
             }
 
         }).subscribeOn(Schedulers.io())
@@ -189,6 +193,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     @Override
                     public void onError(Throwable e) {
                         Logger.e(e.toString());
+                        errorLog = new StringBuilder();
+                        errorLog.append(e.toString())
+                                .append("\n")
+                                .append(cacheDirPath);
                         adapter.removeAllHeaderView();
                         adapter.addHeaderView(getHeaderView(R.layout.scan_books_failed_card));
                         showBooks();
@@ -211,6 +219,16 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             adapter.removeAllHeaderView();
             adapter.addHeaderView(getHeaderView(R.layout.scan_books_failed_card));
             adapter.getHeaderLayout().setOnClickListener(this);
+            adapter.getHeaderLayout().setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                    ClipData mClipData = ClipData.newPlainText("errorLog", errorLog);
+                    cm.setPrimaryClip(mClipData);
+                    showSnackBar("日志已复制到剪切板",drawerLayout);
+                    return true;
+                }
+            });
             Logger.e("未扫描到书籍");
         } else {
             booksNum = cacheBooks.size();
