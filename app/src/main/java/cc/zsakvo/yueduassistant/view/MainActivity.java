@@ -154,19 +154,19 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             }
         });
 
-        searchView.setOnOpenCloseListener(new Search.OnOpenCloseListener() {
-            @Override
-            public void onOpen() {
-                cacheBooks.clear();
-                cacheTmp.clear();
-                adapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onClose() {
-
-            }
-        });
+//        searchView.setOnOpenCloseListener(new Search.OnOpenCloseListener() {
+//            @Override
+//            public void onOpen() {
+//                cacheBooks.clear();
+//                cacheTmp.clear();
+//                adapter.notifyDataSetChanged();
+//            }
+//
+//            @Override
+//            public void onClose() {
+//
+//            }
+//        });
 
         // 设置汉堡键
 //        ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close) {
@@ -315,6 +315,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public void doOnStart() {
         searchView.clearFocus();
         searchView.setText(null);
+        baseDatas.clear();
         //获取缓存路径
         cacheDirPath = SpUtil.getCacheDirPath(this);
         //检查权限
