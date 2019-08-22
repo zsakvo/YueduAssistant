@@ -63,6 +63,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private List<String> bookInfos = new ArrayList<>();
     private List<String> bookKeys = new ArrayList<>();
     private List<CacheBook> cacheBooks = new ArrayList<>();
+    private List<CacheBook> baseDatas = new ArrayList<>();
 
     private CacheBookAdapter adapter;
 
@@ -141,6 +142,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             @Override
             public void onQueryTextChange(CharSequence newText) {
                 Logger.d(newText);
+                List<CacheBook> cacheTmp = new ArrayList<>();
+                for (CacheBook cacheBook:baseDatas){
+                    if (cacheBook.getName().contains(newText)) {
+                        cacheTmp.add(cacheBook);
+                    }
+                }
+                cacheBooks.clear();
+                cacheBooks.addAll(cacheTmp);
+                adapter.notifyDataSetChanged();
             }
         });
 
@@ -209,6 +219,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     int chapterNum = new File(cacheDirPath+"/"+cacheName+"/").list().length;
                     cacheBook.setChapterNum(chapterNum);
                     cacheBooks.add(cacheBook);
+                    baseDatas.add(cacheBook);
                 }
                 emitter.onComplete();
             }catch (Exception e){
