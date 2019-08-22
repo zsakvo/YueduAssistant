@@ -25,13 +25,18 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.google.android.material.navigation.NavigationView;
+import com.lapism.searchview.Search;
+import com.lapism.searchview.widget.SearchBar;
+import com.lapism.searchview.widget.SearchView;
 import com.orhanobut.logger.Logger;
 import com.yanzhenjie.permission.AndPermission;
 import com.yanzhenjie.permission.runtime.Permission;
@@ -41,11 +46,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private DrawerLayout drawerLayout;
     private RecyclerView mRecyclerView;
+    private SearchView searchView;
     private CardView permisson_card;
     private CardView scanning_card;
     private CardView prompt_card;
@@ -101,26 +108,58 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     public void initView(View view) {
         drawerLayout = $(R.id.drawer_layout);
-        Toolbar toolbar = $(R.id.toolbar);
-        toolbar.setTitle(getResources().getString(R.string.app_name));
-        setSupportActionBar(toolbar);
+//        Toolbar toolbar = $(R.id.toolbar);
+//        toolbar.setTitle(getResources().getString(R.string.app_name));
+//        setSupportActionBar(toolbar);
+
+//        SearchBar searchBar = $(R.id.searchBar);
+//        searchBar.setContentDescription(getResources().getString(R.string.app_name));
+
+        searchView = $(R.id.searchView);
+        searchView.setHint("阅读助手");
+        searchView.setShadow(false);
+        searchView.setClickable(false);
+        searchView.setOnMenuClickListener(new Search.OnMenuClickListener() {
+            @Override
+            public void onMenuClick() {
+                Logger.d("menu!");
+            }
+        });
+        searchView.setOnLogoClickListener(new Search.OnLogoClickListener() {
+            @Override
+            public void onLogoClick() {
+                drawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
+
+        searchView.setOnQueryTextListener(new Search.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(CharSequence query) {
+                return false;
+            }
+
+            @Override
+            public void onQueryTextChange(CharSequence newText) {
+                Logger.d(newText);
+            }
+        });
 
         // 设置汉堡键
-        ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close) {
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                invalidateOptionsMenu();
-            }
-
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                super.onDrawerClosed(drawerView);
-                invalidateOptionsMenu();
-            }
-        };
-        drawerLayout.addDrawerListener(drawerToggle);
-        drawerToggle.syncState();
+//        ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close) {
+//            @Override
+//            public void onDrawerOpened(View drawerView) {
+//                super.onDrawerOpened(drawerView);
+//                invalidateOptionsMenu();
+//            }
+//
+//            @Override
+//            public void onDrawerClosed(View drawerView) {
+//                super.onDrawerClosed(drawerView);
+//                invalidateOptionsMenu();
+//            }
+//        };
+//        drawerLayout.addDrawerListener(drawerToggle);
+//        drawerToggle.syncState();
         NavigationView navigationView = $(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
@@ -205,9 +244,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     @Override
                     public void onComplete() {
                         Logger.d("扫描完毕");
-                        adapter.removeAllHeaderView();
-                        adapter.addHeaderView(getHeaderView(R.layout.scan_succes_card));
                         showBooks();
+                        searchView.setClickable(true);
                     }
                 });
     }
@@ -215,8 +253,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private void showBooks() {
         int booksNum;
         String type = "基础功能";
+        adapter.removeAllHeaderView();
         if (cacheBooks == null || cacheBooks.size() == 0) {
-            adapter.removeAllHeaderView();
             adapter.addHeaderView(getHeaderView(R.layout.scan_books_failed_card));
             adapter.getHeaderLayout().setOnClickListener(this);
             adapter.getHeaderLayout().setOnLongClickListener(new View.OnLongClickListener() {
@@ -224,17 +262,25 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 public boolean onLongClick(View v) {
                     ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                     ClipData mClipData = ClipData.newPlainText("errorLog", errorLog);
-                    cm.setPrimaryClip(mClipData);
+                    Objects.requireNonNull(cm).setPrimaryClip(mClipData);
                     showSnackBar("日志已复制到剪切板",drawerLayout);
                     return true;
                 }
             });
             Logger.e("未扫描到书籍");
         } else {
-            booksNum = cacheBooks.size();
-            TextView tv_scan_success =  adapter.getHeaderLayout().findViewById(R.id.card_scan_success_sub);
-            tv_scan_success.setText(String.format(getResources().getString(R.string.scan_result_text), type, booksNum));
-            adapter.getHeaderLayout().setOnClickListener(null);
+            searchView.setOnMicClickListener(new Search.OnMicClickListener() {
+                @Override
+                public void onMicClick() {
+                    Logger.d("Mic!");
+                }
+            });
+            searchView.setMicIcon(R.drawable.ic_scan_done);
+//            booksNum = cacheBooks.size();
+//            adapter.addHeaderView(getHeaderView(R.layout.scan_succes_card));
+//            TextView tv_scan_success =  adapter.getHeaderLayout().findViewById(R.id.card_scan_success_sub);
+//            tv_scan_success.setText(String.format(getResources().getString(R.string.scan_result_text), type, booksNum));
+//            adapter.getHeaderLayout().setOnClickListener(null);
         }
         adapter.notifyDataSetChanged();
     }

@@ -11,8 +11,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-        <include layout="@layout/toolbar"/>
-        <include layout="@layout/main_content"/>
+        <!--<include layout="@layout/toolbar"/>-->
+        <com.lapism.searchview.widget.SearchView
+            android:id="@+id/searchView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:search_logo="hamburger_arrow"
+            app:search_version_margins="toolbar">
+            <include layout="@layout/main_content"/>
+        </com.lapism.searchview.widget.SearchView>
     </FrameLayout>
 
     <com.google.android.material.navigation.NavigationView
