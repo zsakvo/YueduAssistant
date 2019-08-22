@@ -142,17 +142,29 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
             @Override
             public void onQueryTextChange(CharSequence newText) {
+                cacheBooks.clear();
                 cacheTmp.clear();
-                Logger.d(newText);
                 for (CacheBook cacheBook:baseDatas){
                     if (cacheBook.getName().contains(newText)) {
                         cacheTmp.add(cacheBook);
                     }
                 }
-                cacheBooks.clear();
-                adapter.notifyDataSetChanged();
                 cacheBooks.addAll(cacheTmp);
                 adapter.notifyDataSetChanged();
+            }
+        });
+
+        searchView.setOnOpenCloseListener(new Search.OnOpenCloseListener() {
+            @Override
+            public void onOpen() {
+                cacheBooks.clear();
+                cacheTmp.clear();
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onClose() {
+
             }
         });
 
@@ -191,8 +203,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mRecyclerView = $(R.id.cache_recyclerView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new CacheBookAdapter(R.layout.list_cache_book, cacheBooks);
-
         adapter.openLoadAnimation();
+
 
         adapter.setOnItemClickListener((adapter, view, position) -> {
             Intent intent = new Intent(MainActivity.this,BookDetailActivity.class);
@@ -301,6 +313,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Override
     public void doOnStart() {
+        searchView.clearFocus();
+        searchView.setText(null);
         //获取缓存路径
         cacheDirPath = SpUtil.getCacheDirPath(this);
         //检查权限
