@@ -142,6 +142,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
             @Override
             public void onQueryTextChange(CharSequence newText) {
+                if (newText.length()==0){
+                    searchView.clearFocus();
+                }
                 cacheBooks.clear();
                 cacheTmp.clear();
                 for (CacheBook cacheBook:baseDatas){
