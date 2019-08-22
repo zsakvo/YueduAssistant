@@ -137,6 +137,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         searchView.setOnQueryTextListener(new Search.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(CharSequence query) {
+                searchView.clearFocus();
                 return false;
             }
 
