@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="transparent">#00000000</color>
     <color name="colorPrimary">#FFFFFF</color>
     <color name="colorPrimaryDark">#FFFFFF</color>
     <color name="colorBlack">#FF000000</color>
@@ -12,6 +13,7 @@
     <color name="google_grey300">#ffdadce0</color>
     <color name="google_grey400">#B1B1B1</color>
     <color name="google_grey800">#FAFAFA</color>
+    <color name="google_grey_stroke">#46B9B9B9</color>
     <color name="color_red300">#E57373</color>
     <color name="color_yellow400">#FFCA28</color>
     <color name="color_blue200">#90CAF9</color>

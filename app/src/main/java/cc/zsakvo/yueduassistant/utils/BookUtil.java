@@ -107,7 +107,7 @@ public class BookUtil {
             try {
                 fileInit();
                 chapters = BookUtil.this.selectChapters();
-                BufferedWriter writer = new BufferedWriter( new OutputStreamWriter( new FileOutputStream(new File(outputDirPath+"/"+fileName)), StandardCharsets.UTF_8));
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter( new FileOutputStream(new File(outputDirPath+"/"+fileName)), StandardCharsets.UTF_8));
                 int i = 0;
                 for (String chapter : chapters) {
                     InputStreamReader reader = new InputStreamReader(new FileInputStream(new File(chapter)));

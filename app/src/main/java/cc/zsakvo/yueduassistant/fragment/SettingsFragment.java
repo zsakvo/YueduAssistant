@@ -10,6 +10,7 @@ import java.util.Objects;
 import cc.zsakvo.yueduassistant.R;
 import cc.zsakvo.yueduassistant.listener.PathListener;
 import cc.zsakvo.yueduassistant.utils.DialogUtil;
+import cc.zsakvo.yueduassistant.utils.SourceUtil;
 import cc.zsakvo.yueduassistant.utils.SpUtil;
 import cc.zsakvo.yueduassistant.view.SettingsActivity;
 import moe.shizuku.preference.BuildConfig;
@@ -24,6 +25,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
     private Preference cache_path;
     private Preference backup_path;
     private Preference output_path;
+    private Preference update_source;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -42,6 +44,9 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 
         output_path = findPreference("output_path");
         output_path.setOnPreferenceClickListener(this);
+
+        update_source = findPreference("update_source");
+        update_source.setOnPreferenceClickListener(this);
 
         cache_path.setSummary(SpUtil.getCacheDirPath(Objects.requireNonNull(getContext())));
 //        backup_path.setSummary(SpUtil.getBackupPath(Objects.requireNonNull(getContext())));
@@ -68,6 +73,9 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
                 break;
             case "output_path":
                 DialogUtil.fileChoose("output_path", getContext(),activity.getSupportFragmentManager(),this,SpUtil.getOutputPath(Objects.requireNonNull(getContext())));
+                break;
+            case "update_source":
+                SourceUtil.update(activity.getSupportFragmentManager(),getContext(),activity.findViewById(R.id.toolbar));
                 break;
             case "author_id":
                 Intent intent_id = new Intent(Intent.ACTION_VIEW,

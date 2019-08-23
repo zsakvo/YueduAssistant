@@ -8,6 +8,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import cc.zsakvo.yueduassistant.R;
 import cc.zsakvo.yueduassistant.adapter.CacheBookAdapter;
 import cc.zsakvo.yueduassistant.bean.CacheBook;
@@ -20,6 +21,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
+import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -29,10 +32,14 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.google.android.material.navigation.NavigationView;
 import com.lapism.searchview.Search;
 import com.lapism.searchview.widget.SearchBar;
@@ -75,9 +82,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Override
     public void widgetClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case -1:
-                startActivity(new Intent(MainActivity.this,SettingsActivity.class));
+                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
                 break;
         }
     }
@@ -143,12 +150,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
             @Override
             public void onQueryTextChange(CharSequence newText) {
-                if (newText.length()==0){
+                if (newText.length() == 0) {
                     searchView.clearFocus();
                 }
                 cacheBooks.clear();
                 cacheTmp.clear();
-                for (CacheBook cacheBook:baseDatas){
+                for (CacheBook cacheBook : baseDatas) {
                     if (cacheBook.getName().contains(newText)) {
                         cacheTmp.add(cacheBook);
                     }
@@ -209,11 +216,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         adapter = new CacheBookAdapter(R.layout.list_cache_book, cacheBooks);
         adapter.openLoadAnimation();
 
-
         adapter.setOnItemClickListener((adapter, view, position) -> {
-            Intent intent = new Intent(MainActivity.this,BookDetailActivity.class);
-            intent.putExtra("info",cacheBooks.get(position).getInfo());
-            startActivity(intent);
+            Intent intent = new Intent(MainActivity.this, BookDetailActivity.class);
+            intent.putExtra("info", cacheBooks.get(position).getInfo());
+            MainActivity.this.startActivity(intent);
         });
         mRecyclerView.setAdapter(adapter);
 
@@ -227,20 +233,21 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         Observable.create((ObservableOnSubscribe<Void>) emitter -> {
             try {
                 File cacheDir = new File(cacheDirPath);
-                for (String cacheName:cacheDir.list()){
+                for (String cacheName : cacheDir.list()) {
                     if (!cacheName.contains("-")) break;
                     CacheBook cacheBook = new CacheBook();
                     cacheBook.setInfo(cacheName);
                     String[] cacheInfo = cacheName.split(("-"));
                     cacheBook.setName(cacheInfo[0]);
-                    cacheBook.setSource(SourceUtil.trans(cacheInfo[1]));
-                    int chapterNum = new File(cacheDirPath+"/"+cacheName+"/").list().length;
+//                    cacheBook.setSource(SourceUtil.trans(cacheInfo[1]));
+                    cacheBook.setSource(SourceUtil.queryName(cacheInfo[1]));
+                    int chapterNum = new File(cacheDirPath + "/" + cacheName + "/").list().length;
                     cacheBook.setChapterNum(chapterNum);
                     cacheBooks.add(cacheBook);
                     baseDatas.add(cacheBook);
                 }
                 emitter.onComplete();
-            }catch (Exception e){
+            } catch (Exception e) {
                 emitter.onError(e);
             }
 
@@ -292,23 +299,23 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                     ClipData mClipData = ClipData.newPlainText("errorLog", errorLog);
                     Objects.requireNonNull(cm).setPrimaryClip(mClipData);
-                    showSnackBar("日志已复制到剪切板",drawerLayout);
+                    showSnackBar("日志已复制到剪切板", drawerLayout);
                     return true;
                 }
             });
             Logger.e("未扫描到书籍");
         } else {
-            searchView.setOnMicClickListener(new Search.OnMicClickListener() {
-                @Override
-                public void onMicClick() {
-                    Logger.d("Mic!");
-                }
-            });
-            searchView.setMicIcon(R.drawable.ic_scan_done);
+//            searchView.setOnMicClickListener(new Search.OnMicClickListener() {
+//                @Override
+//                public void onMicClick() {
+//                    Logger.d("Mic!");
+//                }
+//            });
+//            searchView.setMicIcon(R.drawable.ic_scan_done);
 //            booksNum = cacheBooks.size();
 //            adapter.addHeaderView(getHeaderView(R.layout.scan_succes_card));
-//            TextView tv_scan_success =  adapter.getHeaderLayout().findViewById(R.id.card_scan_success_sub);
-//            tv_scan_success.setText(String.format(getResources().getString(R.string.scan_result_text), type, booksNum));
+//            TextView tv_scan_success =  adapter.getHeaderLayout().findViewById(R.id.card_scan_success_title);
+//            tv_scan_success.setText(String.format(getResources().getString(R.string.scan_result_text), booksNum));
 //            adapter.getHeaderLayout().setOnClickListener(null);
         }
         adapter.notifyDataSetChanged();
@@ -353,6 +360,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public void onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
+        } else if (searchView.getText() != null && searchView.getText().length() > 0) {
+            searchView.setText(null);
+            searchView.clearFocus();
         } else {
             super.onBackPressed();
         }
@@ -365,10 +375,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 menuItem.setChecked(true);
                 break;
             case R.id.drawer_settings:
-                startActivity(new Intent(MainActivity.this,SettingsActivity.class));
+                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
                 break;
             case R.id.drawer_help:
-                startActivity(new Intent(MainActivity.this,AboutActivity.class));
+                startActivity(new Intent(MainActivity.this, AboutActivity.class));
                 break;
         }
         drawerLayout.closeDrawer(GravityCompat.START);

@@ -34,6 +34,11 @@
             <!--android:title="高级导出"-->
             <!--android:summary="允许导出更多种书籍格式"/>-->
 
+        <Preference
+            android:key="update_source"
+            android:summary="从书源文件更新来源识别数据"
+            android:title="更新识别数据"/>
+
         <SwitchPreference
             android:defaultValue="false"
             android:key="auto_del"
