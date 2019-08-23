@@ -1,63 +1,93 @@
 package cc.zsakvo.yueduassistant.adapter;
 
-import android.animation.ObjectAnimator;
-import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.DecelerateInterpolator;
-import android.widget.ImageView;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.chad.library.adapter.base.BaseViewHolder;
-import com.orhanobut.logger.Logger;
+import com.google.android.material.card.MaterialCardView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import cc.zsakvo.yueduassistant.R;
 import cc.zsakvo.yueduassistant.bean.CacheBook;
+import cc.zsakvo.yueduassistant.view.BookDetailActivity;
+
+public class CacheBookAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+    private Context context;
+    private List<CacheBook> mCacheBooks;
 
 
-public class CacheBookAdapter extends BaseQuickAdapter<CacheBook, BaseViewHolder>{
 
-    public CacheBookAdapter(int layoutResId, List<CacheBook> data) {
-        super(layoutResId, data);
+    public CacheBookAdapter(Context context) {
+        this.context = context;
+        mCacheBooks = new ArrayList<>();
+    }
+
+    public void setItems(List<CacheBook> data) {
+        this.mCacheBooks.addAll(data);
+        notifyDataSetChanged();
+    }
+
+    public void cleanItems(){
+        this.mCacheBooks.clear();
+        notifyDataSetChanged();
     }
 
     @Override
-    protected void convert(BaseViewHolder helper, CacheBook item) {
-        helper.getView(R.id.card_cache_book).setOnTouchListener(new View.OnTouchListener() {
-            @SuppressLint("ClickableViewAccessibility")
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                switch (motionEvent.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        ObjectAnimator downAnimator = ObjectAnimator.ofFloat(view, "translationZ", 16);
-                        downAnimator.setDuration(200);
-                        downAnimator.setInterpolator(new DecelerateInterpolator());
-                        downAnimator.start();
-                        break;
-                    case MotionEvent.ACTION_UP:
-                    case MotionEvent.ACTION_CANCEL:
-                        ObjectAnimator upAnimator = ObjectAnimator.ofFloat(view, "translationZ", 0);
-                        upAnimator.setDuration(200);
-                        upAnimator.setInterpolator(new AccelerateInterpolator());
-                        upAnimator.start();
-                        break;
-                }
-                return false;
-            }
-        });
-        helper.setText(R.id.card_cache_book_name,"《"+item.getName()+"》");
-        helper.setText(R.id.card_cache_book_source,"\t共"+item.getChapterNum()+"章\n\t来源："+item.getSource());
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_cache_book, parent, false);
+        return new RecyclerViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
+
+        if (holder instanceof RecyclerViewHolder) {
+            final RecyclerViewHolder recyclerViewHolder = (RecyclerViewHolder) holder;
+
+            recyclerViewHolder.bookName.setText("《"+mCacheBooks.get(position).getName()+"》");
+            recyclerViewHolder.bookInfo.setText("\t共"+mCacheBooks.get(position).getChapterNum()+"章\n\t来源："+mCacheBooks.get(position).getSource());
+
+
+            recyclerViewHolder.mView.setOnClickListener(view -> {
+                Intent intent = new Intent(context, BookDetailActivity.class);
+                intent.putExtra("info", mCacheBooks.get(position).getInfo());
+                context.startActivity(intent);
+            });
+        }
+    }
+
+    @Override
+    public int getItemCount() {
+        return mCacheBooks.size();
+    }
+
+    private class RecyclerViewHolder extends RecyclerView.ViewHolder {
+        private View mView;
+        private MaterialCardView mCard;
+        private TextView bookName;
+        private TextView bookInfo;
+
+        private RecyclerViewHolder(View itemView) {
+            super(itemView);
+            mView = itemView;
+            mCard = itemView.findViewById(R.id.card_cache_book);
+            bookName = itemView.findViewById(R.id.card_cache_book_name);
+            bookInfo = itemView.findViewById(R.id.card_cache_book_source);
+        }
     }
 }
-
-
