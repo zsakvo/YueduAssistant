@@ -13,13 +13,15 @@ import cc.zsakvo.yueduassistant.utils.DialogUtil;
 import cc.zsakvo.yueduassistant.utils.SourceUtil;
 import cc.zsakvo.yueduassistant.utils.SpUtil;
 import cc.zsakvo.yueduassistant.view.SettingsActivity;
-import moe.shizuku.preference.BuildConfig;
-import moe.shizuku.preference.Preference;
-import moe.shizuku.preference.PreferenceFragment;
+
+import androidx.preference.ListPreference;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceManager;
 
 import static android.content.Context.MODE_PRIVATE;
 
-public class SettingsFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener, PathListener {
+public class SettingsFragment extends PreferenceFragmentCompat implements Preference.OnPreferenceClickListener, PathListener {
 
     private SettingsActivity activity;
     private Preference cache_path;
@@ -29,10 +31,11 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        getPreferenceManager().setDefaultPackages(new String[]{BuildConfig.APPLICATION_ID + "."});
-        getPreferenceManager().setSharedPreferencesName("settings");
-        getPreferenceManager().setSharedPreferencesMode(MODE_PRIVATE);
-        setPreferencesFromResource(R.xml.settings, null);
+//        getPreferenceManager().setDefaultPackages(new String[]{BuildConfig.APPLICATION_ID + "."});
+//        getPreferenceManager().setSharedPreferencesName("settings");
+//        getPreferenceManager().setSharedPreferencesMode(MODE_PRIVATE);
+//        setPreferencesFromResource(R.xml.settings, null);
+        addPreferencesFromResource(R.xml.settings);
 
         activity = (SettingsActivity) getActivity();
 

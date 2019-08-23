@@ -63,7 +63,7 @@ public class CacheBookAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHol
             recyclerViewHolder.bookInfo.setText("\t共"+mCacheBooks.get(position).getChapterNum()+"章\n\t来源："+mCacheBooks.get(position).getSource());
 
 
-            recyclerViewHolder.mView.setOnClickListener(view -> {
+            recyclerViewHolder.mCard.setOnClickListener(view -> {
                 Intent intent = new Intent(context, BookDetailActivity.class);
                 intent.putExtra("info", mCacheBooks.get(position).getInfo());
                 context.startActivity(intent);

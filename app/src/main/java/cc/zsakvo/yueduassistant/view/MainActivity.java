@@ -6,6 +6,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -117,13 +118,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     public void initView(View view) {
         drawerLayout = $(R.id.drawer_layout);
-//        Toolbar toolbar = $(R.id.toolbar);
-//        toolbar.setTitle(getResources().getString(R.string.app_name));
-//        setSupportActionBar(toolbar);
-
-//        SearchBar searchBar = $(R.id.searchBar);
-//        searchBar.setContentDescription(getResources().getString(R.string.app_name));
-
         searchView = $(R.id.searchView);
         searchView.setHint("阅读助手");
         searchView.setShadow(false);
@@ -165,37 +159,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 adapter.setItems(cacheBooks);
             }
         });
-
-//        searchView.setOnOpenCloseListener(new Search.OnOpenCloseListener() {
-//            @Override
-//            public void onOpen() {
-//                cacheBooks.clear();
-//                cacheTmp.clear();
-//                adapter.notifyDataSetChanged();
-//            }
-//
-//            @Override
-//            public void onClose() {
-//
-//            }
-//        });
-
-        // 设置汉堡键
-//        ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close) {
-//            @Override
-//            public void onDrawerOpened(View drawerView) {
-//                super.onDrawerOpened(drawerView);
-//                invalidateOptionsMenu();
-//            }
-//
-//            @Override
-//            public void onDrawerClosed(View drawerView) {
-//                super.onDrawerClosed(drawerView);
-//                invalidateOptionsMenu();
-//            }
-//        };
-//        drawerLayout.addDrawerListener(drawerToggle);
-//        drawerToggle.syncState();
         NavigationView navigationView = $(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
@@ -205,26 +168,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     }
 
-    private View getHeaderView(int id) {
-        return getLayoutInflater().inflate(id, (ViewGroup) mRecyclerView.getParent(), false);
-    }
-
     @Override
     public void doBusiness(Context mContext) {
-
         mRecyclerView = $(R.id.cache_recyclerView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new CacheBookAdapter(MainActivity.this);
-//        adapter.openLoadAnimation();
-
-//        adapter.setOnItemClickListener((adapter, view, position) -> {
-//            Intent intent = new Intent(MainActivity.this, BookDetailActivity.class);
-//            intent.putExtra("info", cacheBooks.get(position).getInfo());
-//            MainActivity.this.startActivity(intent);
-//        });
         mRecyclerView.setAdapter(adapter);
-
-
     }
 
     private void scanBooks() {
@@ -240,7 +189,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     cacheBook.setInfo(cacheName);
                     String[] cacheInfo = cacheName.split(("-"));
                     cacheBook.setName(cacheInfo[0]);
-//                    cacheBook.setSource(SourceUtil.trans(cacheInfo[1]));
                     cacheBook.setSource(SourceUtil.queryName(cacheInfo[1]));
                     int chapterNum = new File(cacheDirPath + "/" + cacheName + "/").list().length;
                     cacheBook.setChapterNum(chapterNum);
@@ -273,8 +221,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                         errorLog.append(e.toString())
                                 .append("\n")
                                 .append(cacheDirPath);
-//                        adapter.removeAllHeaderView();
-//                        adapter.addHeaderView(getHeaderView(R.layout.scan_books_failed_card));
                         showBooks();
                     }
 
@@ -289,6 +235,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     private void showBooks() {
         adapter.setItems(cacheBooks);
+        
         int booksNum;
         String type = "基础功能";
 //        adapter.removeAllHeaderView();

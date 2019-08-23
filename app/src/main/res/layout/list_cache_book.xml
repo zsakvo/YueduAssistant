@@ -9,9 +9,9 @@
     android:layout_marginTop="10dp"
     android:layout_marginRight="9dp"
     android:layout_marginBottom="10dp"
+    android:foreground="?attr/selectableItemBackground"
     android:clickable="true"
     android:focusable="true"
-    android:foreground="?attr/selectableItemBackground"
     app:cardElevation="0dp"
     app:strokeColor="@color/google_grey_stroke"
     app:strokeWidth="1dp">
