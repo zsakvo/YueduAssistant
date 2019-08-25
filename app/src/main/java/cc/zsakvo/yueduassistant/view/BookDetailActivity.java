@@ -14,6 +14,7 @@ import cc.zsakvo.yueduassistant.bean.CacheBook;
 import cc.zsakvo.yueduassistant.bean.CacheChapter;
 import cc.zsakvo.yueduassistant.bean.ExportBook;
 import cc.zsakvo.yueduassistant.listener.ExportListener;
+import cc.zsakvo.yueduassistant.listener.FlagsListener;
 import cc.zsakvo.yueduassistant.utils.BookUtil;
 import cc.zsakvo.yueduassistant.utils.SourceUtil;
 import cc.zsakvo.yueduassistant.utils.SpUtil;
@@ -45,7 +46,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class BookDetailActivity extends BaseActivity implements ExportListener {
+public class BookDetailActivity extends BaseActivity implements ExportListener, FlagsListener {
 
     List<CacheChapter> cacheChapters = new ArrayList<>();
     List<Boolean> chapterFlags = new ArrayList<>();
@@ -59,6 +60,7 @@ public class BookDetailActivity extends BaseActivity implements ExportListener {
     private RecyclerView bookChapters;
     private SpeedDialView fab;
     private CoordinatorLayout coordinatorLayout;
+    private boolean flagsStatus;
 
     @Override
     public void widgetClick(View v) {
@@ -103,7 +105,7 @@ public class BookDetailActivity extends BaseActivity implements ExportListener {
 
         bookChapters = $(R.id.book_chapters);
         bookChapters.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new CacheChapterAdapter(BookDetailActivity.this);
+        adapter = new CacheChapterAdapter(BookDetailActivity.this,this::setFlags);
 
         bookChapters.setAdapter(adapter);
 
@@ -145,7 +147,7 @@ public class BookDetailActivity extends BaseActivity implements ExportListener {
 
     private void scanChapters(String path) {
         cacheChapters.clear();
-        chapterFlags.clear();
+//        chapterFlags.clear();
         adapter.cleanItems();
         Observable.create((ObservableOnSubscribe<Void>) emitter -> {
             try {
@@ -160,11 +162,10 @@ public class BookDetailActivity extends BaseActivity implements ExportListener {
                     String[] chapterCacheNameInfo = chapterCacheName.split(("-"));
                     cacheChapter.setName(chapterCacheNameInfo[1]);
                     cacheChapters.add(cacheChapter);
-                    chapterFlags.add(true);
+                    if (flagsStatus) chapterFlags.add(true);
                 }
                 emitter.onComplete();
             } catch (Exception e) {
-                Logger.e(e.toString());
                 fab.setVisibility(View.GONE);
                 View topView = getLayoutInflater().inflate(R.layout.scan_chapters_failed_card, new LinearLayout(BookDetailActivity.this));
                 bookInfoCard.removeAllViews();
@@ -220,11 +221,17 @@ public class BookDetailActivity extends BaseActivity implements ExportListener {
     @Override
     public void doOnStart() {
         adapter.cleanItems();
+        flagsStatus = chapterFlags.size() == 0;
         scanChapters(bookCachePath);
     }
 
     @Override
     public void exportFinish() {
         scanChapters(bookCachePath);
+    }
+
+    @Override
+    public void setFlags(List<Boolean> flags) {
+        this.chapterFlags = flags;
     }
 }

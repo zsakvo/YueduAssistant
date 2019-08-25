@@ -19,6 +19,7 @@ import java.util.List;
 import cc.zsakvo.yueduassistant.R;
 import cc.zsakvo.yueduassistant.bean.CacheBook;
 import cc.zsakvo.yueduassistant.bean.CacheChapter;
+import cc.zsakvo.yueduassistant.listener.FlagsListener;
 import cc.zsakvo.yueduassistant.view.BookDetailActivity;
 
 public class CacheChapterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -26,23 +27,24 @@ public class CacheChapterAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private Context context;
     private List<CacheChapter> mCacheChapters;
     private List<Boolean> flags;
+    private FlagsListener flagsListener;
 
 
-    public CacheChapterAdapter(Context context) {
+    public CacheChapterAdapter(Context context, FlagsListener flagsListener) {
         this.context = context;
         mCacheChapters = new ArrayList<>();
         flags = new ArrayList<>();
+        this.flagsListener = flagsListener;
     }
 
     public void setItems(List<CacheChapter> data, List<Boolean> flags) {
         this.mCacheChapters.addAll(data);
-        this.flags.addAll(flags);
+        this.flags = flags;
         notifyDataSetChanged();
     }
 
     public void cleanItems() {
         this.mCacheChapters.clear();
-        this.flags.clear();
         notifyDataSetChanged();
     }
 
@@ -65,6 +67,7 @@ public class CacheChapterAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             recyclerViewHolder.mView.setOnClickListener(view -> {
                 boolean status = !flags.get(position);
                 flags.set(position, status);
+                this.flagsListener.setFlags(flags);
                 if (status) {
                     recyclerViewHolder.chapterText.setPaintFlags(recyclerViewHolder.chapterText.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
                 } else {
