@@ -17,6 +17,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
+import com.orhanobut.logger.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +56,6 @@ public class CacheBookAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
-
         if (holder instanceof RecyclerViewHolder) {
             final RecyclerViewHolder recyclerViewHolder = (RecyclerViewHolder) holder;
 
@@ -63,7 +63,8 @@ public class CacheBookAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHol
             recyclerViewHolder.bookInfo.setText("\t共"+mCacheBooks.get(position).getChapterNum()+"章\n\t来源："+mCacheBooks.get(position).getSource());
 
 
-            recyclerViewHolder.mCard.setOnClickListener(view -> {
+            recyclerViewHolder.mView.setOnClickListener(view -> {
+                Logger.d("activity!");
                 Intent intent = new Intent(context, BookDetailActivity.class);
                 intent.putExtra("info", mCacheBooks.get(position).getInfo());
                 context.startActivity(intent);
@@ -77,10 +78,10 @@ public class CacheBookAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     private class RecyclerViewHolder extends RecyclerView.ViewHolder {
-        private View mView;
         private MaterialCardView mCard;
         private TextView bookName;
         private TextView bookInfo;
+        private View mView;
 
         private RecyclerViewHolder(View itemView) {
             super(itemView);

@@ -1,32 +1,92 @@
 package cc.zsakvo.yueduassistant.adapter;
 
 import android.content.Context;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
+import android.content.Intent;
+import android.graphics.Paint;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
-import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.chad.library.adapter.base.BaseViewHolder;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.card.MaterialCardView;
 import com.orhanobut.logger.Logger;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import cc.zsakvo.yueduassistant.R;
+import cc.zsakvo.yueduassistant.bean.CacheBook;
 import cc.zsakvo.yueduassistant.bean.CacheChapter;
+import cc.zsakvo.yueduassistant.view.BookDetailActivity;
 
-public class CacheChapterAdapter extends BaseQuickAdapter<CacheChapter, BaseViewHolder> {
+public class CacheChapterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+    private Context context;
+    private List<CacheChapter> mCacheChapters;
     private List<Boolean> flags;
 
-    public CacheChapterAdapter(int layoutResId, List<CacheChapter> data,List<Boolean> flags) {
-        super(layoutResId, data);
-        this.flags = flags;
+
+    public CacheChapterAdapter(Context context) {
+        this.context = context;
+        mCacheChapters = new ArrayList<>();
+        flags = new ArrayList<>();
+    }
+
+    public void setItems(List<CacheChapter> data, List<Boolean> flags) {
+        this.mCacheChapters.addAll(data);
+        this.flags.addAll(flags);
+        notifyDataSetChanged();
+    }
+
+    public void cleanItems() {
+        this.mCacheChapters.clear();
+        this.flags.clear();
+        notifyDataSetChanged();
     }
 
     @Override
-    protected void convert(BaseViewHolder helper, CacheChapter item) {
-        CheckBox checkBox = helper.getView(R.id.cache_chapter_check);
-        checkBox.setText(item.getName());
-        checkBox.setChecked(true);
-        checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> flags.set(helper.getLayoutPosition(),!flags.get(helper.getLayoutPosition())));
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_cache_chapter, parent, false);
+        return new RecyclerViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
+        if (holder instanceof RecyclerViewHolder) {
+            final RecyclerViewHolder recyclerViewHolder = (RecyclerViewHolder) holder;
+            recyclerViewHolder.chapterText.setText(mCacheChapters.get(position).getName());
+            if (flags.get(position)) {
+                recyclerViewHolder.chapterText.setPaintFlags(recyclerViewHolder.chapterText.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+            } else {
+                recyclerViewHolder.chapterText.setPaintFlags(recyclerViewHolder.chapterText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            }
+            recyclerViewHolder.mView.setOnClickListener(view -> {
+                boolean status = !flags.get(position);
+                flags.set(position, status);
+                if (status) {
+                    recyclerViewHolder.chapterText.setPaintFlags(recyclerViewHolder.chapterText.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+                } else {
+                    recyclerViewHolder.chapterText.setPaintFlags(recyclerViewHolder.chapterText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                }
+            });
+        }
+    }
+
+    @Override
+    public int getItemCount() {
+        return mCacheChapters.size();
+    }
+
+    private class RecyclerViewHolder extends RecyclerView.ViewHolder {
+        private View mView;
+        private TextView chapterText;
+
+        private RecyclerViewHolder(View itemView) {
+            super(itemView);
+            mView = itemView;
+            chapterText = itemView.findViewById(R.id.cache_chapter_check);
+        }
     }
 }

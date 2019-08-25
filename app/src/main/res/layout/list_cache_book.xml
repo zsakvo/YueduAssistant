@@ -9,7 +9,7 @@
     android:layout_marginTop="10dp"
     android:layout_marginRight="9dp"
     android:layout_marginBottom="10dp"
-    android:foreground="?attr/selectableItemBackground"
+    android:foreground="?android:attr/selectableItemBackground"
     android:clickable="true"
     android:focusable="true"
     app:cardElevation="0dp"

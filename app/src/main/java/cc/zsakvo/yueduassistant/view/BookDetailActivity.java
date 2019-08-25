@@ -103,11 +103,7 @@ public class BookDetailActivity extends BaseActivity implements ExportListener {
 
         bookChapters = $(R.id.book_chapters);
         bookChapters.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new CacheChapterAdapter(R.layout.list_cache_chapter, cacheChapters, chapterFlags);
-        adapter.openLoadAnimation();
-        adapter.setOnItemClickListener((adapter, itemView, position) -> {
-            Logger.d(chapterFlags.get(position));
-        });
+        adapter = new CacheChapterAdapter(BookDetailActivity.this);
 
         bookChapters.setAdapter(adapter);
 
@@ -150,7 +146,7 @@ public class BookDetailActivity extends BaseActivity implements ExportListener {
     private void scanChapters(String path) {
         cacheChapters.clear();
         chapterFlags.clear();
-        adapter.notifyDataSetChanged();
+        adapter.cleanItems();
         Observable.create((ObservableOnSubscribe<Void>) emitter -> {
             try {
                 File bookCache = new File(path);
@@ -199,7 +195,6 @@ public class BookDetailActivity extends BaseActivity implements ExportListener {
 
                     @Override
                     public void onComplete() {
-                        adapter.notifyDataSetChanged();
                         View topView = getLayoutInflater().inflate(R.layout.book_info_card, new LinearLayout(BookDetailActivity.this));
                         bookInfoName = topView.findViewById(R.id.card_book_info_name);
                         bookInfoNum = topView.findViewById(R.id.card_book_info_num);
@@ -208,6 +203,7 @@ public class BookDetailActivity extends BaseActivity implements ExportListener {
                         chapterNum = cacheChapters.size();
                         bookInfoName.setText(bookName);
                         bookInfoNum.setText(String.format(getResources().getString(R.string.book_info_chapterNum), chapterNum));
+                        adapter.setItems(cacheChapters,chapterFlags);
 
                     }
                 });
@@ -223,6 +219,7 @@ public class BookDetailActivity extends BaseActivity implements ExportListener {
 
     @Override
     public void doOnStart() {
+        adapter.cleanItems();
         scanChapters(bookCachePath);
     }
 

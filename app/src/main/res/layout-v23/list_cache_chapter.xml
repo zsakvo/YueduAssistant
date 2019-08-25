@@ -10,7 +10,7 @@
     android:paddingStart="24dp"
     android:paddingEnd="24dp">
 
-    <CheckBox
+    <TextView
         android:id="@+id/cache_chapter_check"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

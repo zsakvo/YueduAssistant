@@ -4,6 +4,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.preference.Preference;
+import androidx.preference.PreferenceFragmentCompat;
+
 import java.util.Objects;
 
 import cc.zsakvo.yueduassistant.R;
@@ -11,20 +14,14 @@ import cc.zsakvo.yueduassistant.listener.PathListener;
 import cc.zsakvo.yueduassistant.utils.DialogUtil;
 import cc.zsakvo.yueduassistant.utils.SpUtil;
 import cc.zsakvo.yueduassistant.view.SettingsActivity;
-import moe.shizuku.preference.BuildConfig;
-import moe.shizuku.preference.Preference;
-import moe.shizuku.preference.PreferenceFragment;
 
 import static android.content.Context.MODE_PRIVATE;
 
-public class AboutFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener{
+public class AboutFragment extends PreferenceFragmentCompat implements Preference.OnPreferenceClickListener{
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        getPreferenceManager().setDefaultPackages(new String[]{BuildConfig.APPLICATION_ID + "."});
-        getPreferenceManager().setSharedPreferencesName("about");
-        getPreferenceManager().setSharedPreferencesMode(MODE_PRIVATE);
-        setPreferencesFromResource(R.xml.about, null);
+        addPreferencesFromResource(R.xml.about);
 
         findPreference("author_id").setOnPreferenceClickListener(this);
         findPreference("project_git").setOnPreferenceClickListener(this);
