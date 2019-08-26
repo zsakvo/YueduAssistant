@@ -66,6 +66,7 @@ public class CacheBookAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHol
             recyclerViewHolder.mView.setOnClickListener(view -> {
                 Logger.d("activity!");
                 Intent intent = new Intent(context, BookDetailActivity.class);
+                Logger.d(mCacheBooks.get(position).getInfo());
                 intent.putExtra("info", mCacheBooks.get(position).getInfo());
                 context.startActivity(intent);
             });

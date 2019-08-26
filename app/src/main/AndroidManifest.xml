@@ -3,19 +3,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="cc.zsakvo.yueduassistant">
 
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
     <application
+        android:name="cc.zsakvo.yueduassistant.MyApplication"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:name="cc.zsakvo.yueduassistant.MyApplication"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".view.BookDetailActivity" />
+        <activity
+            android:name=".view.BookDetailActivity"
+            android:windowSoftInputMode="stateHidden|stateUnchanged" />
         <activity android:name=".view.MainActivity">
 
             <intent-filter>
@@ -27,5 +26,8 @@
         <activity android:name=".view.SettingsActivity" />
         <activity android:name=".view.AboutActivity" />
     </application>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
 </manifest>

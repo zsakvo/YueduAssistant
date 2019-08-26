@@ -33,10 +33,15 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.lapism.searchview.Search;
+import com.lapism.searchview.widget.SearchView;
 import com.leinardi.android.speeddial.SpeedDialView;
 import com.orhanobut.logger.Logger;
 
@@ -58,9 +63,10 @@ public class BookDetailActivity extends BaseActivity implements ExportListener, 
     private TextView bookInfoName, bookInfoNum;
     private FrameLayout bookInfoCard;
     private RecyclerView bookChapters;
-    private SpeedDialView fab;
+    private FloatingActionButton fab;
     private CoordinatorLayout coordinatorLayout;
     private boolean flagsStatus;
+    private SearchView searchView;
 
     @Override
     public void widgetClick(View v) {
@@ -93,12 +99,34 @@ public class BookDetailActivity extends BaseActivity implements ExportListener, 
 
     @Override
     public void initView(View view) {
-        Toolbar toolbar = $(R.id.toolbar);
-        toolbar.setTitle("书籍详情");
-        setSupportActionBar(toolbar);
+//        Toolbar toolbar = $(R.id.toolbar);
+//        toolbar.setTitle("书籍详情");
+//        setSupportActionBar(toolbar);
 
-        bookInfoCard = $(R.id.book_info_card);
+//        bookInfoCard = $(R.id.book_info_card);
 
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+        searchView = $(R.id.searchView);
+        searchView.setShadow(false);
+        searchView.setClickable(false);
+        searchView.setOnLogoClickListener(new Search.OnLogoClickListener() {
+            @Override
+            public void onLogoClick() {
+                finish();
+            }
+        });
+
+        searchView.setOnOpenCloseListener(new Search.OnOpenCloseListener() {
+
+            @Override
+            public void onOpen() {
+                searchView.clearFocus();
+            }
+
+            @Override
+            public void onClose() {
+            }
+        });
         coordinatorLayout = $(R.id.coord);
 
         fab = $(R.id.fab);
@@ -109,18 +137,18 @@ public class BookDetailActivity extends BaseActivity implements ExportListener, 
 
         bookChapters.setAdapter(adapter);
 
-        if (getSupportActionBar() != null) {
-            @SuppressLint("PrivateResource") Drawable upArrow = ContextCompat.getDrawable(this, R.drawable.abc_ic_ab_back_material);
-            assert upArrow != null;
-            upArrow.setColorFilter(getResources().getColor(R.color.colorBlack), PorterDuff.Mode.SRC_ATOP);
-            getSupportActionBar().setHomeAsUpIndicator(upArrow);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
-        toolbar.setNavigationOnClickListener(v -> finish());
+//        if (getSupportActionBar() != null) {
+//            @SuppressLint("PrivateResource") Drawable upArrow = ContextCompat.getDrawable(this, R.drawable.abc_ic_ab_back_material);
+//            assert upArrow != null;
+//            upArrow.setColorFilter(getResources().getColor(R.color.colorBlack), PorterDuff.Mode.SRC_ATOP);
+//            getSupportActionBar().setHomeAsUpIndicator(upArrow);
+//            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        }
+//        toolbar.setNavigationOnClickListener(v -> finish());
 
-        fab.setOnChangeListener(new SpeedDialView.OnChangeListener() {
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onMainActionSelected() {
+            public void onClick(View view) {
                 ExportBook.Builder bookBuilder = new ExportBook.Builder(BookDetailActivity.this);
                 ExportBook exportBook = bookBuilder
                         .bookPath(bookCachePath)
@@ -130,14 +158,15 @@ public class BookDetailActivity extends BaseActivity implements ExportListener, 
                         .fileName(bookName + ".txt")
                         .build();
                 new BookUtil(exportBook, coordinatorLayout, BookDetailActivity.this).extractTXT();
-                return false;
-            }
-
-            @Override
-            public void onToggleChanged(boolean isOpen) {
-
             }
         });
+
+//
+//            @Override
+//            public void onToggleChanged(boolean isOpen) {
+//
+//            }
+//        });
     }
 
     @Override
@@ -199,8 +228,8 @@ public class BookDetailActivity extends BaseActivity implements ExportListener, 
                         View topView = getLayoutInflater().inflate(R.layout.book_info_card, new LinearLayout(BookDetailActivity.this));
                         bookInfoName = topView.findViewById(R.id.card_book_info_name);
                         bookInfoNum = topView.findViewById(R.id.card_book_info_num);
-                        bookInfoCard.removeAllViews();
-                        bookInfoCard.addView(topView);
+//                        bookInfoCard.removeAllViews();
+//                        bookInfoCard.addView(topView);
                         chapterNum = cacheChapters.size();
                         bookInfoName.setText(bookName);
                         bookInfoNum.setText(String.format(getResources().getString(R.string.book_info_chapterNum), chapterNum));
@@ -214,6 +243,7 @@ public class BookDetailActivity extends BaseActivity implements ExportListener, 
     public void doBusiness(Context mContext) {
         String info = getIntent().getStringExtra("info");
         bookName = info.split("-")[0];
+        searchView.setHint(bookName);
         bookCachePath = SpUtil.getCacheDirPath(this) + "/" + info;
         outputPath = SpUtil.getOutputPath(this) + "/" + bookName + ".txt";
     }
