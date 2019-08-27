@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -61,6 +62,8 @@ public class CacheBookAdapter  extends RecyclerView.Adapter<RecyclerView.ViewHol
                 Intent intent = new Intent(context, BookDetailActivity.class);
                 Logger.d(mCacheBooks.get(position).getInfo());
                 intent.putExtra("info", mCacheBooks.get(position).getInfo());
+                InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                 context.startActivity(intent);
             });
         }
