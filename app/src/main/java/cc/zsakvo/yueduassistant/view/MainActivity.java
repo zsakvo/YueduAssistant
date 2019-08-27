@@ -148,13 +148,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             }
         });
 
-
-        searchView.setOnMicClickListener(new Search.OnMicClickListener() {
-            @Override
-            public void onMicClick() {
-                Logger.d("Mic!");
-            }
-        });
         NavigationView navigationView = $(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
@@ -217,7 +210,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                         errorLog.append(e.toString())
                                 .append("\n")
                                 .append(cacheDirPath);
-
                         showBooks();
                     }
 
@@ -232,7 +224,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     private void showBooks() {
         adapter.setItems(cacheBooks);
-        searchView.setMicColor(getResources().getColor(R.color.colorAccent));
+        searchView.setOnMicClickListener(new Search.OnMicClickListener() {
+            @Override
+            public void onMicClick() {
+                Logger.d("Mic!");
+            }
+        });
+//        searchView.setMicColor(getResources().getColor(R.color.colorAccent));
         searchView.setMicIcon(R.drawable.ic_scan_status);
         int booksNum;
         String type = "基础功能";
@@ -260,9 +258,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (rperm == PackageManager.PERMISSION_GRANTED && wperm == PackageManager.PERMISSION_GRANTED) {
             scanBooks();
         } else {
-            View top = getLayoutInflater().inflate(R.layout.request_permission_card, (ViewGroup) mRecyclerView.getParent(), false);
-            searchView.setMicColor(Color.parseColor("#e53935"));
-            searchView.setMicIcon(R.drawable.ic_scan_status);
             BottomSheetDialog mBottomSheetDialog = new BottomSheetDialog(MainActivity.this);
             mBottomSheetDialog.setCancelable(false);
             View dialogView = getLayoutInflater().inflate(R.layout.dialog_scan_books_failed, null);
