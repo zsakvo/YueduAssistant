@@ -2,8 +2,9 @@ package cc.zsakvo.yueduassistant.utils;
 
 import android.content.Context;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AlertDialog;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.orhanobut.logger.Logger;
@@ -12,27 +13,20 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import cc.zsakvo.yueduassistant.R;
 import cc.zsakvo.yueduassistant.bean.CacheChapter;
 import cc.zsakvo.yueduassistant.bean.ExportBook;
 import cc.zsakvo.yueduassistant.listener.ExportListener;
-import cc.zsakvo.yueduassistant.view.BookDetailActivity;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;

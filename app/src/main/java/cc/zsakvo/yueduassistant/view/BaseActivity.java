@@ -2,7 +2,6 @@ package cc.zsakvo.yueduassistant.view;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,11 +11,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.material.snackbar.Snackbar;
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
 
-import androidx.appcompat.app.AppCompatActivity;
 import cc.zsakvo.yueduassistant.R;
 import cc.zsakvo.yueduassistant.utils.SnackbarUtil;
 import cc.zsakvo.yueduassistant.utils.StatusbarUtil;

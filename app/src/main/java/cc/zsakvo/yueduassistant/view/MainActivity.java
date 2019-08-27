@@ -1,14 +1,31 @@
 package cc.zsakvo.yueduassistant.view;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.navigation.NavigationView;
+import com.lapism.searchview.Search;
+import com.lapism.searchview.widget.SearchView;
+import com.orhanobut.logger.Logger;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 import cc.zsakvo.yueduassistant.R;
 import cc.zsakvo.yueduassistant.adapter.CacheBookAdapter;
@@ -21,40 +38,6 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-
-import android.animation.ObjectAnimator;
-import android.annotation.SuppressLint;
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.os.Bundle;
-import android.view.KeyEvent;
-import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.DecelerateInterpolator;
-import android.widget.TextView;
-
-import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.google.android.material.navigation.NavigationView;
-import com.lapism.searchview.Search;
-import com.lapism.searchview.widget.SearchBar;
-import com.lapism.searchview.widget.SearchView;
-import com.orhanobut.logger.Logger;
-import com.yanzhenjie.permission.AndPermission;
-import com.yanzhenjie.permission.runtime.Permission;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Objects;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -238,34 +221,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         
         int booksNum;
         String type = "基础功能";
-//        adapter.removeAllHeaderView();
         if (cacheBooks == null || cacheBooks.size() == 0) {
-//            adapter.addHeaderView(getHeaderView(R.layout.scan_books_failed_card));
-//            adapter.getHeaderLayout().setOnClickListener(this);
-//            adapter.getHeaderLayout().setOnLongClickListener(new View.OnLongClickListener() {
-//                @Override
-//                public boolean onLongClick(View v) {
-//                    ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-//                    ClipData mClipData = ClipData.newPlainText("errorLog", errorLog);
-//                    Objects.requireNonNull(cm).setPrimaryClip(mClipData);
-//                    showSnackBar("日志已复制到剪切板", drawerLayout);
-//                    return true;
-//                }
-//            });
             Logger.e("未扫描到书籍");
         } else {
-//            searchView.setOnMicClickListener(new Search.OnMicClickListener() {
-//                @Override
-//                public void onMicClick() {
-//                    Logger.d("Mic!");
-//                }
-//            });
-//            searchView.setMicIcon(R.drawable.ic_scan_done);
-//            booksNum = cacheBooks.size();
-//            adapter.addHeaderView(getHeaderView(R.layout.scan_succes_card));
-//            TextView tv_scan_success =  adapter.getHeaderLayout().findViewById(R.id.card_scan_success_title);
-//            tv_scan_success.setText(String.format(getResources().getString(R.string.scan_result_text), booksNum));
-//            adapter.getHeaderLayout().setOnClickListener(null);
         }
         adapter.notifyDataSetChanged();
     }
@@ -285,24 +243,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         int rperm = checkCallingOrSelfPermission(readPermission);
         int wperm = checkCallingOrSelfPermission(writePermission);
         if (rperm == PackageManager.PERMISSION_GRANTED && wperm == PackageManager.PERMISSION_GRANTED) {
-//            adapter.addHeaderView(getHeaderView(R.layout.scanning_card));
             scanBooks();
         } else {
             View top = getLayoutInflater().inflate(R.layout.request_permission_card, (ViewGroup) mRecyclerView.getParent(), false);
-//            adapter.addHeaderView(top);
-//            adapter.getHeaderLayout().setOnClickListener(v -> {
-//                adapter.removeAllHeaderView();
-//                AndPermission.with(MainActivity.this)
-//                        .runtime()
-//                        .permission(Permission.Group.STORAGE)
-//                        .onGranted(permissions -> {
-//                            adapter.getHeaderLayout().setOnClickListener(null);
-//                            adapter.addHeaderView(getHeaderView(R.layout.scanning_card));
-//                            scanBooks();
-//                        })
-//                        .onDenied(permissions -> adapter.addHeaderView(getHeaderView(R.layout.request_permission_card)))
-//                        .start();
-//            });
         }
     }
 

@@ -10,9 +10,9 @@ import android.view.View;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
+
 import cc.zsakvo.yueduassistant.R;
 import cc.zsakvo.yueduassistant.fragment.AboutFragment;
-import cc.zsakvo.yueduassistant.fragment.SettingsFragment;
 
 public class AboutActivity extends BaseActivity{
 

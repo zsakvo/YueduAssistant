@@ -1,22 +1,35 @@
 package cc.zsakvo.yueduassistant.view;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
+import android.content.Context;
+import android.os.Bundle;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.lapism.searchview.Search;
+import com.lapism.searchview.widget.SearchView;
+import com.orhanobut.logger.Logger;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import cc.zsakvo.yueduassistant.R;
-import cc.zsakvo.yueduassistant.adapter.CacheBookAdapter;
 import cc.zsakvo.yueduassistant.adapter.CacheChapterAdapter;
-import cc.zsakvo.yueduassistant.bean.CacheBook;
 import cc.zsakvo.yueduassistant.bean.CacheChapter;
 import cc.zsakvo.yueduassistant.bean.ExportBook;
 import cc.zsakvo.yueduassistant.listener.ExportListener;
 import cc.zsakvo.yueduassistant.listener.FlagsListener;
 import cc.zsakvo.yueduassistant.utils.BookUtil;
-import cc.zsakvo.yueduassistant.utils.SourceUtil;
 import cc.zsakvo.yueduassistant.utils.SpUtil;
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
@@ -24,32 +37,6 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
-import android.os.Bundle;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.lapism.searchview.Search;
-import com.lapism.searchview.widget.SearchView;
-import com.leinardi.android.speeddial.SpeedDialView;
-import com.orhanobut.logger.Logger;
-
-import java.io.File;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class BookDetailActivity extends BaseActivity implements ExportListener, FlagsListener {
 
@@ -137,36 +124,17 @@ public class BookDetailActivity extends BaseActivity implements ExportListener, 
 
         bookChapters.setAdapter(adapter);
 
-//        if (getSupportActionBar() != null) {
-//            @SuppressLint("PrivateResource") Drawable upArrow = ContextCompat.getDrawable(this, R.drawable.abc_ic_ab_back_material);
-//            assert upArrow != null;
-//            upArrow.setColorFilter(getResources().getColor(R.color.colorBlack), PorterDuff.Mode.SRC_ATOP);
-//            getSupportActionBar().setHomeAsUpIndicator(upArrow);
-//            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-//        }
-//        toolbar.setNavigationOnClickListener(v -> finish());
-
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ExportBook.Builder bookBuilder = new ExportBook.Builder(BookDetailActivity.this);
-                ExportBook exportBook = bookBuilder
-                        .bookPath(bookCachePath)
-                        .cacheChapters(cacheChapters)
-                        .flags(chapterFlags)
-                        .outputDirPath(SpUtil.getOutputPath(BookDetailActivity.this))
-                        .fileName(bookName + ".txt")
-                        .build();
-                new BookUtil(exportBook, coordinatorLayout, BookDetailActivity.this).extractTXT();
-            }
+        fab.setOnClickListener(view1 -> {
+            ExportBook.Builder bookBuilder = new ExportBook.Builder(BookDetailActivity.this);
+            ExportBook exportBook = bookBuilder
+                    .bookPath(bookCachePath)
+                    .cacheChapters(cacheChapters)
+                    .flags(chapterFlags)
+                    .outputDirPath(SpUtil.getOutputPath(BookDetailActivity.this))
+                    .fileName(bookName + ".txt")
+                    .build();
+            new BookUtil(exportBook, coordinatorLayout, BookDetailActivity.this).extractTXT();
         });
-
-//
-//            @Override
-//            public void onToggleChanged(boolean isOpen) {
-//
-//            }
-//        });
     }
 
     @Override
@@ -176,7 +144,6 @@ public class BookDetailActivity extends BaseActivity implements ExportListener, 
 
     private void scanChapters(String path) {
         cacheChapters.clear();
-//        chapterFlags.clear();
         adapter.cleanItems();
         Observable.create((ObservableOnSubscribe<Void>) emitter -> {
             try {
@@ -195,7 +162,6 @@ public class BookDetailActivity extends BaseActivity implements ExportListener, 
                 }
                 emitter.onComplete();
             } catch (Exception e) {
-                fab.setVisibility(View.GONE);
                 View topView = getLayoutInflater().inflate(R.layout.scan_chapters_failed_card, new LinearLayout(BookDetailActivity.this));
                 bookInfoCard.removeAllViews();
                 bookInfoCard.addView(topView);
@@ -217,7 +183,6 @@ public class BookDetailActivity extends BaseActivity implements ExportListener, 
                     @Override
                     public void onError(Throwable e) {
                         Logger.e(e.toString());
-                        fab.setVisibility(View.GONE);
                         View topView = getLayoutInflater().inflate(R.layout.scan_chapters_failed_card,new LinearLayout(BookDetailActivity.this));
                         bookInfoCard.removeAllViews();
                         bookInfoCard.addView(topView);
@@ -228,8 +193,6 @@ public class BookDetailActivity extends BaseActivity implements ExportListener, 
                         View topView = getLayoutInflater().inflate(R.layout.book_info_card, new LinearLayout(BookDetailActivity.this));
                         bookInfoName = topView.findViewById(R.id.card_book_info_name);
                         bookInfoNum = topView.findViewById(R.id.card_book_info_num);
-//                        bookInfoCard.removeAllViews();
-//                        bookInfoCard.addView(topView);
                         chapterNum = cacheChapters.size();
                         bookInfoName.setText(bookName);
                         bookInfoNum.setText(String.format(getResources().getString(R.string.book_info_chapterNum), chapterNum));

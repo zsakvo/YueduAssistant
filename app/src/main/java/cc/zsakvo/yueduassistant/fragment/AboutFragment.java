@@ -7,15 +7,7 @@ import android.os.Bundle;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
-import java.util.Objects;
-
 import cc.zsakvo.yueduassistant.R;
-import cc.zsakvo.yueduassistant.listener.PathListener;
-import cc.zsakvo.yueduassistant.utils.DialogUtil;
-import cc.zsakvo.yueduassistant.utils.SpUtil;
-import cc.zsakvo.yueduassistant.view.SettingsActivity;
-
-import static android.content.Context.MODE_PRIVATE;
 
 public class AboutFragment extends PreferenceFragmentCompat implements Preference.OnPreferenceClickListener{
 

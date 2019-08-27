@@ -1,7 +1,6 @@
 package cc.zsakvo.yueduassistant.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,17 +9,12 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.card.MaterialCardView;
-import com.orhanobut.logger.Logger;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import cc.zsakvo.yueduassistant.R;
-import cc.zsakvo.yueduassistant.bean.CacheBook;
 import cc.zsakvo.yueduassistant.bean.CacheChapter;
 import cc.zsakvo.yueduassistant.listener.FlagsListener;
-import cc.zsakvo.yueduassistant.view.BookDetailActivity;
 
 public class CacheChapterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 

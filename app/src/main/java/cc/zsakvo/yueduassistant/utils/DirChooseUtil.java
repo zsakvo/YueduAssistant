@@ -7,14 +7,14 @@ import android.os.Environment;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.DialogFragment;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.DialogFragment;
 
 @SuppressWarnings("ALL")
 public class DirChooseUtil extends DialogFragment implements android.content.DialogInterface.OnClickListener {

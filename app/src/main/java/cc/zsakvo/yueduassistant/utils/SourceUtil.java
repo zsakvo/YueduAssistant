@@ -2,11 +2,8 @@ package cc.zsakvo.yueduassistant.utils;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.Environment;
-import android.util.Log;
 import android.view.View;
 
 import androidx.fragment.app.FragmentManager;
@@ -18,19 +15,13 @@ import com.google.android.material.snackbar.Snackbar;
 import com.orhanobut.logger.Logger;
 
 import org.litepal.LitePal;
-import org.litepal.crud.LitePalSupport;
-import org.litepal.exceptions.DataSupportException;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 
-import cc.zsakvo.yueduassistant.MyApplication;
-import cc.zsakvo.yueduassistant.R;
-import cc.zsakvo.yueduassistant.bean.CacheBook;
 import cc.zsakvo.yueduassistant.bean.Source;
-import cc.zsakvo.yueduassistant.listener.PathListener;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -38,8 +29,6 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-
-import static android.content.Context.MODE_PRIVATE;
 
 public class SourceUtil {
 

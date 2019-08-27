@@ -1,31 +1,20 @@
 package cc.zsakvo.yueduassistant.utils;
 
-import android.Manifest;
-import android.app.Activity;
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.DialogFragment;
-
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.DialogFragment;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-
-import cc.zsakvo.yueduassistant.R;
 
 public class FileChooseUtil extends DialogFragment implements android.content.DialogInterface.OnClickListener {
     public static final int PERMISSION_REQUEST = 573;

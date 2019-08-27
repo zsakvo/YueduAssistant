@@ -3,11 +3,10 @@ package cc.zsakvo.yueduassistant.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.orhanobut.logger.Logger;
+import androidx.fragment.app.FragmentManager;
 
 import java.io.File;
 
-import androidx.fragment.app.FragmentManager;
 import cc.zsakvo.yueduassistant.listener.PathListener;
 
 import static android.content.Context.MODE_PRIVATE;

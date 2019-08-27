@@ -3,7 +3,9 @@ package cc.zsakvo.yueduassistant.fragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
+
+import androidx.preference.Preference;
+import androidx.preference.PreferenceFragmentCompat;
 
 import java.util.Objects;
 
@@ -13,13 +15,6 @@ import cc.zsakvo.yueduassistant.utils.DialogUtil;
 import cc.zsakvo.yueduassistant.utils.SourceUtil;
 import cc.zsakvo.yueduassistant.utils.SpUtil;
 import cc.zsakvo.yueduassistant.view.SettingsActivity;
-
-import androidx.preference.ListPreference;
-import androidx.preference.Preference;
-import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.PreferenceManager;
-
-import static android.content.Context.MODE_PRIVATE;
 
 public class SettingsFragment extends PreferenceFragmentCompat implements Preference.OnPreferenceClickListener, PathListener {
 
@@ -31,38 +26,16 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-//        getPreferenceManager().setDefaultPackages(new String[]{BuildConfig.APPLICATION_ID + "."});
-//        getPreferenceManager().setSharedPreferencesName("settings");
-//        getPreferenceManager().setSharedPreferencesMode(MODE_PRIVATE);
-//        setPreferencesFromResource(R.xml.settings, null);
         addPreferencesFromResource(R.xml.settings);
-
         activity = (SettingsActivity) getActivity();
-
         cache_path = findPreference("cache_path");
         cache_path.setOnPreferenceClickListener(this);
-
-//        backup_path = findPreference("backup_path");
-//        backup_path.setOnPreferenceClickListener(this);
-
         output_path = findPreference("output_path");
         output_path.setOnPreferenceClickListener(this);
-
         update_source = findPreference("update_source");
         update_source.setOnPreferenceClickListener(this);
-
         cache_path.setSummary(SpUtil.getCacheDirPath(Objects.requireNonNull(getContext())));
-//        backup_path.setSummary(SpUtil.getBackupPath(Objects.requireNonNull(getContext())));
         output_path.setSummary(SpUtil.getOutputPath(Objects.requireNonNull(getContext())));
-
-//        Preference author_id = findPreference("author_id");
-//        author_id.setOnPreferenceClickListener(this);
-//
-//        Preference project_git = findPreference("project_git");
-//        project_git.setOnPreferenceClickListener(this);
-//
-//        Preference libs = findPreference("libs");
-//        libs.setOnPreferenceClickListener(this);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package cc.zsakvo.yueduassistant.utils;
 
 import android.app.Activity;
-import android.os.Build;
 import android.view.Window;
 
 public class StatusbarUtil {
