@@ -3,6 +3,7 @@ package cc.zsakvo.yueduassistant.view;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,10 +17,14 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.navigation.NavigationView;
 import com.lapism.searchview.Search;
 import com.lapism.searchview.widget.SearchView;
 import com.orhanobut.logger.Logger;
+import com.yanzhenjie.permission.AndPermission;
+import com.yanzhenjie.permission.runtime.Permission;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -142,6 +147,14 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 adapter.setItems(cacheBooks);
             }
         });
+
+
+        searchView.setOnMicClickListener(new Search.OnMicClickListener() {
+            @Override
+            public void onMicClick() {
+                Logger.d("Mic!");
+            }
+        });
         NavigationView navigationView = $(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
@@ -204,6 +217,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                         errorLog.append(e.toString())
                                 .append("\n")
                                 .append(cacheDirPath);
+
                         showBooks();
                     }
 
@@ -218,7 +232,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     private void showBooks() {
         adapter.setItems(cacheBooks);
-        
+        searchView.setMicColor(getResources().getColor(R.color.colorAccent));
+        searchView.setMicIcon(R.drawable.ic_scan_status);
         int booksNum;
         String type = "基础功能";
         if (cacheBooks == null || cacheBooks.size() == 0) {
@@ -246,6 +261,37 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             scanBooks();
         } else {
             View top = getLayoutInflater().inflate(R.layout.request_permission_card, (ViewGroup) mRecyclerView.getParent(), false);
+            searchView.setMicColor(Color.parseColor("#e53935"));
+            searchView.setMicIcon(R.drawable.ic_scan_status);
+            BottomSheetDialog mBottomSheetDialog = new BottomSheetDialog(MainActivity.this);
+            mBottomSheetDialog.setCancelable(false);
+            View dialogView = getLayoutInflater().inflate(R.layout.dialog_scan_books_failed, null);
+            MaterialButton appExit = (MaterialButton) dialogView.findViewById(R.id.app_exit);
+            MaterialButton appAuth = (MaterialButton) dialogView.findViewById(R.id.app_auth);
+            appExit.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    finish();
+                }
+            });
+            appAuth.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    AndPermission.with(MainActivity.this)
+                            .runtime()
+                            .permission(Permission.Group.STORAGE)
+                            .onGranted(permissions -> {
+                                mBottomSheetDialog.cancel();
+                                scanBooks();
+                            })
+                            .onDenied(permissions -> {
+
+                            })
+                            .start();
+                }
+            });
+            mBottomSheetDialog.setContentView(dialogView);
+            mBottomSheetDialog.show();
         }
     }
 

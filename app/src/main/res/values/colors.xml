@@ -4,7 +4,7 @@
     <color name="colorPrimary">#FFFFFF</color>
     <color name="colorPrimaryDark">#FFFFFF</color>
     <color name="colorBlack">#FF000000</color>
-    <color name="colorAccent">#81C784</color>
+    <color name="colorAccent">@color/color_blue300</color>
     <color name="color_green100">#C8E6C9</color>
     <color name="color_green200">#A5D6A7</color>
     <color name="color_green300">#81C784</color>
@@ -16,5 +16,7 @@
     <color name="google_grey_stroke">#46B9B9B9</color>
     <color name="color_red300">#E57373</color>
     <color name="color_yellow400">#FFCA28</color>
+    <color name="color_blue50">#E3F2FD</color>
     <color name="color_blue200">#90CAF9</color>
+    <color name="color_blue300">#64B5F6</color>
 </resources>
