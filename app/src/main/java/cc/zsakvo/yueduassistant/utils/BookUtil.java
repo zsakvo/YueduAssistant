@@ -46,8 +46,7 @@ public class BookUtil {
     private TextView tv_progress;
     private ExportListener el;
 
-    public BookUtil(ExportBook exportBook,View view,ExportListener el){
-        this.v = view;
+    public BookUtil(ExportBook exportBook,ExportListener el){
         this.el = el;
         this.cacheChapters = exportBook.getCacheChapters();
         this.flags = exportBook.getFlags();
@@ -141,7 +140,6 @@ public class BookUtil {
                     public void onComplete() {
                         Logger.d("完毕！");
                         progressDialog.cancel();
-                        SnackbarUtil.build(mContext, v, "导出成功", Snackbar.LENGTH_SHORT).show();
                         if(SpUtil.getAutoDel(mContext)){
                             deleteDirectory(bookPath);
                         }
