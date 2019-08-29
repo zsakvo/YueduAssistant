@@ -213,6 +213,21 @@ public class BookDetailActivity extends BaseActivity implements ExportListener, 
                                     new BookUtil(exportBook, BookDetailActivity.this).extractTXT();
                                 }
                             });
+
+                            mb_export_epub.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    ExportBook.Builder bookBuilder = new ExportBook.Builder(BookDetailActivity.this);
+                                    ExportBook exportBook = bookBuilder
+                                            .bookPath(bookCachePath)
+                                            .cacheChapters(cacheChapters)
+                                            .flags(chapterFlags)
+                                            .outputDirPath(SpUtil.getOutputPath(BookDetailActivity.this))
+                                            .fileName(bookName + ".txt")
+                                            .build();
+                                    new BookUtil(exportBook, BookDetailActivity.this).extractEpub();
+                                }
+                            });
                         }
                     });
 
