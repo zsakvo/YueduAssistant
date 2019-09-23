@@ -1,12 +1,14 @@
 package cc.zsakvo.yueduassistant.utils;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.snackbar.Snackbar;
 import com.orhanobut.logger.Logger;
 
@@ -46,6 +48,9 @@ public class BookUtil {
     private List<String> chapters;
     private String bookPath;
     private String fileName;
+    private String name;
+    private String author;
+    private String cover;
     private String outputDirPath;
     private Context mContext;
     private AlertDialog progressDialog;
@@ -60,6 +65,9 @@ public class BookUtil {
         this.outputDirPath = exportBook.getOutputDirPath();
         this.fileName = exportBook.getFileName();
         this.mContext = exportBook.getmContext();
+        this.name = exportBook.getName();
+        this.author = exportBook.getAuthor();
+        this.cover = exportBook.getCover();
     }
 
     private List<String> selectChapters(){
@@ -108,6 +116,29 @@ public class BookUtil {
         }
     }
 
+    private void preEpubFile(String str,String path){
+        try {
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter( new FileOutputStream(new File(path)), StandardCharsets.UTF_8));
+            writer.write(str);
+            writer.newLine();
+            writer.flush();
+            writer.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void genCover(String path){
+        try {
+            Bitmap bitmap = Glide.with(mContext).asBitmap().load(cover).submit().get();
+            BufferedOutputStream bos =  new BufferedOutputStream(new FileOutputStream(new File(path)));
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+            bos.flush();
+            bos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     public void extractEpub(){
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
@@ -123,10 +154,17 @@ public class BookUtil {
             try {
                 fileInit(1);
                 copyAssets(mContext,"epub",book_ep);
+
+                preEpubFile(genOpf(),book_ep+"/OEBPS/content.opf");
+                preEpubFile(genTocNcx(),book_ep+"/OEBPS/toc.ncx");
+                preEpubFile(genPart0(),book_ep+"/OEBPS/Text/0.xhtml");
+                genCover(book_ep+"/OEBPS/Images/cover.jpg");
+
                 chapters = BookUtil.this.selectChapters();
                 int i = 0;
                 for (String chapter : chapters) {
-                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter( new FileOutputStream(new File(book_ep+"/OEBPS/Text/"+i+".xhtml")), StandardCharsets.UTF_8));
+                    int c = i+1;
+                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter( new FileOutputStream(new File(book_ep+"/OEBPS/Text/"+c+".xhtml")), StandardCharsets.UTF_8));
                     File chapterFile = new File(chapter);
                     InputStreamReader reader = new InputStreamReader(new FileInputStream(chapterFile));
                     BufferedReader br = new BufferedReader(reader);
@@ -342,7 +380,7 @@ public class BookUtil {
         return sb.toString();
     }
 
-    private void genTocNcx(){
+    private String genTocNcx(){
         StringBuilder sb = new StringBuilder("<?xml version='1.0' encoding='utf-8'?>\n" +
                 "<ncx xmlns=\"http://www.daisy.org/z3986/2005/ncx/\" version=\"2005-1\" xml:lang=\"zh\">\n" +
                 "  <head>\n" +
@@ -358,9 +396,70 @@ public class BookUtil {
                 "</docTitle>\n" +
                 "<navMap>");
         for (int i=0;i<cacheChapters.size();i++){
-
+            sb.append("<navPoint id=\"np_")
+                    .append(i)
+                    .append(" playOrder=\"")
+                    .append(i)
+                    .append("\">\n" +
+                            "    <navLabel>\n" +
+                            "    <text>")
+                    .append(cacheChapters.get(i).getName())
+                    .append("</text>\n" +
+                            "    </navLabel>\n" +
+                            "    <content src=\"Text/")
+                    .append(i)
+                    .append(".xhtml\"/>\n" +
+                            "    </navPoint>");
         }
         sb.append("</navMap>\n" +
                 "</ncx>");
+        return  sb.toString();
+    }
+
+    private String genOpf(){
+        StringBuilder sb0 = new StringBuilder();
+        StringBuilder sb1 = new StringBuilder("<manifest>");
+        StringBuilder sb2 = new StringBuilder("<spine toc=\"ncx\">");
+        sb0.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                "<package version=\"2.0\" \n" +
+                "    xmlns=\"http://www.idpf.org/2007/opf\">\n" +
+                "    <metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" \n" +
+                "        xmlns:opf=\"http://www.idpf.org/2007/opf\">\n" +
+                "        <dc:title>")
+                .append(name)
+                .append("</dc:title>\n" +
+                        "        <dc:language>zh</dc:language>\n" +
+                        "        <dc:creator>")
+                .append(author)
+                .append("</dc:creator>\n" +
+                        "        <meta name=\"cover\" content=\"cover.jpg\" />\n" +
+                        "        <meta name=\"output encoding\" content=\"utf-8\" />\n" +
+                        "        <meta name=\"primary-writing-mode\" content=\"horizontal-lr\" />\n" +
+                        "    </metadata>");
+        sb1.append(" <item id=\"item30\" media-type=\"text/css\" href=\"Styles/style0001.css\" />\n" +
+                "        <item id=\"item31\" media-type=\"text/css\" href=\"Styles/style0002.css\" />\n" +
+                "        <item id=\"cover.jpg\" media-type=\"image/jpeg\" href=\"Images/cover.jpg\" />\n" +
+                "        <item id=\"ncx\" media-type=\"application/x-dtbncx+xml\" href=\"toc.ncx\" />");
+        sb1.append("<item id=\"x_TOC.xhtml\" media-type=\"application/xhtml+xml\" href=\"Text/0.xhtml\" />");
+        sb2.append("<itemref idref=\"x_TOC.xhtml\"/>");
+        for (int i=0;i<cacheChapters.size();i++){
+            sb1.append("<item id=\"x_Section")
+                    .append(i)
+                    .append(".xhtml\" media-type=\"application/xhtml+xml\" href=\"Text/")
+                    .append(i)
+                    .append(".xhtml\" />");
+            sb2.append("<itemref idref=\"x_Section")
+                    .append(i)
+                    .append(".xhtml\"/>");
+        }
+        sb1.append("</manifest>");
+        sb2.append("</spine>");
+        sb0.append(sb1)
+                .append(sb2)
+                .append("<guide>\n" +
+                        "        <reference type=\"toc\" title=\"目录\" href=\"Text/0.xhtml\" />\n" +
+                        "    </guide>")
+                .append("</package>");
+        return sb0.toString();
     }
 }

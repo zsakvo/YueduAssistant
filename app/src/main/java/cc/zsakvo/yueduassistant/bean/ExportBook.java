@@ -1,6 +1,9 @@
 package cc.zsakvo.yueduassistant.bean;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+
+import com.orhanobut.logger.Logger;
 
 import java.util.List;
 
@@ -8,6 +11,9 @@ public class ExportBook {
     private String bookPath;
     private String outputDirPath;
     private String fileName;
+    private String author;
+    private String name;
+    private String cover;
     private List<CacheChapter> cacheChapters;
     private List<Boolean> flags;
 
@@ -23,6 +29,17 @@ public class ExportBook {
         return bookPath;
     }
 
+    public String getAuthor() {
+        return author;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getCover() {
+        return cover;
+    }
 
     public List<CacheChapter> getCacheChapters() {
         return cacheChapters;
@@ -46,6 +63,9 @@ public class ExportBook {
         this.cacheChapters = builder.cacheChapters;
         this.flags = builder.flags;
         this.mContext = builder.mContext;
+        this.author = builder.author;
+        this.name = builder.name;
+        this.cover = builder.cover;
     }
 
     public static class Builder {
@@ -53,6 +73,9 @@ public class ExportBook {
         private String bookPath;
         private String outputDirPath;
         private String fileName;
+        private String author;
+        private String name;
+        private String cover;
         private List<CacheChapter> cacheChapters;
         private List<Boolean> flags;
         private Context mContext;
@@ -74,6 +97,21 @@ public class ExportBook {
 
         public Builder fileName(String fileName) {
             this.fileName = fileName;
+            return this;
+        }
+
+        public Builder author(String author) {
+            this.author = author;
+            return this;
+        }
+
+        public Builder cover(String cover){
+            this.cover = cover;
+            return this;
+        }
+
+        public Builder name(String name) {
+            this.name = name;
             return this;
         }
 

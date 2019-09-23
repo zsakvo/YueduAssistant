@@ -1,6 +1,7 @@
 package cc.zsakvo.yueduassistant.view;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -64,6 +65,7 @@ public class BookDetailActivity extends BaseActivity implements ExportListener, 
     private String outputPath;
     private CacheChapterAdapter adapter;
     private String bookName;
+    private String cover;
     private int chapterNum;
     private TextView bookInfoName, bookInfoNum;
     private FrameLayout bookInfoCard;
@@ -183,8 +185,8 @@ public class BookDetailActivity extends BaseActivity implements ExportListener, 
 
                         @Override
                         public void onNext(JSONObject jsonObject) {
-                            Logger.d("onNext: ");
-                            Glide.with(dialogView).load(jsonObject.getString("cover")).into(imageView);
+                            cover = jsonObject.getString("cover");
+                            Glide.with(dialogView).load(cover).into(imageView);
                             tv_name.setText(bookName);
                             DecimalFormat df = new DecimalFormat("0.00");
                             String wordCount = df.format((float)jsonObject.getInteger("desc")/10000);
@@ -199,24 +201,24 @@ public class BookDetailActivity extends BaseActivity implements ExportListener, 
 
                         @Override
                         public void onComplete() {
-                            mb_export_txt.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    ExportBook.Builder bookBuilder = new ExportBook.Builder(BookDetailActivity.this);
-                                    ExportBook exportBook = bookBuilder
-                                            .bookPath(bookCachePath)
-                                            .cacheChapters(cacheChapters)
-                                            .flags(chapterFlags)
-                                            .outputDirPath(SpUtil.getOutputPath(BookDetailActivity.this))
-                                            .fileName(bookName + ".txt")
-                                            .build();
-                                    new BookUtil(exportBook, BookDetailActivity.this).extractTXT();
-                                }
+                            mb_export_txt.setOnClickListener(view2 -> {
+                                ExportBook.Builder bookBuilder = new ExportBook.Builder(BookDetailActivity.this);
+                                ExportBook exportBook = bookBuilder
+                                        .bookPath(bookCachePath)
+                                        .cacheChapters(cacheChapters)
+                                        .flags(chapterFlags)
+                                        .outputDirPath(SpUtil.getOutputPath(BookDetailActivity.this))
+                                        .fileName(bookName + ".txt")
+                                        .build();
+                                new BookUtil(exportBook, BookDetailActivity.this).extractTXT();
                             });
 
                             mb_export_epub.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
+                                    imageView.buildDrawingCache(true);
+                                    Bitmap bitmap = imageView.getDrawingCache();
+                                    imageView.buildDrawingCache(false);
                                     ExportBook.Builder bookBuilder = new ExportBook.Builder(BookDetailActivity.this);
                                     ExportBook exportBook = bookBuilder
                                             .bookPath(bookCachePath)
@@ -224,6 +226,9 @@ public class BookDetailActivity extends BaseActivity implements ExportListener, 
                                             .flags(chapterFlags)
                                             .outputDirPath(SpUtil.getOutputPath(BookDetailActivity.this))
                                             .fileName(bookName + ".txt")
+                                            .name(bookName)
+                                            .cover(cover)
+                                            .author(tv_author.getText().toString().replace(" 著",""))
                                             .build();
                                     new BookUtil(exportBook, BookDetailActivity.this).extractEpub();
                                 }
