@@ -398,7 +398,7 @@ public class BookUtil {
         for (int i=0;i<cacheChapters.size();i++){
             sb.append("<navPoint id=\"np_")
                     .append(i)
-                    .append(" playOrder=\"")
+                    .append("\" playOrder=\"")
                     .append(i)
                     .append("\">\n" +
                             "    <navLabel>\n" +
@@ -407,7 +407,7 @@ public class BookUtil {
                     .append("</text>\n" +
                             "    </navLabel>\n" +
                             "    <content src=\"Text/")
-                    .append(i)
+                    .append(i+1)
                     .append(".xhtml\"/>\n" +
                             "    </navPoint>");
         }

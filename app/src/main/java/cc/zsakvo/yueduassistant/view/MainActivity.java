@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Objects;
 
 import cc.zsakvo.yueduassistant.R;
 import cc.zsakvo.yueduassistant.adapter.CacheBookAdapter;
@@ -172,14 +173,14 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         Observable.create((ObservableOnSubscribe<Void>) emitter -> {
             try {
                 File cacheDir = new File(cacheDirPath);
-                for (String cacheName : cacheDir.list()) {
+                for (String cacheName : Objects.requireNonNull(cacheDir.list())) {
                     if (!cacheName.contains("-")) break;
                     CacheBook cacheBook = new CacheBook();
                     cacheBook.setInfo(cacheName);
                     String[] cacheInfo = cacheName.split(("-"));
                     cacheBook.setName(cacheInfo[0]);
                     cacheBook.setSource(SourceUtil.queryName(cacheInfo[1]));
-                    int chapterNum = new File(cacheDirPath + "/" + cacheName + "/").list().length;
+                    int chapterNum = Objects.requireNonNull(new File(cacheDirPath + "/" + cacheName + "/").list()).length;
                     cacheBook.setChapterNum(chapterNum);
                     cacheBooks.add(cacheBook);
                     baseDatas.add(cacheBook);
