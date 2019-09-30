@@ -1,0 +1,219 @@
+/* Kindle font */
+/* Kindle 内嵌字体 */
+.CN_Kindle_Hei{ font-family:"MYing Hei S", Hei;}
+.CN_Kindle_Kai{ font-family:STKai, "MKai PRC", Kai;}
+.CN_Kindle_Song{font-family:STSong, "Song S", Song;}
+
+/* Kindle font color */
+/* Kindle 字体颜色  */
+.CN_Kindle_blue{ color:#0000CC;}
+.CN_Kindle_red{ color:red;}
+.CN_Kindle_orange{ color:#E66C2C;}
+.CN_Kindle_grey{ color:grey;}
+.CN_Kindle_white{ color:white;}
+
+/* Global setting */
+/* 全局设定 */
+body {
+	font-size: 1em;
+	text-align: justify;
+	line-height: 1.618em;
+    font-family:STSong, "Song S", Song;
+}
+
+/* Recommended Text indent */
+/* 全文首行缩进2各个中文字符 */
+p {
+	text-indent: 2em;
+}
+
+/* Recommended main heading style */
+/* 主标题的样式 */
+h1.kindle-cn-main-heading {
+	padding: 2em 0 0.75em 0;
+	width: 100%;
+	page-break-before: always;
+	font-size: 2em;
+    text-align: center;
+    font-weight: bold;
+	font-family:"MYing Hei S", Hei;
+}
+
+/* Recommended subheading style */
+/* 副标题的样式 */
+.kindle-cn-subheading {
+	padding: 0em 0 0.75em 0;
+	width: 100%;
+	font-size: 1em;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* 版权信息页标题 */
+/* Copyright page title */
+h1.kindle-cn-copyright-title {
+	page-break-before: always;
+	font-size: 1.2em; 
+	text-align: center; 
+	border-width: 1.5px;
+	margin:0.5em 0em 0.5em 0em;
+	border-style: none none solid none;
+	font-family:"MYing Hei S", Hei;
+}
+
+/* 版权信息页正文 */
+/* Copyright page text */
+p.kindle-cn-copyright-text {
+	line-height: 1.618em;
+	text-indent: 0em;
+}
+
+/* Recommended heading level 1 style */
+/* 一级标题的样式 */
+h1.kindle-cn-heading-1 {
+	border-bottom: 2px dashed #5e5a59;
+	border-top: 2px dashed #5e5a59;
+	padding: 0.75em 0 0.75em 0;
+	width: 100%;
+	page-break-before: always;
+	font-size: 1.5em;
+	font-family:"MYing Hei S", Hei;
+}
+
+/* Recommended heading level 2 style */
+/* 二级标题的样式 */
+h2.kindle-cn-heading-2 {
+	font-size: 1.25em;
+	font-family:"MYing Hei S", Hei;
+}
+
+/* Recommended heading level 3 style */
+/* 三级标题的样式 */
+h3.kindle-cn-heading-3 {
+	font-size: 1.1em;
+	font-family:"MYing Hei S", Hei;
+}
+
+/* Heading bottom border  */
+/* 标题底部边框 */
+.kindle-cn-bottom-border-heading{
+	border-bottom: 2px dashed grey;
+	margin-bottom: -0em;
+	width: 100%;
+}
+
+/* Page header  */
+/* 页眉 */
+.kindle-cn-page-header-outer{
+	border-bottom: 1px solid #E66C2C;
+    margin-bottom: 0em;
+    width: 100%;
+}
+h1.kindle-cn-page-header-inner{
+    padding:0.4em;
+    margin:0;
+	width: 100%;
+    color: white;
+    background-color:#E66C2C;
+    display: inline;
+	font-size:0.8em;
+}
+
+/* Tip box */
+/* 提示框 */
+div.kindle-cn-tip-box {
+	/*border:0.1em solid #e66c2c;*/
+	padding:1em 1em 1em 1em; 
+	/*border-radius:0.5em;*/
+	margin: 1em 0 1em 0em;
+	background-color: #D9D8D8;
+	/*display: inline;*/
+	font-family:STKai, "MKai PRC", Kai;
+    line-height:1.5em;
+}
+
+/* Quote */
+/* 引用框 */
+blockquote.kindle-cn-blockquote {
+  	background: #f9f9f9;
+	border-left: 0.5em solid #ccc;
+	margin: 1.5em;
+ 	padding: 1em;
+ 	/*text-indent:2em;*/
+	font-family:STKai, "MKai PRC", Kai;
+  	line-height:1.5em;
+}
+
+/* Picture caption */
+/* 图注 */
+.kindle-cn-pic-caption {
+	font-size: small;
+	text-align: center;
+	margin-top: 0pt;
+	margin-bottom: 10pt;
+	color:grey;
+	font-family:STKai, "MKai PRC", Kai;
+}
+.kindle-cn-pic-caption p {
+	text-indent:0;
+}
+
+/* Floating image left */
+/* 左图文绕排 */
+.kindle-cn-pic-left {
+	float: left;
+	margin: 0 1em 1em 0;
+	text-align: center;
+	line-height: 0.5;
+}
+.kindle-cn-pic-left p {
+	text-indent:0;
+}
+
+/* Drop Cap */
+/* 首字下沉 */
+.kindle-cn-dropcap {
+	float:left;
+	font-size:3em;
+	/*font-weight:bold;*/
+	line-height: 1em;
+	padding:0.1 0em 0.1em 0;
+   /* background-color:#E66C2C;*/
+    /*color:white;*/
+	text-indent:0
+}
+
+/* Letter box - circle */
+/* 圆圈文本框 */
+.kindle-cn-letter-circle {
+	font-size:0.8em;
+	color:white;
+	border-radius:100%;
+	border: 0.1em solid #E66C2C;
+	background-color:#E66C2C;
+	box-shadow: 3px 3px 5px grey;
+	font-weight:bold;
+	text-align:center;
+	padding:0.2em;
+}
+
+/* Sign */
+/* 签名 */
+.kindle-cn-sign{
+	text-align: right;
+    font-weight:bold;
+	font-family:"MYing Hei S", Hei;
+}
+
+
+/* Bulleted List  */
+/* 项目符号列表 */
+ul{
+	text-indent:0;
+	font-family:STKai, "MKai PRC", Kai;
+
+}
+ol{
+	text-indent:0;
+	font-family:STKai, "MKai PRC", Kai;
+}

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package version="2.0" 
+    xmlns="http://www.idpf.org/2007/opf">
+    <metadata xmlns:dc="http://purl.org/dc/elements/1.1/" 
+        xmlns:opf="http://www.idpf.org/2007/opf">
+        <dc:title>长安十二时辰（上下册）</dc:title>
+        <dc:language>zh</dc:language>
+        <dc:creator>马伯庸</dc:creator>
+        <meta name="cover" content="cover.jpg" />
+        <meta name="output encoding" content="utf-8" />
+        <meta name="primary-writing-mode" content="horizontal-lr" />
+    </metadata>
+    <manifest>
+        <item id="x_Section0001.xhtml" media-type="application/xhtml+xml" href="Text/part0001.xhtml" />
+        <item id="x_Section0002.xhtml" media-type="application/xhtml+xml" href="Text/part0002.xhtml" />
+        <item id="x_Section0003.xhtml" media-type="application/xhtml+xml" href="Text/part0003.xhtml" />
+        <item id="x_Section0004.xhtml" media-type="application/xhtml+xml" href="Text/part0004.xhtml" />
+        <item id="x_Section0005.xhtml" media-type="application/xhtml+xml" href="Text/part0005.xhtml" />
+        <item id="x_Section0006.xhtml" media-type="application/xhtml+xml" href="Text/part0006.xhtml" />
+        <item id="x_Section0007.xhtml" media-type="application/xhtml+xml" href="Text/part0007.xhtml" />
+        <item id="x_Section0008.xhtml" media-type="application/xhtml+xml" href="Text/part0008.xhtml" />
+        <item id="x_Section0009.xhtml" media-type="application/xhtml+xml" href="Text/part0009.xhtml" />
+        <item id="x_Section0010.xhtml" media-type="application/xhtml+xml" href="Text/part0010.xhtml" />
+        <item id="x_Section0011.xhtml" media-type="application/xhtml+xml" href="Text/part0011.xhtml" />
+        <item id="x_Section0012.xhtml" media-type="application/xhtml+xml" href="Text/part0012.xhtml" />
+        <item id="x_Section0013.xhtml" media-type="application/xhtml+xml" href="Text/part0013.xhtml" />
+        <item id="x_Section0014.xhtml" media-type="application/xhtml+xml" href="Text/part0014.xhtml" />
+        <item id="x_Section0015.xhtml" media-type="application/xhtml+xml" href="Text/part0015.xhtml" />
+        <item id="x_Section0016.xhtml" media-type="application/xhtml+xml" href="Text/part0016.xhtml" />
+        <item id="x_Section0017.xhtml" media-type="application/xhtml+xml" href="Text/part0017.xhtml" />
+        <item id="x_Section0018.xhtml" media-type="application/xhtml+xml" href="Text/part0018.xhtml" />
+        <item id="x_Section0019.xhtml" media-type="application/xhtml+xml" href="Text/part0019.xhtml" />
+        <item id="x_Section0020.xhtml" media-type="application/xhtml+xml" href="Text/part0020.xhtml" />
+        <item id="x_Section0021.xhtml" media-type="application/xhtml+xml" href="Text/part0021.xhtml" />
+        <item id="x_Section0022.xhtml" media-type="application/xhtml+xml" href="Text/part0022.xhtml" />
+        <item id="x_Section0023.xhtml" media-type="application/xhtml+xml" href="Text/part0023.xhtml" />
+        <item id="x_Section0024.xhtml" media-type="application/xhtml+xml" href="Text/part0024.xhtml" />
+        <item id="x_Section0025.xhtml" media-type="application/xhtml+xml" href="Text/part0025.xhtml" />
+        <item id="x_Section0026.xhtml" media-type="application/xhtml+xml" href="Text/part0026.xhtml" />
+        <item id="x_Section0027.xhtml" media-type="application/xhtml+xml" href="Text/part0027.xhtml" />
+        <item id="x_Section0028.xhtml" media-type="application/xhtml+xml" href="Text/part0028.xhtml" />
+        <item id="item30" media-type="text/css" href="Styles/style0001.css" />
+        <item id="item31" media-type="text/css" href="Styles/style0002.css" />
+        <item id="cover.jpg" media-type="image/jpeg" href="Images/cover.jpg" />
+        <item id="ncx" media-type="application/x-dtbncx+xml" href="toc.ncx" />
+    </manifest>
+    <spine toc="ncx">
+        <itemref idref="x_Section0001.xhtml"/>
+        <itemref idref="x_Section0002.xhtml"/>
+        <itemref idref="x_Section0003.xhtml"/>
+        <itemref idref="x_Section0004.xhtml"/>
+        <itemref idref="x_Section0005.xhtml"/>
+        <itemref idref="x_Section0006.xhtml"/>
+        <itemref idref="x_Section0007.xhtml"/>
+        <itemref idref="x_Section0008.xhtml"/>
+        <itemref idref="x_Section0009.xhtml"/>
+        <itemref idref="x_Section0010.xhtml"/>
+        <itemref idref="x_Section0011.xhtml"/>
+        <itemref idref="x_Section0012.xhtml"/>
+        <itemref idref="x_Section0013.xhtml"/>
+        <itemref idref="x_Section0014.xhtml"/>
+        <itemref idref="x_Section0015.xhtml"/>
+        <itemref idref="x_Section0016.xhtml"/>
+        <itemref idref="x_Section0017.xhtml"/>
+        <itemref idref="x_Section0018.xhtml"/>
+        <itemref idref="x_Section0019.xhtml"/>
+        <itemref idref="x_Section0020.xhtml"/>
+        <itemref idref="x_Section0021.xhtml"/>
+        <itemref idref="x_Section0022.xhtml"/>
+        <itemref idref="x_Section0023.xhtml"/>
+        <itemref idref="x_Section0024.xhtml"/>
+        <itemref idref="x_Section0025.xhtml"/>
+        <itemref idref="x_Section0026.xhtml"/>
+        <itemref idref="x_Section0027.xhtml"/>
+        <itemref idref="x_Section0028.xhtml"/>
+    </spine>
+
+</package>
