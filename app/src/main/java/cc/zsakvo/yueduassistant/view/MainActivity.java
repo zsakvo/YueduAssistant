@@ -231,13 +231,35 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 Logger.d("Mic!");
             }
         });
-//        searchView.setMicColor(getResources().getColor(R.color.colorAccent));
         searchView.setMicIcon(R.drawable.ic_scan_status);
-        int booksNum;
-        String type = "基础功能";
         if (cacheBooks == null || cacheBooks.size() == 0) {
             Logger.e("未扫描到书籍");
-        } else {
+            BottomSheetDialog mBottomSheetDialog = new BottomSheetDialog(MainActivity.this);
+            mBottomSheetDialog.setCancelable(false);
+            View dialogView = getLayoutInflater().inflate(R.layout.dialog_scan_books_failed, null);
+            TextView title = (TextView)dialogView.findViewById(R.id.scan_failed_title);
+            TextView content = (TextView)dialogView.findViewById(R.id.scan_failed_content);
+            MaterialButton appExit = (MaterialButton) dialogView.findViewById(R.id.app_exit);
+            MaterialButton appAuth = (MaterialButton) dialogView.findViewById(R.id.app_auth);
+            title.setText(getResources().getText(R.string.no_books_title));
+            content.setText(getResources().getText(R.string.no_books_content));
+            appExit.setText("退出");
+            appAuth.setText("去设置");
+            appExit.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    finish();
+                }
+            });
+            appAuth.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+                    mBottomSheetDialog.dismiss();
+                }
+            });
+            mBottomSheetDialog.setContentView(dialogView);
+            mBottomSheetDialog.show();
         }
         adapter.notifyDataSetChanged();
     }
@@ -262,8 +284,14 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             BottomSheetDialog mBottomSheetDialog = new BottomSheetDialog(MainActivity.this);
             mBottomSheetDialog.setCancelable(false);
             View dialogView = getLayoutInflater().inflate(R.layout.dialog_scan_books_failed, null);
+            TextView title = (TextView)dialogView.findViewById(R.id.scan_failed_title);
+            TextView content = (TextView)dialogView.findViewById(R.id.scan_failed_content);
             MaterialButton appExit = (MaterialButton) dialogView.findViewById(R.id.app_exit);
             MaterialButton appAuth = (MaterialButton) dialogView.findViewById(R.id.app_auth);
+            title.setText(getResources().getText(R.string.no_permission_title));
+            content.setText(getResources().getText(R.string.no_permission_content));
+            appExit.setText("退出");
+            appAuth.setText("授权");
             appExit.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

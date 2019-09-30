@@ -10,16 +10,16 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="oops！需要权限"
         android:textStyle="bold"
         android:textSize="18sp"
+        android:id="@+id/scan_failed_title"
         android:layout_marginTop="36dp"/>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="当前程序无法正常获取到存储读写权限，请点击下面的按钮，然后在弹出的提示框中选择授予，才能正常使用。"
         android:textSize="14sp"
+        android:id="@+id/scan_failed_content"
         android:layout_marginTop="24dp"/>
 
     <LinearLayout
@@ -35,7 +35,6 @@
             android:layout_width="wrap_content"
             android:layout_height="48dp"
             android:layout_gravity="center"
-            android:text="退出"
             android:layout_marginEnd="24dp"
             android:id="@+id/app_exit"/>
 
@@ -44,7 +43,6 @@
             android:layout_width="wrap_content"
             android:layout_height="48dp"
             android:layout_gravity="center"
-            android:text="授权"
             android:id="@+id/app_auth"/>
 
     </LinearLayout>

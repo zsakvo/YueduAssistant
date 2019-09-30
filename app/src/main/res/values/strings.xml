@@ -21,4 +21,8 @@
     <string name="book_info_name">这是一本小说</string>
     <string name="book_info_chapterNum">扫描完毕，共%1d章</string>
     <string name="exporting">正在导出 %1$d/%2$d </string>
+    <string name="no_permission_title">oops！需要权限</string>
+    <string name="no_permission_content">当前程序无法正常获取到存储读写权限，请点击下面的按钮，然后在弹出的提示框中选择授予，才能正常使用。</string>
+    <string name="no_books_title">oops！未发现书籍</string>
+    <string name="no_books_content">未扫描到书籍缓存，请确定您的缓存文件是否准备好，或者检查路径设置是否准确。</string>
 </resources>
