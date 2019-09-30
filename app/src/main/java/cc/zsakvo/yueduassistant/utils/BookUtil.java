@@ -156,6 +156,7 @@ public class BookUtil {
         Observable.create((ObservableEmitter<Integer> emitter) -> {
             try {
                 fileInit(1);
+                emitter.onNext(-3);
                 chapters = BookUtil.this.selectChapters();
                 copyAssets(mContext, "epub", book_ep);
                 preEpubFile(genOpf(), book_ep + "/OEBPS/content.opf");
@@ -222,7 +223,9 @@ public class BookUtil {
                             tv_progress.setText("正在打包文件……");
                         } else if (i == -2) {
                             tv_progress.setText("正在清理临时目录……");
-                        } else {
+                        } else if (i==-3){
+                            tv_progress.setText("正在准备必要文件……");
+                        }else{
                             tv_progress.setText(String.format(mContext.getResources().getString(R.string.exporting), i, chapters.size()));
                         }
                     }
