@@ -48,7 +48,7 @@ public class BookUtil {
     private View v;
     private List<CacheChapter> cacheChapters;
     private List<Boolean> flags;
-    private List<String> chapters;
+    private List<CacheChapter> chapters;
     private String bookPath;
     private String fileName;
     private String name;
@@ -73,10 +73,10 @@ public class BookUtil {
         this.cover = exportBook.getCover();
     }
 
-    private List<String> selectChapters() {
-        List<String> chapters = new ArrayList<>();
+    private List<CacheChapter> selectChapters() {
+        List<CacheChapter> chapters = new ArrayList<>();
         for (int i = 0; i < flags.size(); i++) {
-            if (flags.get(i)) chapters.add(bookPath + "/" + cacheChapters.get(i).getFileName());
+            if (flags.get(i)) chapters.add(cacheChapters.get(i));
         }
         return chapters;
     }
@@ -156,19 +156,17 @@ public class BookUtil {
         Observable.create((ObservableEmitter<Integer> emitter) -> {
             try {
                 fileInit(1);
+                chapters = BookUtil.this.selectChapters();
                 copyAssets(mContext, "epub", book_ep);
-
                 preEpubFile(genOpf(), book_ep + "/OEBPS/content.opf");
                 preEpubFile(genTocNcx(), book_ep + "/OEBPS/toc.ncx");
                 preEpubFile(genPart0(), book_ep + "/OEBPS/Text/0.xhtml");
                 genCover(book_ep + "/OEBPS/Images/cover.jpg");
-
-                chapters = BookUtil.this.selectChapters();
                 int i = 0;
-                for (String chapter : chapters) {
+                for (CacheChapter chapter : chapters) {
                     int c = i + 1;
                     BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(book_ep + "/OEBPS/Text/" + c + ".xhtml")), StandardCharsets.UTF_8));
-                    File chapterFile = new File(chapter);
+                    File chapterFile = new File(bookPath + "/" + chapter.getFileName());
                     InputStreamReader reader = new InputStreamReader(new FileInputStream(chapterFile));
                     BufferedReader br = new BufferedReader(reader);
                     String s;
@@ -260,8 +258,8 @@ public class BookUtil {
                 chapters = BookUtil.this.selectChapters();
                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(outputDirPath + "/" + fileName)), StandardCharsets.UTF_8));
                 int i = 0;
-                for (String chapter : chapters) {
-                    InputStreamReader reader = new InputStreamReader(new FileInputStream(new File(chapter)));
+                for (CacheChapter chapter : chapters) {
+                    InputStreamReader reader = new InputStreamReader(new FileInputStream(new File(bookPath + "/" + chapter.getFileName())));
                     BufferedReader br = new BufferedReader(reader);
                     String s;
                     while ((s = br.readLine()) != null) {
@@ -386,12 +384,12 @@ public class BookUtil {
                 "  <div class=\"sgc-toc-title\">\n" +
                 "    目录\n" +
                 "  </div>");
-        for (int i = 0; i < cacheChapters.size(); i++) {
+        for (int i = 0; i < chapters.size(); i++) {
             sb.append("<div class=\"sgc-toc-level-1\">\n" +
                     "    <a href=\"")
                     .append(i + 1)
                     .append(".xhtml\">")
-                    .append(cacheChapters.get(i).getName())
+                    .append(chapters.get(i).getName())
                     .append("</a>\n" +
                             "  </div>");
         }
@@ -414,7 +412,7 @@ public class BookUtil {
         sb.append("</text>\n" +
                 "</docTitle>\n" +
                 "<navMap>");
-        for (int i = 0; i < cacheChapters.size(); i++) {
+        for (int i = 0; i < chapters.size(); i++) {
             sb.append("<navPoint id=\"np_")
                     .append(i)
                     .append("\" playOrder=\"")
@@ -422,7 +420,7 @@ public class BookUtil {
                     .append("\">\n" +
                             "    <navLabel>\n" +
                             "    <text>")
-                    .append(cacheChapters.get(i).getName())
+                    .append(chapters.get(i).getName())
                     .append("</text>\n" +
                             "    </navLabel>\n" +
                             "    <content src=\"Text/")
@@ -459,7 +457,7 @@ public class BookUtil {
                 "        <item id=\"item31\" media-type=\"text/css\" href=\"Styles/style0002.css\" />\n" +
                 "        <item id=\"cover.jpg\" media-type=\"image/jpeg\" href=\"Images/cover.jpg\" />\n" +
                 "        <item id=\"ncx\" media-type=\"application/x-dtbncx+xml\" href=\"toc.ncx\" />");
-        for (int i = 0; i < cacheChapters.size(); i++) {
+        for (int i = 0; i < chapters.size(); i++) {
             sb1.append("<item id=\"x_Section")
                     .append(i + 1)
                     .append(".xhtml\" media-type=\"application/xhtml+xml\" href=\"Text/")
