@@ -9,6 +9,7 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -150,6 +151,7 @@ public class BookDetailActivity extends BaseActivity implements ExportListener, 
                 TextView tv_desc = (TextView) dialogView.findViewById(R.id.book_desc);
                 MaterialButton mb_export_txt = (MaterialButton) dialogView.findViewById(R.id.export_txt);
                 MaterialButton mb_export_epub = (MaterialButton) dialogView.findViewById(R.id.export_epub);
+                RelativeLayout book_info = (RelativeLayout) dialogView.findViewById(R.id.book_info);
                 mBottomSheetDialog.setContentView(dialogView);
 
                 Observable.create((ObservableOnSubscribe<JSONObject>) emitter -> {
@@ -159,13 +161,17 @@ public class BookDetailActivity extends BaseActivity implements ExportListener, 
                                 .ignoreContentType(true)
                                 .execute();
                         JSONObject data = JSONObject.parseObject(response.body()).getJSONObject("data");
-                        JSONObject book = data.getJSONArray("books").getJSONObject(0);
-                        JSONObject object = new JSONObject();
-                        object.put("name", book.getString("title"));
-                        object.put("author", book.getString("author"));
-                        object.put("desc", book.getString("countWord"));
-                        object.put("cover", book.getString("cover"));
-                        emitter.onNext(object);
+                        if (data.getJSONArray("books").size() == 0) {
+                            emitter.onError(new Throwable("没有检索到本书"));
+                        } else {
+                            JSONObject book = data.getJSONArray("books").getJSONObject(0);
+                            JSONObject object = new JSONObject();
+                            object.put("name", book.getString("title"));
+                            object.put("author", book.getString("author"));
+                            object.put("desc", book.getString("countWord"));
+                            object.put("cover", book.getString("cover"));
+                            emitter.onNext(object);
+                        }
                     } catch (Exception e) {
                         emitter.onError(e);
                     }
@@ -188,15 +194,7 @@ public class BookDetailActivity extends BaseActivity implements ExportListener, 
                                 String wordCount = df.format((float) jsonObject.getInteger("desc") / 10000);
                                 tv_author.setText(jsonObject.getString("author") + " 著");
                                 tv_desc.setText("共 " + wordCount + " 万字");
-                            }
 
-                            @Override
-                            public void onError(Throwable e) {
-                                Logger.e(e.toString());
-                            }
-
-                            @Override
-                            public void onComplete() {
                                 mb_export_txt.setOnClickListener(view2 -> {
                                     mBottomSheetDialog.cancel();
                                     ExportBook.Builder bookBuilder = new ExportBook.Builder(BookDetailActivity.this);
@@ -215,7 +213,6 @@ public class BookDetailActivity extends BaseActivity implements ExportListener, 
                                     public void onClick(View view) {
                                         mBottomSheetDialog.cancel();
                                         imageView.buildDrawingCache(true);
-                                        Bitmap bitmap = imageView.getDrawingCache();
                                         imageView.buildDrawingCache(false);
                                         ExportBook.Builder bookBuilder = new ExportBook.Builder(BookDetailActivity.this);
                                         ExportBook exportBook = bookBuilder
@@ -231,6 +228,30 @@ public class BookDetailActivity extends BaseActivity implements ExportListener, 
                                         new BookUtil(exportBook, BookDetailActivity.this).extractEpub();
                                     }
                                 });
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                Logger.e(e.toString());
+                                book_info.setVisibility(View.GONE);
+                                mb_export_txt.setOnClickListener(view2 -> {
+                                    mBottomSheetDialog.cancel();
+                                    ExportBook.Builder bookBuilder = new ExportBook.Builder(BookDetailActivity.this);
+                                    ExportBook exportBook = bookBuilder
+                                            .bookPath(bookCachePath)
+                                            .cacheChapters(cacheChapters)
+                                            .flags(chapterFlags)
+                                            .outputDirPath(SpUtil.getOutputPath(BookDetailActivity.this))
+                                            .fileName(bookName + ".txt")
+                                            .build();
+                                    new BookUtil(exportBook, BookDetailActivity.this).extractTXT();
+                                });
+                                mb_export_txt.setEnabled(true);
+
+                            }
+
+                            @Override
+                            public void onComplete() {
                                 mb_export_txt.setEnabled(true);
                                 mb_export_epub.setEnabled(true);
                             }
@@ -301,9 +322,13 @@ public class BookDetailActivity extends BaseActivity implements ExportListener, 
                     @Override
                     public void onError(Throwable e) {
                         Logger.e(e.toString());
-                        View topView = getLayoutInflater().inflate(R.layout.scan_chapters_failed_card, new LinearLayout(BookDetailActivity.this));
-                        bookInfoCard.removeAllViews();
-                        bookInfoCard.addView(topView);
+                        try {
+                            View topView = getLayoutInflater().inflate(R.layout.scan_chapters_failed_card, new LinearLayout(BookDetailActivity.this));
+                            bookInfoCard.removeAllViews();
+                            bookInfoCard.addView(topView);
+                        } catch (Exception e1) {
+                            Logger.e(e1.toString());
+                        }
                     }
 
                     @Override
@@ -338,10 +363,15 @@ public class BookDetailActivity extends BaseActivity implements ExportListener, 
 
     @Override
     public void exportFinish() {
-        SnackbarUtil.build(BookDetailActivity.this, coordinatorLayout, "导出成功", Snackbar.LENGTH_SHORT).show();
-        chapterFlags.clear();
-        flagsStatus = true;
-        scanChapters(bookCachePath);
+        if (SpUtil.getAutoDel(BookDetailActivity.this)) {
+            finish();
+        } else {
+            SnackbarUtil.build(BookDetailActivity.this, coordinatorLayout, "导出成功", Snackbar.LENGTH_SHORT).show();
+            chapterFlags.clear();
+            flagsStatus = true;
+            scanChapters(bookCachePath);
+        }
+
     }
 
     @Override
