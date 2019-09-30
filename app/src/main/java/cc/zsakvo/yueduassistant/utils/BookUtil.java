@@ -12,6 +12,9 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.snackbar.Snackbar;
 import com.orhanobut.logger.Logger;
 
+import org.zeroturnaround.zip.NameMapper;
+import org.zeroturnaround.zip.ZipUtil;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -195,6 +198,11 @@ public class BookUtil {
                     i++;
                     emitter.onNext(i);
                 }
+                ZipUtil.pack(new File(outputDirPath+"/"+fileName.replace(".txt","")+"-ep/"), new File(outputDirPath+"/"+fileName.replace(".txt","")+".epub"), new NameMapper() {
+                    public String map(String name) {
+                        return name;
+                    }
+                });
                 emitter.onComplete();
             } catch (Exception e) {
                 Logger.e(e.toString());
@@ -369,8 +377,8 @@ public class BookUtil {
                 "  </div>");
         for (int i=0;i<cacheChapters.size();i++){
             sb.append("<div class=\"sgc-toc-level-1\">\n" +
-                    "    <a href=\"part")
-                    .append(i)
+                    "    <a href=\"")
+                    .append(i+1)
                     .append(".xhtml\">")
                     .append(cacheChapters.get(i).getName())
                     .append("</a>\n" +
@@ -440,25 +448,20 @@ public class BookUtil {
                 "        <item id=\"item31\" media-type=\"text/css\" href=\"Styles/style0002.css\" />\n" +
                 "        <item id=\"cover.jpg\" media-type=\"image/jpeg\" href=\"Images/cover.jpg\" />\n" +
                 "        <item id=\"ncx\" media-type=\"application/x-dtbncx+xml\" href=\"toc.ncx\" />");
-        sb1.append("<item id=\"x_TOC.xhtml\" media-type=\"application/xhtml+xml\" href=\"Text/0.xhtml\" />");
-        sb2.append("<itemref idref=\"x_TOC.xhtml\"/>");
         for (int i=0;i<cacheChapters.size();i++){
             sb1.append("<item id=\"x_Section")
-                    .append(i)
+                    .append(i+1)
                     .append(".xhtml\" media-type=\"application/xhtml+xml\" href=\"Text/")
-                    .append(i)
+                    .append(i+1)
                     .append(".xhtml\" />");
             sb2.append("<itemref idref=\"x_Section")
-                    .append(i)
+                    .append(i+1)
                     .append(".xhtml\"/>");
         }
         sb1.append("</manifest>");
         sb2.append("</spine>");
         sb0.append(sb1)
                 .append(sb2)
-                .append("<guide>\n" +
-                        "        <reference type=\"toc\" title=\"目录\" href=\"Text/0.xhtml\" />\n" +
-                        "    </guide>")
                 .append("</package>");
         return sb0.toString();
     }
