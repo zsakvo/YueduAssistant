@@ -67,6 +67,7 @@
             android:text="导出 txt"
             android:layout_marginEnd="24dp"
             android:layout_marginStart="24dp"
+            android:enabled="false"
             android:id="@+id/export_txt"/>
 
         <com.google.android.material.button.MaterialButton
@@ -78,6 +79,7 @@
             android:text="导出 epub"
             android:layout_marginEnd="24dp"
             android:layout_marginStart="24dp"
+            android:enabled="false"
             android:id="@+id/export_epub"/>
 
     </LinearLayout>
