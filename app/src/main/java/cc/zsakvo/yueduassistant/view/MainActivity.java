@@ -111,12 +111,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         searchView.setHint("阅读助手");
         searchView.setShadow(false);
         searchView.setClickable(false);
-        searchView.setOnMenuClickListener(new Search.OnMenuClickListener() {
-            @Override
-            public void onMenuClick() {
-                Logger.d("menu!");
-            }
-        });
         searchView.setOnLogoClickListener(new Search.OnLogoClickListener() {
             @Override
             public void onLogoClick() {
@@ -225,13 +219,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     private void showBooks() {
         adapter.setItems(cacheBooks);
-        searchView.setOnMicClickListener(new Search.OnMicClickListener() {
-            @Override
-            public void onMicClick() {
-                Logger.d("Mic!");
-            }
-        });
-        searchView.setMicIcon(R.drawable.ic_scan_status);
         if (cacheBooks == null || cacheBooks.size() == 0) {
             Logger.e("未扫描到书籍");
             BottomSheetDialog mBottomSheetDialog = new BottomSheetDialog(MainActivity.this);
