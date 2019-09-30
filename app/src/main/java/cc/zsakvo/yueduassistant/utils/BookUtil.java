@@ -60,7 +60,7 @@ public class BookUtil {
     private TextView tv_progress;
     private ExportListener el;
 
-    public BookUtil(ExportBook exportBook,ExportListener el){
+    public BookUtil(ExportBook exportBook, ExportListener el) {
         this.el = el;
         this.cacheChapters = exportBook.getCacheChapters();
         this.flags = exportBook.getFlags();
@@ -73,31 +73,31 @@ public class BookUtil {
         this.cover = exportBook.getCover();
     }
 
-    private List<String> selectChapters(){
+    private List<String> selectChapters() {
         List<String> chapters = new ArrayList<>();
-        for (int i=0;i<flags.size();i++){
-            if (flags.get(i)) chapters.add(bookPath+"/"+cacheChapters.get(i).getFileName());
+        for (int i = 0; i < flags.size(); i++) {
+            if (flags.get(i)) chapters.add(bookPath + "/" + cacheChapters.get(i).getFileName());
         }
         return chapters;
     }
 
-    private void fileInit(int i){
+    private void fileInit(int i) {
         File outPutDir = new File(outputDirPath);
-        if (!outPutDir.exists()){
-            if(!outPutDir.mkdirs()){
+        if (!outPutDir.exists()) {
+            if (!outPutDir.mkdirs()) {
                 Logger.e("输出目录生成失败！");
             }
-        }else {
-            switch (i){
+        } else {
+            switch (i) {
                 case 0:
-                    File outFile = new File(outputDirPath+"/"+fileName);
-                    if (outFile.exists()){
-                        if (!outFile.delete()){
+                    File outFile = new File(outputDirPath + "/" + fileName);
+                    if (outFile.exists()) {
+                        if (!outFile.delete()) {
                             Logger.e("已存在目标清除失败！");
                         }
-                    }else {
+                    } else {
                         try {
-                            if (!outFile.createNewFile()){
+                            if (!outFile.createNewFile()) {
                                 Logger.e("输出文件创建失败！");
                             }
                         } catch (IOException e) {
@@ -106,11 +106,11 @@ public class BookUtil {
                     }
                     break;
                 case 1:
-                    File outTmp = new File(outputDirPath+"/"+fileName.replace(".txt","")+"-ep/");
-                    if (outTmp.exists()){
+                    File outTmp = new File(outputDirPath + "/" + fileName.replace(".txt", "") + "-ep/");
+                    if (outTmp.exists()) {
                         deleteDirectory(outTmp.getAbsolutePath());
-                    }else {
-                        if (!outTmp.mkdirs()){
+                    } else {
+                        if (!outTmp.mkdirs()) {
                             Logger.d("epub-临时目录生成失败");
                         }
                     }
@@ -119,9 +119,9 @@ public class BookUtil {
         }
     }
 
-    private void preEpubFile(String str,String path){
+    private void preEpubFile(String str, String path) {
         try {
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter( new FileOutputStream(new File(path)), StandardCharsets.UTF_8));
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(path)), StandardCharsets.UTF_8));
             writer.write(str);
             writer.newLine();
             writer.flush();
@@ -131,10 +131,10 @@ public class BookUtil {
         }
     }
 
-    private void genCover(String path){
+    private void genCover(String path) {
         try {
             Bitmap bitmap = Glide.with(mContext).asBitmap().load(cover).submit().get();
-            BufferedOutputStream bos =  new BufferedOutputStream(new FileOutputStream(new File(path)));
+            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(new File(path)));
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
             bos.flush();
             bos.close();
@@ -143,31 +143,31 @@ public class BookUtil {
         }
     }
 
-    public void extractEpub(){
+    public void extractEpub() {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         builder.setCancelable(false);
         View view = View.inflate(mContext, R.layout.loading_dialog, null);
         builder.setView(view);
         progressDialog = builder.create();
-        tv_progress =  view.findViewById(R.id.progress_text);
+        tv_progress = view.findViewById(R.id.progress_text);
         progressDialog.show();
-        String book_ep = outputDirPath+"/"+fileName.replace(".txt","")+"-ep/";
+        String book_ep = outputDirPath + "/" + fileName.replace(".txt", "") + "-ep/";
 
         Observable.create((ObservableEmitter<Integer> emitter) -> {
             try {
                 fileInit(1);
-                copyAssets(mContext,"epub",book_ep);
+                copyAssets(mContext, "epub", book_ep);
 
-                preEpubFile(genOpf(),book_ep+"/OEBPS/content.opf");
-                preEpubFile(genTocNcx(),book_ep+"/OEBPS/toc.ncx");
-                preEpubFile(genPart0(),book_ep+"/OEBPS/Text/0.xhtml");
-                genCover(book_ep+"/OEBPS/Images/cover.jpg");
+                preEpubFile(genOpf(), book_ep + "/OEBPS/content.opf");
+                preEpubFile(genTocNcx(), book_ep + "/OEBPS/toc.ncx");
+                preEpubFile(genPart0(), book_ep + "/OEBPS/Text/0.xhtml");
+                genCover(book_ep + "/OEBPS/Images/cover.jpg");
 
                 chapters = BookUtil.this.selectChapters();
                 int i = 0;
                 for (String chapter : chapters) {
-                    int c = i+1;
-                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter( new FileOutputStream(new File(book_ep+"/OEBPS/Text/"+c+".xhtml")), StandardCharsets.UTF_8));
+                    int c = i + 1;
+                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(book_ep + "/OEBPS/Text/" + c + ".xhtml")), StandardCharsets.UTF_8));
                     File chapterFile = new File(chapter);
                     InputStreamReader reader = new InputStreamReader(new FileInputStream(chapterFile));
                     BufferedReader br = new BufferedReader(reader);
@@ -181,11 +181,11 @@ public class BookUtil {
                     writer.newLine();
                     writer.flush();
                     int li = 0;
-                    while ((s=br.readLine())!=null) {
-                        if (li==0){
-                            writer.write("<h1 class=\"kindle-cn-heading-1\">"+s+"</h1>");
-                        }else {
-                            writer.write("<p>"+s+"</p>");
+                    while ((s = br.readLine()) != null) {
+                        if (li == 0) {
+                            writer.write("<h1 class=\"kindle-cn-heading-1\">" + s + "</h1>");
+                        } else {
+                            writer.write("<p>" + s + "</p>");
                         }
                         writer.newLine();
                         writer.flush();
@@ -198,11 +198,14 @@ public class BookUtil {
                     i++;
                     emitter.onNext(i);
                 }
-                ZipUtil.pack(new File(outputDirPath+"/"+fileName.replace(".txt","")+"-ep/"), new File(outputDirPath+"/"+fileName.replace(".txt","")+".epub"), new NameMapper() {
+                emitter.onNext(-1);
+                ZipUtil.pack(new File(book_ep), new File(outputDirPath + "/" + fileName.replace(".txt", "") + ".epub"), new NameMapper() {
                     public String map(String name) {
                         return name;
                     }
                 });
+                emitter.onNext(-2);
+                deleteDirectory(book_ep);
                 emitter.onComplete();
             } catch (Exception e) {
                 Logger.e(e.toString());
@@ -212,11 +215,18 @@ public class BookUtil {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<Integer>() {
                     @Override
-                    public void onSubscribe(Disposable d) { }
+                    public void onSubscribe(Disposable d) {
+                    }
 
                     @Override
                     public void onNext(Integer i) {
-                        tv_progress.setText(String.format(mContext.getResources().getString(R.string.exporting), i, chapters.size()));
+                        if (i == -1) {
+                            tv_progress.setText("正在打包文件……");
+                        } else if (i == -2) {
+                            tv_progress.setText("正在清理临时目录……");
+                        } else {
+                            tv_progress.setText(String.format(mContext.getResources().getString(R.string.exporting), i, chapters.size()));
+                        }
                     }
 
                     @Override
@@ -228,7 +238,7 @@ public class BookUtil {
                     public void onComplete() {
                         Logger.d("完毕！");
                         progressDialog.cancel();
-                        if(SpUtil.getAutoDel(mContext)){
+                        if (SpUtil.getAutoDel(mContext)) {
                             deleteDirectory(bookPath);
                         }
                         el.exportFinish();
@@ -236,25 +246,25 @@ public class BookUtil {
                 });
     }
 
-    public void extractTXT(){
+    public void extractTXT() {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         builder.setCancelable(false);
         View view = View.inflate(mContext, R.layout.loading_dialog, null);
         builder.setView(view);
         progressDialog = builder.create();
-        tv_progress =  view.findViewById(R.id.progress_text);
+        tv_progress = view.findViewById(R.id.progress_text);
         progressDialog.show();
         Observable.create((ObservableEmitter<Integer> emitter) -> {
             try {
                 fileInit(0);
                 chapters = BookUtil.this.selectChapters();
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter( new FileOutputStream(new File(outputDirPath+"/"+fileName)), StandardCharsets.UTF_8));
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(outputDirPath + "/" + fileName)), StandardCharsets.UTF_8));
                 int i = 0;
                 for (String chapter : chapters) {
                     InputStreamReader reader = new InputStreamReader(new FileInputStream(new File(chapter)));
                     BufferedReader br = new BufferedReader(reader);
                     String s;
-                    while ((s=br.readLine())!=null) {
+                    while ((s = br.readLine()) != null) {
                         writer.write(s);
                         writer.newLine();
                         writer.flush();
@@ -272,7 +282,8 @@ public class BookUtil {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<Integer>() {
                     @Override
-                    public void onSubscribe(Disposable d) { }
+                    public void onSubscribe(Disposable d) {
+                    }
 
                     @Override
                     public void onNext(Integer i) {
@@ -288,7 +299,7 @@ public class BookUtil {
                     public void onComplete() {
                         Logger.d("完毕！");
                         progressDialog.cancel();
-                        if(SpUtil.getAutoDel(mContext)){
+                        if (SpUtil.getAutoDel(mContext)) {
                             deleteDirectory(bookPath);
                         }
                         el.exportFinish();
@@ -366,7 +377,7 @@ public class BookUtil {
         }
     }
 
-    private String genPart0(){
+    private String genPart0() {
         StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?><!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\"\n" +
                 "  \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\"><html xmlns=\"http://www.w3.org/1999/xhtml\"><head>\n" +
                 "  <title>Contents</title>\n" +
@@ -375,10 +386,10 @@ public class BookUtil {
                 "  <div class=\"sgc-toc-title\">\n" +
                 "    目录\n" +
                 "  </div>");
-        for (int i=0;i<cacheChapters.size();i++){
+        for (int i = 0; i < cacheChapters.size(); i++) {
             sb.append("<div class=\"sgc-toc-level-1\">\n" +
                     "    <a href=\"")
-                    .append(i+1)
+                    .append(i + 1)
                     .append(".xhtml\">")
                     .append(cacheChapters.get(i).getName())
                     .append("</a>\n" +
@@ -388,7 +399,7 @@ public class BookUtil {
         return sb.toString();
     }
 
-    private String genTocNcx(){
+    private String genTocNcx() {
         StringBuilder sb = new StringBuilder("<?xml version='1.0' encoding='utf-8'?>\n" +
                 "<ncx xmlns=\"http://www.daisy.org/z3986/2005/ncx/\" version=\"2005-1\" xml:lang=\"zh\">\n" +
                 "  <head>\n" +
@@ -399,11 +410,11 @@ public class BookUtil {
                 "  </head>\n" +
                 "  <docTitle>\n" +
                 "    <text>");
-        sb.append(fileName.substring(0,fileName.length()-4));
+        sb.append(fileName.substring(0, fileName.length() - 4));
         sb.append("</text>\n" +
                 "</docTitle>\n" +
                 "<navMap>");
-        for (int i=0;i<cacheChapters.size();i++){
+        for (int i = 0; i < cacheChapters.size(); i++) {
             sb.append("<navPoint id=\"np_")
                     .append(i)
                     .append("\" playOrder=\"")
@@ -415,16 +426,16 @@ public class BookUtil {
                     .append("</text>\n" +
                             "    </navLabel>\n" +
                             "    <content src=\"Text/")
-                    .append(i+1)
+                    .append(i + 1)
                     .append(".xhtml\"/>\n" +
                             "    </navPoint>");
         }
         sb.append("</navMap>\n" +
                 "</ncx>");
-        return  sb.toString();
+        return sb.toString();
     }
 
-    private String genOpf(){
+    private String genOpf() {
         StringBuilder sb0 = new StringBuilder();
         StringBuilder sb1 = new StringBuilder("<manifest>");
         StringBuilder sb2 = new StringBuilder("<spine toc=\"ncx\">");
@@ -448,14 +459,14 @@ public class BookUtil {
                 "        <item id=\"item31\" media-type=\"text/css\" href=\"Styles/style0002.css\" />\n" +
                 "        <item id=\"cover.jpg\" media-type=\"image/jpeg\" href=\"Images/cover.jpg\" />\n" +
                 "        <item id=\"ncx\" media-type=\"application/x-dtbncx+xml\" href=\"toc.ncx\" />");
-        for (int i=0;i<cacheChapters.size();i++){
+        for (int i = 0; i < cacheChapters.size(); i++) {
             sb1.append("<item id=\"x_Section")
-                    .append(i+1)
+                    .append(i + 1)
                     .append(".xhtml\" media-type=\"application/xhtml+xml\" href=\"Text/")
-                    .append(i+1)
+                    .append(i + 1)
                     .append(".xhtml\" />");
             sb2.append("<itemref idref=\"x_Section")
-                    .append(i+1)
+                    .append(i + 1)
                     .append(".xhtml\"/>");
         }
         sb1.append("</manifest>");
