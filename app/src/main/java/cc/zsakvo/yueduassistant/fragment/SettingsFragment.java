@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.SwitchPreference;
 
 import java.util.Objects;
 
@@ -23,6 +24,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
     private Preference backup_path;
     private Preference output_path;
     private Preference update_source;
+    private SwitchPreference export_more;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -34,6 +36,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
         output_path.setOnPreferenceClickListener(this);
         update_source = findPreference("update_source");
         update_source.setOnPreferenceClickListener(this);
+        export_more = findPreference("export_more");
         cache_path.setSummary(SpUtil.getCacheDirPath(Objects.requireNonNull(getContext())));
         output_path.setSummary(SpUtil.getOutputPath(Objects.requireNonNull(getContext())));
     }

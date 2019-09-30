@@ -107,11 +107,6 @@ public class BookDetailActivity extends BaseActivity implements ExportListener, 
 
     @Override
     public void initView(View view) {
-//        Toolbar toolbar = $(R.id.toolbar);
-//        toolbar.setTitle("书籍详情");
-//        setSupportActionBar(toolbar);
-
-//        bookInfoCard = $(R.id.book_info_card);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
         searchView = $(R.id.searchView);
@@ -141,84 +136,69 @@ public class BookDetailActivity extends BaseActivity implements ExportListener, 
 
         bookChapters = $(R.id.book_chapters);
         bookChapters.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new CacheChapterAdapter(BookDetailActivity.this,this::setFlags);
+        adapter = new CacheChapterAdapter(BookDetailActivity.this, this::setFlags);
 
         bookChapters.setAdapter(adapter);
 
-        fab.setOnClickListener(view1 -> {
-            mBottomSheetDialog = new BottomSheetDialog(BookDetailActivity.this);
-            View dialogView = getLayoutInflater().inflate(R.layout.dialog_advanced_export, null);
-            ImageView imageView = (ImageView) dialogView.findViewById(R.id.book_cover);
-            TextView tv_name = (TextView)dialogView.findViewById(R.id.book_name);
-            TextView tv_author = (TextView)dialogView.findViewById(R.id.book_author);
-            TextView tv_desc = (TextView)dialogView.findViewById(R.id.book_desc);
-            MaterialButton mb_export_txt = (MaterialButton)dialogView.findViewById(R.id.export_txt);
-            MaterialButton mb_export_epub = (MaterialButton)dialogView.findViewById(R.id.export_epub);
-            mBottomSheetDialog.setContentView(dialogView);
+        if (SpUtil.getExportMore(BookDetailActivity.this)) {
+            fab.setOnClickListener(view1 -> {
+                mBottomSheetDialog = new BottomSheetDialog(BookDetailActivity.this);
+                View dialogView = getLayoutInflater().inflate(R.layout.dialog_advanced_export, null);
+                ImageView imageView = (ImageView) dialogView.findViewById(R.id.book_cover);
+                TextView tv_name = (TextView) dialogView.findViewById(R.id.book_name);
+                TextView tv_author = (TextView) dialogView.findViewById(R.id.book_author);
+                TextView tv_desc = (TextView) dialogView.findViewById(R.id.book_desc);
+                MaterialButton mb_export_txt = (MaterialButton) dialogView.findViewById(R.id.export_txt);
+                MaterialButton mb_export_epub = (MaterialButton) dialogView.findViewById(R.id.export_epub);
+                mBottomSheetDialog.setContentView(dialogView);
 
-            Observable.create((ObservableOnSubscribe<JSONObject>) emitter -> {
-                try {
-                    Connection.Response response =Jsoup.connect("https://www.yousuu.com/api/search?type=title&value="+bookName+"&page=1")
-                            .header("Accept", "*/*")
-                            .ignoreContentType(true)
-                            .execute();
-                    JSONObject data = JSONObject.parseObject(response.body()).getJSONObject("data") ;
-                    JSONObject book = data.getJSONArray("books").getJSONObject(0);
-                    JSONObject object = new JSONObject();
-                    object.put("name",book.getString("title"));
-                    object.put("author",book.getString("author"));
-                    object.put("desc",book.getString("countWord"));
-                    object.put("cover",book.getString("cover"));
-                    emitter.onNext(object);
-                } catch (Exception e) {
-                    emitter.onError(e);
-                }
-                emitter.onComplete();
-            }).subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Observer<JSONObject>() {
+                Observable.create((ObservableOnSubscribe<JSONObject>) emitter -> {
+                    try {
+                        Connection.Response response = Jsoup.connect("https://www.yousuu.com/api/search?type=title&value=" + bookName + "&page=1")
+                                .header("Accept", "*/*")
+                                .ignoreContentType(true)
+                                .execute();
+                        JSONObject data = JSONObject.parseObject(response.body()).getJSONObject("data");
+                        JSONObject book = data.getJSONArray("books").getJSONObject(0);
+                        JSONObject object = new JSONObject();
+                        object.put("name", book.getString("title"));
+                        object.put("author", book.getString("author"));
+                        object.put("desc", book.getString("countWord"));
+                        object.put("cover", book.getString("cover"));
+                        emitter.onNext(object);
+                    } catch (Exception e) {
+                        emitter.onError(e);
+                    }
+                    emitter.onComplete();
+                }).subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Observer<JSONObject>() {
 
-                        @Override
-                        public void onSubscribe(Disposable d) {
-                            Logger.d("subscribe");
-                        }
+                            @Override
+                            public void onSubscribe(Disposable d) {
+                                Logger.d("subscribe");
+                            }
 
-                        @Override
-                        public void onNext(JSONObject jsonObject) {
-                            cover = jsonObject.getString("cover");
-                            Glide.with(dialogView).load(cover).into(imageView);
-                            tv_name.setText(bookName);
-                            DecimalFormat df = new DecimalFormat("0.00");
-                            String wordCount = df.format((float)jsonObject.getInteger("desc")/10000);
-                            tv_author.setText(jsonObject.getString("author")+" 著");
-                            tv_desc.setText("共 "+wordCount+" 万字");
-                        }
+                            @Override
+                            public void onNext(JSONObject jsonObject) {
+                                cover = jsonObject.getString("cover");
+                                Glide.with(dialogView).load(cover).into(imageView);
+                                tv_name.setText(bookName);
+                                DecimalFormat df = new DecimalFormat("0.00");
+                                String wordCount = df.format((float) jsonObject.getInteger("desc") / 10000);
+                                tv_author.setText(jsonObject.getString("author") + " 著");
+                                tv_desc.setText("共 " + wordCount + " 万字");
+                            }
 
-                        @Override
-                        public void onError(Throwable e) {
-                            Logger.e(e.toString());
-                        }
+                            @Override
+                            public void onError(Throwable e) {
+                                Logger.e(e.toString());
+                            }
 
-                        @Override
-                        public void onComplete() {
-                            mb_export_txt.setOnClickListener(view2 -> {
-                                ExportBook.Builder bookBuilder = new ExportBook.Builder(BookDetailActivity.this);
-                                ExportBook exportBook = bookBuilder
-                                        .bookPath(bookCachePath)
-                                        .cacheChapters(cacheChapters)
-                                        .flags(chapterFlags)
-                                        .outputDirPath(SpUtil.getOutputPath(BookDetailActivity.this))
-                                        .fileName(bookName + ".txt")
-                                        .build();
-                                new BookUtil(exportBook, BookDetailActivity.this).extractTXT();
-                            });
-
-                            mb_export_epub.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    imageView.buildDrawingCache(true);
-                                    Bitmap bitmap = imageView.getDrawingCache();
-                                    imageView.buildDrawingCache(false);
+                            @Override
+                            public void onComplete() {
+                                mb_export_txt.setOnClickListener(view2 -> {
+                                    mBottomSheetDialog.cancel();
                                     ExportBook.Builder bookBuilder = new ExportBook.Builder(BookDetailActivity.this);
                                     ExportBook exportBook = bookBuilder
                                             .bookPath(bookCachePath)
@@ -226,20 +206,53 @@ public class BookDetailActivity extends BaseActivity implements ExportListener, 
                                             .flags(chapterFlags)
                                             .outputDirPath(SpUtil.getOutputPath(BookDetailActivity.this))
                                             .fileName(bookName + ".txt")
-                                            .name(bookName)
-                                            .cover(cover)
-                                            .author(tv_author.getText().toString().replace(" 著",""))
                                             .build();
-                                    new BookUtil(exportBook, BookDetailActivity.this).extractEpub();
-                                }
-                            });
-                            mb_export_txt.setEnabled(true);
-                            mb_export_epub.setEnabled(true);
-                        }
-                    });
+                                    new BookUtil(exportBook, BookDetailActivity.this).extractTXT();
+                                });
 
-            mBottomSheetDialog.show();
-        });
+                                mb_export_epub.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        mBottomSheetDialog.cancel();
+                                        imageView.buildDrawingCache(true);
+                                        Bitmap bitmap = imageView.getDrawingCache();
+                                        imageView.buildDrawingCache(false);
+                                        ExportBook.Builder bookBuilder = new ExportBook.Builder(BookDetailActivity.this);
+                                        ExportBook exportBook = bookBuilder
+                                                .bookPath(bookCachePath)
+                                                .cacheChapters(cacheChapters)
+                                                .flags(chapterFlags)
+                                                .outputDirPath(SpUtil.getOutputPath(BookDetailActivity.this))
+                                                .fileName(bookName + ".txt")
+                                                .name(bookName)
+                                                .cover(cover)
+                                                .author(tv_author.getText().toString().replace(" 著", ""))
+                                                .build();
+                                        new BookUtil(exportBook, BookDetailActivity.this).extractEpub();
+                                    }
+                                });
+                                mb_export_txt.setEnabled(true);
+                                mb_export_epub.setEnabled(true);
+                            }
+                        });
+
+                mBottomSheetDialog.show();
+            });
+        } else {
+            fab.setOnClickListener(view12 -> {
+                ExportBook.Builder bookBuilder = new ExportBook.Builder(BookDetailActivity.this);
+                ExportBook exportBook = bookBuilder
+                        .bookPath(bookCachePath)
+                        .cacheChapters(cacheChapters)
+                        .flags(chapterFlags)
+                        .outputDirPath(SpUtil.getOutputPath(BookDetailActivity.this))
+                        .fileName(bookName + ".txt")
+                        .build();
+                new BookUtil(exportBook, BookDetailActivity.this).extractTXT();
+            });
+        }
+
+
     }
 
     @Override
@@ -288,7 +301,7 @@ public class BookDetailActivity extends BaseActivity implements ExportListener, 
                     @Override
                     public void onError(Throwable e) {
                         Logger.e(e.toString());
-                        View topView = getLayoutInflater().inflate(R.layout.scan_chapters_failed_card,new LinearLayout(BookDetailActivity.this));
+                        View topView = getLayoutInflater().inflate(R.layout.scan_chapters_failed_card, new LinearLayout(BookDetailActivity.this));
                         bookInfoCard.removeAllViews();
                         bookInfoCard.addView(topView);
                     }
@@ -301,7 +314,7 @@ public class BookDetailActivity extends BaseActivity implements ExportListener, 
                         chapterNum = cacheChapters.size();
                         bookInfoName.setText(bookName);
                         bookInfoNum.setText(String.format(getResources().getString(R.string.book_info_chapterNum), chapterNum));
-                        adapter.setItems(cacheChapters,chapterFlags);
+                        adapter.setItems(cacheChapters, chapterFlags);
 
                     }
                 });
@@ -325,7 +338,6 @@ public class BookDetailActivity extends BaseActivity implements ExportListener, 
 
     @Override
     public void exportFinish() {
-        mBottomSheetDialog.cancel();
         SnackbarUtil.build(BookDetailActivity.this, coordinatorLayout, "导出成功", Snackbar.LENGTH_SHORT).show();
         chapterFlags.clear();
         flagsStatus = true;
